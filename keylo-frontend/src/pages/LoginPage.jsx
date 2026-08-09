@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function KeyLoLogo() {
   return (
@@ -39,8 +40,19 @@ export default function LoginPage() {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    if (!isSupabaseConfigured) {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      setIsLoading(false);
+      navigate('/dashboard');
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email: formData.email, password: formData.password });
     setIsLoading(false);
+    if (error) {
+      setErrors({ submit: error.message });
+      return;
+    }
     navigate('/dashboard');
   };
 
@@ -59,6 +71,7 @@ export default function LoginPage() {
         {/* Login Form Card */}
         <div className="bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#000000] p-xl">
           <form onSubmit={handleSubmit} className="flex flex-col gap-lg" noValidate>
+            {errors.submit && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{errors.submit}</div>}
             {/* Email */}
             <div>
               <label htmlFor="email" className="font-label-caps text-label-caps text-on-surface block mb-xs">Email</label>

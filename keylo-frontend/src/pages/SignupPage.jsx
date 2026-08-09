@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function KeyLoLogo() {
   return (
@@ -48,8 +49,32 @@ export default function SignupPage() {
     e.preventDefault();
     if (!validate()) return;
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    if (!isSupabaseConfigured) {
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      setIsLoading(false);
+      navigate(formData.userType === 'landlord' ? '/owner' : '/dashboard');
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: { data: { full_name: formData.fullName } },
+    });
+    if (error) {
+      setIsLoading(false);
+      setErrors({ submit: error.message });
+      return;
+    }
+
+    if (data.user) {
+      await supabase.from('profiles').update({ full_name: formData.fullName, phone: formData.phone, role: formData.userType === 'landlord' ? 'landlord' : 'student' }).eq('id', data.user.id);
+    }
     setIsLoading(false);
+    if (!data.session) {
+      setErrors({ submit: 'Account created. Check your email to confirm your account before signing in.' });
+      return;
+    }
     navigate(formData.userType === 'landlord' ? '/owner' : '/dashboard');
   };
 
@@ -68,6 +93,7 @@ export default function SignupPage() {
         {/* Signup Form Card */}
         <div className="bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#000000] p-xl">
           <form onSubmit={handleSubmit} className="flex flex-col gap-lg" noValidate>
+            {errors.submit && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{errors.submit}</div>}
             {/* User Type Selector */}
             <div>
               <label className="font-label-caps text-label-caps text-on-surface block mb-md">I want to</label>
