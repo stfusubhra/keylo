@@ -111,18 +111,26 @@ export async function createTestPayment({ booking, method = 'upi' }) {
   const { data: userData, error: userError } = await client.auth.getUser();
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to make a test payment.');
+  const { data, error } = await client.rpc('complete_test_booking', {
+    p_booking_id: booking.id,
+    p_method: method,
+  });
+  if (error) throw error;
+  return data || { status: 'paid', provider: 'test_mode', method };
+}
 
-  const paymentRows = [
-    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.rent_amount, payment_type: 'rent', provider: 'test_mode', provider_reference: `TEST-${booking.id}-RENT`, status: 'paid', paid_at: new Date().toISOString() },
-    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.deposit_amount, payment_type: 'deposit', provider: 'test_mode', provider_reference: `TEST-${booking.id}-DEPOSIT`, status: 'paid', paid_at: new Date().toISOString() },
-    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.tenant_first_booking_fee, payment_type: 'tenant_first_booking_fee', provider: 'test_mode', provider_reference: `TEST-${booking.id}-FEE-${method.toUpperCase()}`, status: 'paid', paid_at: new Date().toISOString() },
-  ];
-  const { error: paymentError } = await client.from('payments').insert(paymentRows);
-  if (paymentError) throw paymentError;
-
-  const { error: depositError } = await client.from('deposits').insert({ booking_id: booking.id, amount: booking.deposit_amount, status: 'held', held_at: new Date().toISOString() });
-  if (depositError) throw depositError;
-  return { status: 'paid', provider: 'test_mode', method };
+export async function cancelBooking(bookingId) {
+  const client = requireSupabase();
+  const { data, error } = await client
+    .from('bookings')
+    .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+    .eq('id', bookingId)
+    .eq('status', 'pending')
+    .select('id, status')
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error('Only pending bookings can be cancelled.');
+  return data;
 }
 
 export async function getSavedPropertyIds() {
@@ -199,6 +207,14 @@ export async function createProperty({ name, universityId, area, propertyType, m
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in as a landlord to add a property.');
 
+  const rent = Number(monthlyRent);
+  const deposit = Number(securityDeposit);
+  const distanceKm = Number(distance);
+  if (!name?.trim() || !universityId || !area?.trim()) throw new Error('Property name, university, and area are required.');
+  if (!Number.isFinite(rent) || rent <= 0) throw new Error('Monthly rent must be greater than zero.');
+  if (!Number.isFinite(deposit) || deposit < 0) throw new Error('Security deposit cannot be negative.');
+  if (!Number.isFinite(distanceKm) || distanceKm < 0) throw new Error('Distance must be zero or greater.');
+
   const { data, error } = await client.from('properties').insert({
     owner_id: userData.user.id,
     university_id: universityId,
@@ -207,9 +223,9 @@ export async function createProperty({ name, universityId, area, propertyType, m
     area,
     city: 'Kolkata',
     description,
-    monthly_rent: Number(monthlyRent),
-    security_deposit: Number(securityDeposit),
-    distance_to_university_km: Number(distance),
+    monthly_rent: rent,
+    security_deposit: deposit,
+    distance_to_university_km: distanceKm,
     status: 'draft',
     trust_score: 0,
     amenities: [],

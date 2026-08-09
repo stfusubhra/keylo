@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getDashboardData } from '../lib/supabaseData';
+import { cancelBooking, getDashboardData } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 const dashboardSections = {
@@ -24,12 +24,12 @@ const dashboardSections = {
   },
 };
 
-function DashboardSection({ section, pathname, liveData }) {
+function DashboardSection({ section, pathname, liveData, onCancelBooking, cancellingBookingId }) {
   const isMessages = pathname.endsWith('messages');
   const isBookings = pathname.endsWith('bookings');
   const liveSaved = liveData?.saved?.length;
   const cards = isBookings && liveData?.bookings?.length
-    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${booking.move_in_date}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id])
+    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${booking.move_in_date}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id])
     : isBookings
     ? [
         ['College Street Co-Living', 'University of Calcutta · Room 304', 'ACTIVE', '₹7,800 / month', 'directions_walk'],
@@ -57,7 +57,7 @@ function DashboardSection({ section, pathname, liveData }) {
         <div className="bg-primary text-on-primary border-2 border-primary p-lg lg:p-xl shadow-[8px_8px_0px_0px_#C7F000] mb-xl">
           <div className="flex items-start justify-between gap-md"><div><p className="font-label-caps text-label-caps text-acid-lime uppercase mb-sm">{section.eyebrow}</p><h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1><p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p></div><span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span></div>
         </div>
-        <div className="flex flex-col gap-md">{cards.map(([title, detail, status, meta, icon, propertyId]) => <article key={title} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg"><div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">{icon}</span></div><div className="flex-1"><h2 className="font-h3 text-h3 text-primary">{title}</h2><p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p></div><div className="md:text-right"><span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span><p className="font-label-caps text-label-caps text-on-surface-variant mt-sm">{meta}</p></div>{pathname.endsWith('bookings') && <Link to={propertyId ? `/secure-your-stay/${propertyId}` : '/secure-your-stay/jadavpur-pg'} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>}</article>)}</div>
+         <div className="flex flex-col gap-md">{cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => <article key={title} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg"><div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">{icon}</span></div><div className="flex-1"><h2 className="font-h3 text-h3 text-primary">{title}</h2><p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p></div><div className="md:text-right"><span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span><p className="font-label-caps text-label-caps text-on-surface-variant mt-sm">{meta}</p></div>{pathname.endsWith('bookings') && <><Link to={propertyId ? `/secure-your-stay/${propertyId}` : '/secure-your-stay/jadavpur-pg'} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>{bookingId && status === 'PENDING' && <button type="button" onClick={() => onCancelBooking(bookingId)} disabled={cancellingBookingId === bookingId} className="px-md py-sm bg-surface border-2 border-primary font-label-caps text-label-caps text-primary text-center disabled:opacity-50">{cancellingBookingId === bookingId ? 'Cancelling...' : 'Cancel'}</button>}</>}</article>)}</div>
         {isDemo && <div className="mt-xl bg-surface-container border-2 border-primary p-lg flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">These demo records will become live once KeyLo connects to the booking and messaging backend.</p></div>}
       </div>
     </div>
@@ -68,15 +68,32 @@ export default function DashboardPage() {
   const location = useLocation();
   const section = dashboardSections[location.pathname];
   const [liveData, setLiveData] = useState(null);
+  const [cancellingBookingId, setCancellingBookingId] = useState('');
+  const [bookingError, setBookingError] = useState('');
+
+  const reload = () => getDashboardData().then(setLiveData).catch((error) => setBookingError(error.message));
+  const handleCancelBooking = async (bookingId) => {
+    if (!window.confirm('Cancel this pending booking?')) return;
+    setBookingError('');
+    setCancellingBookingId(bookingId);
+    try {
+      await cancelBooking(bookingId);
+      await reload();
+    } catch (error) {
+      setBookingError(error.message || 'Unable to cancel this booking.');
+    } finally {
+      setCancellingBookingId('');
+    }
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
     let active = true;
-    getDashboardData().then((data) => { if (active) setLiveData(data); }).catch(() => {});
+    getDashboardData().then((data) => { if (active) setLiveData(data); }).catch((error) => { if (active) setBookingError(error.message); });
     return () => { active = false; };
   }, []);
 
-  if (section) return <DashboardSection section={section} pathname={location.pathname} liveData={liveData} />;
+  if (section) return <><DashboardSection section={section} pathname={location.pathname} liveData={liveData} onCancelBooking={handleCancelBooking} cancellingBookingId={cancellingBookingId} />{bookingError && <div role="alert" className="fixed bottom-4 right-4 max-w-md border-2 border-error bg-error/10 p-md font-body-md text-error">{bookingError}</div>}</>;
 
   const activityLog = [
     {

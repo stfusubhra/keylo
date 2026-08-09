@@ -18,7 +18,7 @@ export default function OwnerPortalPage() {
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
-    listUniversities().then(setUniversities).catch(() => {});
+    listUniversities().then(setUniversities).catch((err) => setError(err.message));
     refresh();
     return undefined;
   }, []);
@@ -40,7 +40,8 @@ export default function OwnerPortalPage() {
     }
   };
 
-  const isLive = isSupabaseConfigured && ownerData.properties.length > 0;
+  const publishedProperties = ownerData.properties.filter((property) => property.status === 'published');
+  const isLive = isSupabaseConfigured;
   const totalRent = ownerData.bookings.reduce((sum, booking) => sum + Number(booking.rent_amount || 0), 0);
   const commission = totalRent * 0.05;
   const sectionTitle = location.pathname.includes('/properties') ? 'Properties' : location.pathname.includes('/tenants') ? 'Tenants' : location.pathname.includes('/deposits') ? 'Deposits' : location.pathname.includes('/claims') ? 'Claims' : 'Landlord overview';
@@ -55,8 +56,8 @@ export default function OwnerPortalPage() {
         {message && <div className="border-2 border-primary bg-acid-lime p-md font-body-md text-primary">{message}</div>}
         {error && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{error}</div>}
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
-          {[[isLive ? ownerData.properties.length : '—', 'Published properties', 'apartment'], [isLive ? ownerData.bookings.length : '—', 'Bookings', 'calendar_today'], [isLive ? `₹${commission.toLocaleString('en-IN')}` : '—', '5% KeyLo fee', 'payments'], [isLive ? 'Live' : 'Connect account', 'Data status', 'cloud_done']].map(([value, label, icon]) => <div key={label} className="bg-surface-container border-2 border-primary p-lg"><div className="flex justify-between"><span className="font-label-caps text-label-caps text-on-surface-variant uppercase">{label}</span><span className="material-symbols-outlined text-primary">{icon}</span></div><p className="font-price-display text-price-display text-primary mt-lg">{value}</p></div>)}
+         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+           {[[isLive ? publishedProperties.length : '—', 'Published properties', 'apartment'], [isLive ? ownerData.bookings.length : '—', 'Bookings', 'calendar_today'], [isLive ? `₹${commission.toLocaleString('en-IN')}` : '—', '5% KeyLo fee', 'payments'], [isLive ? 'Connected' : 'Demo mode', 'Data status', 'cloud_done']].map(([value, label, icon]) => <div key={label} className="bg-surface-container border-2 border-primary p-lg"><div className="flex justify-between"><span className="font-label-caps text-label-caps text-on-surface-variant uppercase">{label}</span><span className="material-symbols-outlined text-primary">{icon}</span></div><p className="font-price-display text-price-display text-primary mt-lg">{value}</p></div>)}
         </section>
 
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-xl">
