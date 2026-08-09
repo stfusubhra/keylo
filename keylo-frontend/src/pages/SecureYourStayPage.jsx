@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { createBooking, createTestPayment } from '../lib/supabaseData';
+import { createBooking, createTestPayment, getPropertyById } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { demoProperties } from '../lib/demoCatalog';
 
 export default function SecureYourStayPage() {
   const { id = 'jadavpur-pg' } = useParams();
@@ -15,8 +16,37 @@ export default function SecureYourStayPage() {
   const [bookingError, setBookingError] = useState('');
   const [isBooking, setIsBooking] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('upi');
+  const [property, setProperty] = useState(null); // { name, rent, deposit } resolved row or demo
 
-  const baseTotal = 19497;
+  useEffect(() => {
+    let active = true;
+    const demo = demoProperties.find((p) => p.id === id);
+    const demoFallback = demo
+      ? {
+          name: demo.name,
+          rent: Number(String(demo.price).replace(/[^\d]/g, '')) || 8500,
+          deposit: Number(String(demo.deposit).replace(/[^\d]/g, '')) || 10000,
+        }
+      : { name: 'Lake View Student PG', rent: 9500, deposit: 12000 };
+    if (!isSupabaseConfigured) {
+      setProperty(demoFallback);
+      return () => { active = false; };
+    }
+    getPropertyById(id)
+      .then((row) => {
+        if (!active) return;
+        setProperty(row
+          ? { name: row.name, rent: Number(row.monthly_rent), deposit: Number(row.security_deposit) }
+          : demoFallback);
+      })
+      .catch(() => { if (active) setProperty(demoFallback); });
+    return () => { active = false; };
+  }, [id]);
+
+  const rentAmount = property?.rent ?? 9500;
+  const depositAmount = property?.deposit ?? 12000;
+  const propertyName = property?.name || 'Lake View Student PG';
+  const baseTotal = rentAmount + depositAmount + 997;
 
   // These are included in the booking experience; KeyLo does not sell subscriptions.
   const addonPrices = {
@@ -48,7 +78,7 @@ export default function SecureYourStayPage() {
     }
     setIsBooking(true);
     try {
-      const booking = await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount: 8500, depositAmount: 10000 });
+      const booking = await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount, depositAmount });
       await createTestPayment({ booking, method: paymentMethod });
       setShowSuccess(true);
       document.body.style.overflow = 'hidden';
@@ -136,7 +166,7 @@ export default function SecureYourStayPage() {
                 >
                   <div>
                     <h2 className="font-h3 text-h3 text-primary mb-xs group-hover:text-electric-purple transition-colors">
-                      Urban Nest PG
+                      {propertyName}
                     </h2>
                     <p className="font-body-md text-body-md text-on-surface-variant flex items-center gap-1">
                       <span className="material-symbols-outlined text-[18px]">
@@ -309,7 +339,7 @@ export default function SecureYourStayPage() {
                     1st Month Rent
                   </span>
                   <span className="font-price-display text-[20px] text-primary">
-                    ₹8,500
+                    {formatMoney(rentAmount)}
                   </span>
                 </div>
                 <div className="flex justify-between items-end">
@@ -320,7 +350,7 @@ export default function SecureYourStayPage() {
                     </span>
                   </span>
                   <span className="font-price-display text-[20px] text-primary">
-                    ₹10,000
+                    {formatMoney(depositAmount)}
                   </span>
                 </div>
                 <div className="flex justify-between items-end">
@@ -440,7 +470,7 @@ export default function SecureYourStayPage() {
               You're KeyLo'd <span className="inline-block animate-bounce">🎉</span>
             </h2>
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-xl">
-              Your stay at Urban Nest PG has been locked in. Welcome to the
+              Your stay at {propertyName} has been locked in. Welcome to the
               anti-hustle.
             </p>
             <div className="w-full bg-surface-container border-2 border-primary p-md text-left mb-lg flex items-center justify-between">

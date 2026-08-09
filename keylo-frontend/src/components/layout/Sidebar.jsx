@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
 
 const sidebarItems = [
   { path: '/dashboard', label: 'Overview', icon: 'grid_view' },
@@ -40,6 +41,32 @@ function KeyLoLogo() {
 export default function Sidebar({ variant = 'student' }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [authUser, setAuthUser] = useState(null); // { fullName, email } or null
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    supabase.auth.getUser()
+      .then(async ({ data }) => {
+        if (!active || !data?.user) return;
+        let fullName = data.user.user_metadata?.full_name || '';
+        if (!fullName) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', data.user.id)
+            .maybeSingle();
+          if (profile?.full_name) fullName = profile.full_name;
+        }
+        if (active) setAuthUser({ fullName, email: data.user.email || '' });
+      })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  const fallbackLabel = variant === 'owner' ? 'Owner' : variant === 'admin' ? 'Admin' : 'Student';
+  const displayName = authUser?.fullName || authUser?.email?.split('@')[0] || (isSupabaseConfigured ? 'Guest' : fallbackLabel);
+  const displayEmail = authUser?.email || (isSupabaseConfigured ? 'Not signed in' : 'Demo mode');
 
   const items = variant === 'owner' ? ownerSidebarItems : variant === 'admin' ? adminSidebarItems : sidebarItems;
 
@@ -79,8 +106,8 @@ export default function Sidebar({ variant = 'student' }) {
             <span className="material-symbols-outlined text-on-primary-container">person</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-label-caps text-label-caps text-primary truncate">Alex Chen</p>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm truncate">alex.chen@university.edu</p>
+            <p className="font-label-caps text-label-caps text-primary truncate">{displayName}</p>
+            <p className="font-body-md text-body-md text-on-surface-variant text-sm truncate">{displayEmail}</p>
           </div>
         </div>
       </div>

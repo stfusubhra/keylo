@@ -1,5 +1,18 @@
 import { supabase } from './supabase';
 
+// Demo listing slugs used by FindStayPage when Supabase is unconfigured.
+// These resolve to the matching demo property in the database when it is.
+const DEMO_SLUG_NAMES = {
+  'jadavpur-pg': 'Lake View Student PG',
+  'adamas-pg': 'Adamas Green PG',
+  'adamas-flat': 'North Kolkata Student Flat',
+  'jadavpur-flat': 'South Kolkata 2BHK Flat',
+  'calcutta-pg': 'College Street Co-Living',
+  'calcutta-flat': 'Central Kolkata Student Flat',
+  'xaviers-pg': 'New Town Scholars PG',
+  'xaviers-flat': 'Rajarhat Campus Flat',
+};
+
 function requireSupabase() {
   if (!supabase) {
     throw new Error('Supabase is not configured. Copy .env.example to .env.local and add project credentials.');
@@ -33,6 +46,30 @@ export async function listProperties({ universityId, type } = {}) {
   return data;
 }
 
+// Resolve a property by UUID or demo slug (e.g. "jadavpur-pg") and return the
+// full row with university + owner profile, or null when it does not exist.
+export async function getPropertyById(propertyId) {
+  const client = requireSupabase();
+  let id = propertyId;
+  if (!/^[0-9a-f-]{36}$/i.test(propertyId)) {
+    const { data: property, error: lookupError } = await client
+      .from('properties')
+      .select('id')
+      .eq('name', DEMO_SLUG_NAMES[propertyId] || propertyId)
+      .maybeSingle();
+    if (lookupError) throw lookupError;
+    if (!property) return null;
+    id = property.id;
+  }
+  const { data, error } = await client
+    .from('properties')
+    .select('*, universities(name, city), profiles!properties_owner_id_fkey(full_name, owner_rating)')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data || null;
+}
+
 export async function createBooking({ propertyId, roomId, moveInDate, rentAmount, depositAmount }) {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();
@@ -41,20 +78,10 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
 
   let resolvedPropertyId = propertyId;
   if (!/^[0-9a-f-]{36}$/i.test(propertyId)) {
-    const propertyNames = {
-      'jadavpur-pg': 'Lake View Student PG',
-      'adamas-pg': 'Adamas Green PG',
-      'adamas-flat': 'North Kolkata Student Flat',
-      'jadavpur-flat': 'South Kolkata 2BHK Flat',
-      'calcutta-pg': 'College Street Co-Living',
-      'calcutta-flat': 'Central Kolkata Student Flat',
-      'xaviers-pg': 'New Town Scholars PG',
-      'xaviers-flat': 'Rajarhat Campus Flat',
-    };
     const { data: property, error: propertyError } = await client
       .from('properties')
       .select('id')
-      .eq('name', propertyNames[propertyId] || propertyId)
+      .eq('name', DEMO_SLUG_NAMES[propertyId] || propertyId)
       .single();
     if (propertyError) throw propertyError;
     resolvedPropertyId = property.id;
@@ -117,23 +144,12 @@ export async function toggleSavedProperty(propertyId) {
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to save a property.');
 
-  // Resolve demo slugs to real property UUIDs, like createBooking does.
   let resolvedPropertyId = propertyId;
   if (!/^[0-9a-f-]{36}$/i.test(propertyId)) {
-    const propertyNames = {
-      'jadavpur-pg': 'Lake View Student PG',
-      'adamas-pg': 'Adamas Green PG',
-      'adamas-flat': 'North Kolkata Student Flat',
-      'jadavpur-flat': 'South Kolkata 2BHK Flat',
-      'calcutta-pg': 'College Street Co-Living',
-      'calcutta-flat': 'Central Kolkata Student Flat',
-      'xaviers-pg': 'New Town Scholars PG',
-      'xaviers-flat': 'Rajarhat Campus Flat',
-    };
     const { data: property, error: propertyError } = await client
       .from('properties')
       .select('id')
-      .eq('name', propertyNames[propertyId] || propertyId)
+      .eq('name', DEMO_SLUG_NAMES[propertyId] || propertyId)
       .single();
     if (propertyError) throw propertyError;
     resolvedPropertyId = property.id;
