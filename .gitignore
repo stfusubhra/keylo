@@ -33,3 +33,5 @@ opencode.jsonc
 
 # Optional exported design references
 stitch_keylo_student_rental_ecosystem/
+.vercel
+.env*
