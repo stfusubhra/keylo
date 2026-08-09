@@ -26,7 +26,7 @@ export default function LandingPage() {
             <h1 className="font-heading text-h1-mobile md:text-h1 text-on-surface mb-6 uppercase leading-[0.95] tracking-tighter font-bold">
               Your Space.<br />
               Your Rules.<br />
-              <span className="bg-acid-lime px-4 py-2 mt-4 inline-block transform -rotate-2 border-2 border-primary shadow-[8px_8px_0px_0px_#000000]">KeyLo</span>
+              <span className="bg-acid-lime px-4 py-2 mt-4 inline-block transform -rotate-2 border-2 border-primary shadow-[8px_8px_0px_0px_#000000]">keylo</span>
             </h1>
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 text-balance leading-relaxed" style={{ maxWidth: '520px' }}>
               Find verified student homes near Kolkata universities, rent what you need, and keep your security deposit protected — all in one place.

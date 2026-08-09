@@ -16,7 +16,7 @@ function KeyLoLogo({ className = '', textClass = 'text-primary' }) {
         <rect x="0" y="0" width="40" height="40" rx="6" fill="#000000"/>
         <path d="M20 10 L20 30 M10 20 L30 20" stroke="#C7F000" strokeWidth="3" strokeLinecap="round"/>
       </svg>
-      <span className={`font-h3 text-h3 tracking-tight whitespace-nowrap ${textClass}`}>KeyLo</span>
+      <span className={`font-h3 text-h3 tracking-tight whitespace-nowrap ${textClass}`}>keylo</span>
     </div>
   );
 }

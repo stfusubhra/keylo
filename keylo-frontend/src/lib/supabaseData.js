@@ -153,3 +153,17 @@ export async function getOwnerData() {
   if (failed) throw failed.error;
   return { user: userData.user, properties: properties.data || [], bookings: bookings.data || [] };
 }
+
+export async function getAdminProperties() {
+  const client = requireSupabase();
+  const { data, error } = await client.from('properties').select('id, name, area, city, property_type, status, trust_score, is_ai_inspected, is_documents_verified, created_at, universities(name), profiles!properties_owner_id_fkey(full_name, is_verified)').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function moderateProperty(propertyId, status) {
+  const client = requireSupabase();
+  const { data, error } = await client.from('properties').update({ status }).eq('id', propertyId).select().single();
+  if (error) throw error;
+  return data;
+}

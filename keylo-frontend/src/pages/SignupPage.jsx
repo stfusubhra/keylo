@@ -9,7 +9,7 @@ function KeyLoLogo() {
         <rect x="0" y="0" width="40" height="40" rx="6" fill="#000000"/>
         <path d="M20 10 L20 30 M10 20 L30 20" stroke="#C7F000" strokeWidth="3" strokeLinecap="round"/>
       </svg>
-      <span className="font-h2 text-h2 tracking-tight text-primary whitespace-nowrap">KeyLo</span>
+      <span className="font-h2 text-h2 tracking-tight text-primary whitespace-nowrap">keylo</span>
     </div>
   );
 }
