@@ -128,13 +128,17 @@ export async function toggleSavedProperty(propertyId) {
 
   const existing = await client
     .from('saved_properties')
-    .select('id')
+    .select('property_id')
     .eq('student_id', userData.user.id)
     .eq('property_id', resolvedPropertyId)
     .maybeSingle();
 
   if (existing.data) {
-    const { error } = await client.from('saved_properties').delete().eq('id', existing.data.id);
+    const { error } = await client
+      .from('saved_properties')
+      .delete()
+      .eq('student_id', userData.user.id)
+      .eq('property_id', resolvedPropertyId);
     if (error) throw error;
     return { saved: false };
   }
