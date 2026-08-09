@@ -94,3 +94,43 @@ export async function getDashboardData() {
   if (failed) throw failed.error;
   return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [] };
 }
+
+export async function createProperty({ name, universityId, area, propertyType, monthlyRent, securityDeposit, distance, description }) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in as a landlord to add a property.');
+
+  const { data, error } = await client.from('properties').insert({
+    owner_id: userData.user.id,
+    university_id: universityId,
+    name,
+    property_type: propertyType,
+    area,
+    city: 'Kolkata',
+    description,
+    monthly_rent: Number(monthlyRent),
+    security_deposit: Number(securityDeposit),
+    distance_to_university_km: Number(distance),
+    status: 'draft',
+    trust_score: 0,
+    amenities: [],
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getOwnerData() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in as a landlord to view this workspace.');
+
+  const [properties, bookings] = await Promise.all([
+    client.from('properties').select('id, name, area, property_type, status, monthly_rent, security_deposit, universities(name)').eq('owner_id', userData.user.id).order('created_at', { ascending: false }),
+    client.from('bookings').select('id, status, rent_amount, created_at, properties!inner(name, area, owner_id)').eq('properties.owner_id', userData.user.id).order('created_at', { ascending: false }),
+  ]);
+  const failed = [properties, bookings].find((result) => result.error);
+  if (failed) throw failed.error;
+  return { user: userData.user, properties: properties.data || [], bookings: bookings.data || [] };
+}
