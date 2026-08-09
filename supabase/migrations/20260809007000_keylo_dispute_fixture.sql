@@ -19,45 +19,49 @@
 --   landlord /owner/claims        -> respond (status becomes admin_review)
 --   admin    /admin/disputes      -> resolve (refund releases deposit;
 --                                     partial refunds drop trust_score by 5)
+--
+-- Note: all plpgsql variables use a v_ prefix so they never collide with
+-- column names inside SQL statements (ambiguous references previously raised
+-- 55P02 or, worse, silently self-compared).
 -- ============================================================================
 
 do $$
 declare
   -- Demo identities (non-secret; passwords are never stored here).
-  student_email  text := 'student.demo@keylo.in';
-  landlord_email text := 'landlord.demo@keylo.in';
+  v_student_email  text := 'student.demo@keylo.in';
+  v_landlord_email text := 'landlord.demo@keylo.in';
 
   -- Deterministic fixture ids so re-runs are no-ops.
-  prop_id     uuid := '59aac4bc-2b47-49c1-a88f-20aec062513b';
-  room_id     uuid := '7f3a9b21-2b47-49c1-a88f-20aec062513b';
-  booking_id  uuid := 'd56a45ee-8102-4fd9-aa09-eeaf76a25f69';
+  v_prop_id     uuid := '59aac4bc-2b47-49c1-a88f-20aec062513b';
+  v_room_id     uuid := '7f3a9b21-2b47-49c1-a88f-20aec062513b';
+  v_booking_id  uuid := 'd56a45ee-8102-4fd9-aa09-eeaf76a25f69';
 
-  student_id  uuid;
-  landlord_id uuid;
-  univ_id     uuid;
-  prop_inserted integer;
-  booking_inserted integer;
+  v_student_id  uuid;
+  v_landlord_id uuid;
+  v_univ_id     uuid;
+  v_prop_inserted integer;
+  v_booking_inserted integer;
 begin
-  select id into landlord_id from auth.users where email = landlord_email;
-  if landlord_id is null then
-    raise exception 'Demo landlord "%" not found. Create it in Auth > Users first.', landlord_email;
+  select id into v_landlord_id from auth.users where email = v_landlord_email;
+  if v_landlord_id is null then
+    raise exception 'Demo landlord "%" not found. Create it in Auth > Users first.', v_landlord_email;
   end if;
-  select id into student_id from auth.users where email = student_email;
-  if student_id is null then
-    raise exception 'Demo student "%" not found. Create it in Auth > Users first.', student_email;
+  select id into v_student_id from auth.users where email = v_student_email;
+  if v_student_id is null then
+    raise exception 'Demo student "%" not found. Create it in Auth > Users first.', v_student_email;
   end if;
 
   -- Profiles (created by the auth trigger) -- just pin roles + verification.
   insert into public.profiles (id, full_name, role, is_verified)
-  values (student_id, 'Demo Student', 'student', true)
+  values (v_student_id, 'Demo Student', 'student', true)
   on conflict (id) do update set role = 'student', is_verified = true;
 
   insert into public.profiles (id, full_name, role, is_verified)
-  values (landlord_id, 'Demo Landlord', 'landlord', true)
+  values (v_landlord_id, 'Demo Landlord', 'landlord', true)
   on conflict (id) do update set role = 'landlord', is_verified = true;
 
-  select id into univ_id from public.universities where name = 'Jadavpur University';
-  if univ_id is null then
+  select id into v_univ_id from public.universities where name = 'Jadavpur University';
+  if v_univ_id is null then
     raise exception 'Jadavpur University is missing. Apply the foundation migration first.';
   end if;
 
@@ -67,15 +71,15 @@ begin
     monthly_rent, security_deposit, distance_to_university_km, status,
     is_ai_inspected, is_documents_verified, amenities
   ) values (
-    prop_id, landlord_id, univ_id, 'KeyLo Dispute Demo Home', 'flat', 'Jadavpur', 'Kolkata',
+    v_prop_id, v_landlord_id, v_univ_id, 'KeyLo Dispute Demo Home', 'flat', 'Jadavpur', 'Kolkata',
     'Fixture property for the deposit-dispute demo: verified documents, passed AI inspection, full trust score.',
     9000, 12000, 1.2, 'published',
     true, true, array['WiFi', 'Furnished', 'Water heater']
   ) on conflict (id) do nothing;
-  get diagnostics prop_inserted = row_count;
+  get diagnostics v_prop_inserted = row_count;
 
   insert into public.rooms (id, property_id, name, monthly_rent, capacity, available)
-  values (room_id, prop_id, 'Dispute Demo Room', 9000, 1, true)
+  values (v_room_id, v_prop_id, 'Dispute Demo Room', 9000, 1, true)
   on conflict (id) do nothing;
 
   -- Confirmed booking with a protected deposit. The validate_booking_request
@@ -84,35 +88,41 @@ begin
     id, student_id, property_id, room_id, status,
     move_in_date, move_out_date, rent_amount, deposit_amount
   ) values (
-    booking_id, student_id, prop_id, room_id, 'confirmed',
+    v_booking_id, v_student_id, v_prop_id, v_room_id, 'confirmed',
     current_date + 7, current_date + 180, 9000, 12000
   ) on conflict (id) do nothing;
-  get diagnostics booking_inserted = row_count;
+  get diagnostics v_booking_inserted = row_count;
 
   -- Test-mode payments (one per type; no-op when already present).
   insert into public.payments (booking_id, payer_id, amount, payment_type, provider, provider_reference, status, paid_at)
-  select booking_id, student_id, 9000, 'rent', 'test_mode', 'TEST-' || booking_id || '-RENT', 'paid', now()
-  where not exists (select 1 from public.payments where booking_id = booking_id and payment_type = 'rent');
+  select v_booking_id, v_student_id, 9000, 'rent', 'test_mode', 'TEST-' || v_booking_id || '-RENT', 'paid', now()
+  where not exists (
+    select 1 from public.payments p where p.booking_id = v_booking_id and p.payment_type = 'rent'
+  );
 
   insert into public.payments (booking_id, payer_id, amount, payment_type, provider, provider_reference, status, paid_at)
-  select booking_id, student_id, 12000, 'deposit', 'test_mode', 'TEST-' || booking_id || '-DEPOSIT', 'paid', now()
-  where not exists (select 1 from public.payments where booking_id = booking_id and payment_type = 'deposit');
+  select v_booking_id, v_student_id, 12000, 'deposit', 'test_mode', 'TEST-' || v_booking_id || '-DEPOSIT', 'paid', now()
+  where not exists (
+    select 1 from public.payments p where p.booking_id = v_booking_id and p.payment_type = 'deposit'
+  );
 
   insert into public.payments (booking_id, payer_id, amount, payment_type, provider, provider_reference, status, paid_at)
-  select booking_id, student_id, 997, 'tenant_first_booking_fee', 'test_mode', 'TEST-' || booking_id || '-FEE', 'paid', now()
-  where not exists (select 1 from public.payments where booking_id = booking_id and payment_type = 'tenant_first_booking_fee');
+  select v_booking_id, v_student_id, 997, 'tenant_first_booking_fee', 'test_mode', 'TEST-' || v_booking_id || '-FEE', 'paid', now()
+  where not exists (
+    select 1 from public.payments p where p.booking_id = v_booking_id and p.payment_type = 'tenant_first_booking_fee'
+  );
 
   insert into public.deposits (booking_id, amount, status, held_at)
-  values (booking_id, 12000, 'held', now())
+  values (v_booking_id, 12000, 'held', now())
   on conflict (booking_id) do nothing;
 
   -- Recalculate trust only when the property was freshly created, so re-runs
   -- never clobber a trust score already reduced by a partial-refund ruling.
-  if prop_inserted > 0 then
-    perform public.refresh_property_trust_score(prop_id);
+  if v_prop_inserted > 0 then
+    perform public.refresh_property_trust_score(v_prop_id);
   end if;
 
-  raise notice 'Fixture ready: property % (inserted=%), booking % (inserted=%). Now open the dispute from the student dashboard.', prop_id, prop_inserted, booking_id, booking_inserted;
+  raise notice 'Fixture ready: property % (inserted=%), booking % (inserted=%). Now open the dispute from the student dashboard.', v_prop_id, v_prop_inserted, v_booking_id, v_booking_inserted;
 end $$;
 
 -- ============================================================================
