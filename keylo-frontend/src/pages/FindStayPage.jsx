@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { listProperties, toggleSavedProperty } from '../lib/supabaseData';
+import { listProperties, toggleSavedProperty, getSavedPropertyIds } from '../lib/supabaseData';
 
 const properties = [
   {
@@ -93,6 +93,9 @@ export default function FindStayPage() {
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
     let active = true;
+    getSavedPropertyIds()
+      .then((saved) => { if (active) setSavedIds(saved); })
+      .catch(() => {});
     listProperties()
       .then((rows) => {
         if (!active || !rows.length) return;

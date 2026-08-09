@@ -98,6 +98,19 @@ export async function createTestPayment({ booking, method = 'upi' }) {
   return { status: 'paid', provider: 'test_mode', method };
 }
 
+export async function getSavedPropertyIds() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) return {};
+  const { data, error } = await client
+    .from('saved_properties')
+    .select('property_id')
+    .eq('student_id', userData.user.id);
+  if (error) throw error;
+  return (data || []).reduce((acc, row) => ({ ...acc, [row.property_id]: true }), {});
+}
+
 export async function toggleSavedProperty(propertyId) {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();
