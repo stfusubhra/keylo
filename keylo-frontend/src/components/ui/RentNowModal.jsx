@@ -78,7 +78,7 @@ export default function RentNowModal({ item, onClose }) {
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border-2 border-primary shadow-[-8px_8px_0px_0px_#C7F000] outline-none flex flex-col"
+        className="w-full sm:max-w-lg max-h-[90vh] bg-surface border-2 border-primary shadow-[-8px_8px_0px_0px_#C7F000] outline-none flex flex-col"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-primary px-lg py-md bg-surface-container-lowest flex-shrink-0">
@@ -124,8 +124,8 @@ export default function RentNowModal({ item, onClose }) {
           </div>
         )}
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Body — only this section scrolls */}
+        <div className="flex-1 overflow-y-auto min-h-0">
 
           {/* ── STEP 1: Configure ── */}
           {step === 1 && (
