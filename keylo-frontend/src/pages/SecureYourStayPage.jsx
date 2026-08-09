@@ -245,9 +245,9 @@ export default function SecureYourStayPage() {
                     checked={addons['Damage Protection']}
                     onChange={() => toggleAddon('Damage Protection')}
                   />
-                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all peer-checked:bg-acid-lime/10 peer-checked:border-primary peer-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
+                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all group-has-checked:bg-acid-lime/10 group-has-checked:border-primary group-has-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
                     <div className="flex items-center gap-md">
-                      <div className="w-12 h-12 bg-primary text-on-primary flex items-center justify-center border-2 border-primary peer-checked:bg-acid-lime peer-checked:text-primary transition-colors">
+                      <div className="w-12 h-12 bg-primary text-on-primary flex items-center justify-center border-2 border-primary group-has-checked:bg-acid-lime group-has-checked:text-primary transition-colors">
                         <span className="material-symbols-outlined">shield</span>
                       </div>
                       <div>
@@ -263,9 +263,9 @@ export default function SecureYourStayPage() {
                       <span className="font-price-display text-h3 text-primary">
                         Included
                       </span>
-                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest peer-checked:bg-primary transition-colors">
+                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest group-has-checked:bg-primary transition-colors">
                         <span
-                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity"
+                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 group-has-checked:opacity-100 transition-opacity"
                           style={{ fontVariationSettings: "'FILL' 1" }}
                         >
                           check
@@ -283,9 +283,9 @@ export default function SecureYourStayPage() {
                     checked={addons['Bi-weekly Deep Cleaning']}
                     onChange={() => toggleAddon('Bi-weekly Deep Cleaning')}
                   />
-                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all peer-checked:bg-acid-lime/10 peer-checked:border-primary peer-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
+                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all group-has-checked:bg-acid-lime/10 group-has-checked:border-primary group-has-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
                     <div className="flex items-center gap-md">
-                      <div className="w-12 h-12 bg-surface-container-lowest text-primary flex items-center justify-center border-2 border-primary peer-checked:bg-acid-lime transition-colors">
+                      <div className="w-12 h-12 bg-surface-container-lowest text-primary flex items-center justify-center border-2 border-primary group-has-checked:bg-acid-lime transition-colors">
                         <span className="material-symbols-outlined">cleaning_services</span>
                       </div>
                       <div>
@@ -301,9 +301,9 @@ export default function SecureYourStayPage() {
                       <span className="font-price-display text-h3 text-primary">
                         Included
                       </span>
-                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest peer-checked:bg-primary transition-colors">
+                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest group-has-checked:bg-primary transition-colors">
                         <span
-                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity"
+                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 group-has-checked:opacity-100 transition-opacity"
                           style={{ fontVariationSettings: "'FILL' 1" }}
                         >
                           check
@@ -321,9 +321,9 @@ export default function SecureYourStayPage() {
                     checked={addons['Wi-Fi Pro Package']}
                     onChange={() => toggleAddon('Wi-Fi Pro Package')}
                   />
-                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all peer-checked:bg-acid-lime/10 peer-checked:border-primary peer-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
+                  <div className="bg-surface-container border-2 border-primary p-md flex items-center justify-between transition-all group-has-checked:bg-acid-lime/10 group-has-checked:border-primary group-has-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
                     <div className="flex items-center gap-md">
-                      <div className="w-12 h-12 bg-surface-container-lowest text-primary flex items-center justify-center border-2 border-primary peer-checked:bg-acid-lime transition-colors">
+                      <div className="w-12 h-12 bg-surface-container-lowest text-primary flex items-center justify-center border-2 border-primary group-has-checked:bg-acid-lime transition-colors">
                         <span className="material-symbols-outlined">wifi</span>
                       </div>
                       <div>
@@ -339,9 +339,9 @@ export default function SecureYourStayPage() {
                       <span className="font-price-display text-h3 text-primary">
                         Included
                       </span>
-                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest peer-checked:bg-primary transition-colors">
+                      <div className="w-6 h-6 border-2 border-primary flex items-center justify-center bg-surface-container-lowest group-has-checked:bg-primary transition-colors">
                         <span
-                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 peer-checked:opacity-100 transition-opacity"
+                          className="material-symbols-outlined text-[16px] text-on-primary opacity-0 group-has-checked:opacity-100 transition-opacity"
                           style={{ fontVariationSettings: "'FILL' 1" }}
                         >
                           check
