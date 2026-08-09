@@ -1,0 +1,243 @@
+import { Link } from 'react-router-dom';
+
+export default function DashboardPage() {
+  const activityLog = [
+    {
+      id: 1,
+      title: 'Rent Payment Successful',
+      subtitle: '₹8,500 via UPI',
+      time: '2 HRS AGO',
+      icon: 'account_balance_wallet',
+      iconBg: 'bg-electric-purple',
+      iconColor: 'text-white',
+    },
+    {
+      id: 2,
+      title: 'Maintenance Request #402',
+      subtitle: 'AC cooling issue reported',
+      time: 'YESTERDAY',
+      icon: 'build',
+      iconBg: 'bg-surface-container-lowest',
+      iconColor: 'text-primary',
+    },
+    {
+      id: 3,
+      title: 'Scooter Rental Confirmed',
+      subtitle: 'Ather 450X assigned',
+      time: 'OCT 12',
+      icon: 'two_wheeler',
+      iconBg: 'bg-surface-container-lowest',
+      iconColor: 'text-primary',
+    },
+  ];
+
+  return (
+    <div className="bg-surface font-body-md text-on-surface">
+      {/* Hero Section */}
+      <div className="relative w-full h-[320px] -mt-20 pt-20 flex flex-col justify-end pb-lg px-lg bg-surface-container overflow-hidden group">
+        <div
+          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtK3SB6TozgnOSRqM_zUZ0r3SzPNZtylbzfu_tVG-SSR0n6xK2pHv3p9YQzAK5J_-GpSdOhtaGAv9pZPaB-KdKen7bYGiWhCpEayzm8iu82scclP1gtv7tmqN4kvLtsC-tm6NzH6pcG-ttkKOFYyEOfMEc01BTiP6KayvbJXi-Db4DCHBBj2-kpPAhzB_LpezluGRFh1FBNsod07cy5BBqqULYhT5ESditMPD2YIsCtnB1uHtRqS4u')",
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-90"></div>
+        <div className="relative z-10 flex flex-col gap-sm mix-blend-difference text-white">
+          <h1 className="font-heading text-h1-mobile md:text-h1 text-white font-bold">
+            Hey! Ready for your next move? 👋
+          </h1>
+          <p className="font-body-lg text-body-lg text-white/80">
+            Your student life, engineered for speed.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="mt-xl grid grid-cols-12 gap-gutter max-w-[1440px] mx-auto w-full">
+        {/* Left Column: Active Rental Card */}
+        <div className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+          <div className="w-full bg-surface-container-lowest border-2 border-primary relative group">
+            <div className="h-48 w-full border-b-2 border-primary bg-cover bg-center">
+              <img
+                className="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmqfhnjwc40Dh-QaEu0O0pXV41I6QhCqTeNFItdYsXdhIznPs0HZ7jVn4rvMMlaxR5r3LHRHqFIR5EpujTM3XRbPBEd45EK-dNkRxJvbTL9MnSqQG-0Ad-D6qjUptZ2njwyN7wjOeZR96A99OpMPaDXJezMePEimYnvOBgk-w72BytHplAv3AWAVytQhvLYo8_qXm_0hzv4uQyu1DEtFfvP0bvGbtOxsuRCYF6C89Y_qDzXp_QHcPy"
+                alt="Urban Nest PG room"
+              />
+            </div>
+            <div className="p-lg flex flex-col gap-md">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="font-h3 text-h3 text-on-surface">
+                    Urban Nest PG
+                  </h2>
+                  <p className="font-body-md text-body-md text-on-surface-variant">
+                    Room 304, North Wing
+                  </p>
+                </div>
+                <span className="inline-block px-sm py-xs bg-electric-purple text-white font-label-caps text-label-caps border-2 border-primary">
+                  ACTIVE
+                </span>
+              </div>
+              <div className="flex items-center gap-md border-t-2 border-primary pt-md mt-sm">
+                <div className="flex-1">
+                  <p className="font-price-display text-price-display text-primary">
+                    23
+                  </p>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">
+                    Days Remaining
+                  </p>
+                </div>
+                <div className="h-10 w-2 bg-primary"></div>
+                <div className="flex-1">
+                  <p className="font-h3 text-h3 text-primary">24 Nov</p>
+                  <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">
+                    Checkout
+                  </p>
+                </div>
+              </div>
+              <Link
+                to="/secure-your-stay"
+                className="w-full mt-sm px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:shadow-[4px_4px_0px_0px_#000000] transition-all relative overflow-hidden group/btn"
+              >
+                <span className="relative z-10 flex items-center justify-center gap-sm">
+                  EXTEND STAY{' '}
+                  <span className="material-symbols-outlined text-[18px]">
+                    arrow_forward
+                  </span>
+                </span>
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Quick Stats & Activity */}
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter w-full">
+            {/* Deposit Vault */}
+            <Link
+              to="/vault"
+              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
+            >
+              <div className="flex justify-between items-start">
+                <span className="material-symbols-outlined text-[32px] text-primary">
+                  account_balance_wallet
+                </span>
+                <span className="w-3 h-3 rounded-full bg-primary animate-pulse"></span>
+              </div>
+              <div>
+                <p className="font-label-caps text-label-caps text-primary mb-xs">
+                  Deposit Vault
+                </p>
+                <p className="font-h2 text-h2 text-primary">₹10K</p>
+              </div>
+            </Link>
+
+            {/* Active Rental */}
+            <div className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer relative overflow-hidden">
+              <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span className="material-symbols-outlined text-[120px]">
+                  two_wheeler
+                </span>
+              </div>
+              <div className="flex justify-between items-start relative z-10">
+                <span className="material-symbols-outlined text-[32px] text-primary">
+                  two_wheeler
+                </span>
+                <span className="px-xs py-[2px] bg-sky-cyan text-primary font-label-caps text-[10px] border-2 border-primary">
+                  LIVE
+                </span>
+              </div>
+              <div className="relative z-10">
+                <p className="font-label-caps text-label-caps text-primary mb-xs">
+                  Active Rental
+                </p>
+                <p className="font-h3 text-h3 text-primary truncate">
+                  Ather 450X
+                </p>
+              </div>
+            </div>
+
+            {/* Maintenance */}
+            <Link
+              to="/maintenance"
+              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
+            >
+              <div className="flex justify-between items-start">
+                <span className="material-symbols-outlined text-[32px] text-primary">
+                  build
+                </span>
+                <span className="w-6 h-6 rounded-full border-2 border-primary bg-hot-pink flex items-center justify-center font-label-caps text-[10px] text-primary">
+                  1
+                </span>
+              </div>
+              <div>
+                <p className="font-label-caps text-label-caps text-primary mb-xs">
+                  Maintenance
+                </p>
+                <p className="font-h3 text-h3 text-primary">Pending</p>
+              </div>
+            </Link>
+
+            {/* Agreement */}
+            <div className="bg-primary border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-surface-container-highest transition-colors cursor-pointer">
+              <div className="flex justify-between items-start">
+                <span className="material-symbols-outlined text-[32px] text-white">
+                  draw
+                </span>
+                <span className="material-symbols-outlined text-white text-[20px]">
+                  check_circle
+                </span>
+              </div>
+              <div>
+                <p className="font-label-caps text-label-caps text-acid-lime mb-xs">
+                  Agreement
+                </p>
+                <p className="font-h3 text-h3 text-white">Signed</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Log */}
+          <div className="w-full bg-surface-container-lowest border-2 border-primary p-lg">
+            <div className="flex justify-between items-end mb-lg border-b-2 border-primary pb-sm">
+              <h3 className="font-h3 text-h3 text-primary">Activity Log</h3>
+              <button className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors">
+                VIEW ALL
+              </button>
+            </div>
+            <div className="flex flex-col relative">
+              <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-primary"></div>
+              {activityLog.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex gap-md relative pl-10 py-sm group"
+                >
+                  <div
+                    className={`absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary rounded-none group-hover:scale-125 transition-transform ${
+                      item.iconBg === 'bg-electric-purple'
+                        ? 'bg-electric-purple'
+                        : 'bg-surface-container-lowest'
+                    }`}
+                  ></div>
+                  <div className="flex-1">
+                    <p className="font-body-md text-body-md text-primary font-bold">
+                      {item.title}
+                    </p>
+                    <p className="font-body-md text-body-md text-on-surface-variant text-sm">
+                      {item.subtitle}
+                    </p>
+                  </div>
+                  <span className="font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">
+                    {item.time}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
