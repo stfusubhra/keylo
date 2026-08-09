@@ -98,9 +98,54 @@ export async function createTestPayment({ booking, method = 'upi' }) {
   return { status: 'paid', provider: 'test_mode', method };
 }
 
-export async function getDashboardData() {
+export async function toggleSavedProperty(propertyId) {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to save a property.');
+
+  // Resolve demo slugs to real property UUIDs, like createBooking does.
+  let resolvedPropertyId = propertyId;
+  if (!/^[0-9a-f-]{36}$/i.test(propertyId)) {
+    const propertyNames = {
+      'jadavpur-pg': 'Lake View Student PG',
+      'adamas-pg': 'Adamas Green PG',
+      'adamas-flat': 'North Kolkata Student Flat',
+      'jadavpur-flat': 'South Kolkata 2BHK Flat',
+      'calcutta-pg': 'College Street Co-Living',
+      'calcutta-flat': 'Central Kolkata Student Flat',
+      'xaviers-pg': 'New Town Scholars PG',
+      'xaviers-flat': 'Rajarhat Campus Flat',
+    };
+    const { data: property, error: propertyError } = await client
+      .from('properties')
+      .select('id')
+      .eq('name', propertyNames[propertyId] || propertyId)
+      .single();
+    if (propertyError) throw propertyError;
+    resolvedPropertyId = property.id;
+  }
+
+  const existing = await client
+    .from('saved_properties')
+    .select('id')
+    .eq('student_id', userData.user.id)
+    .eq('property_id', resolvedPropertyId)
+    .maybeSingle();
+
+  if (existing.data) {
+    const { error } = await client.from('saved_properties').delete().eq('id', existing.data.id);
+    if (error) throw error;
+    return { saved: false };
+  }
+
+  const { error } = await client.from('saved_properties').insert({ student_id: userData.user.id, property_id: resolvedPropertyId });
+  if (error) throw error;
+  return { saved: true };
+}
+
+export async function getDashboardData() {
+  const client = requireSupabase();
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to view dashboard data.');
 

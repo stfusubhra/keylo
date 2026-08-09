@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { listProperties } from '../lib/supabaseData';
+import { listProperties, toggleSavedProperty } from '../lib/supabaseData';
 
 const properties = [
   {
@@ -40,13 +40,19 @@ const properties = [
 
 const universities = ['All Kolkata', 'Adamas University', 'Jadavpur University', 'University of Calcutta', "St. Xavier's University Kolkata"];
 
-function PropertyCard({ property }) {
+function PropertyCard({ property, saved, onToggleSave }) {
   return (
     <article className="group flex flex-col md:flex-row border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px_#000000] transition-all" data-id={property.id}>
       <div className="w-full md:w-[240px] aspect-[4/3] md:aspect-square relative border-b-2 md:border-b-0 md:border-r-2 border-primary">
         <div className="absolute top-2 left-2 z-10"><span className={`px-2 py-1 border-2 border-primary font-label-caps text-label-caps ${property.badgeClass}`}>{property.badge}</span></div>
         <img className="w-full h-full object-cover" src={property.image} alt={`${property.name} near ${property.university}`} />
-        <button className="absolute top-2 right-2 p-1 bg-surface-container-lowest border-2 border-primary text-primary hover:bg-hot-pink hover:text-white transition-colors" aria-label={`Save ${property.name}`}><span className="material-symbols-outlined text-[20px]">favorite</span></button>
+        <button
+          onClick={onToggleSave}
+          aria-label={`Save ${property.name}`}
+          aria-pressed={saved}
+          title={saved ? 'Remove from saved' : 'Save for later'}
+          className={`absolute top-2 right-2 p-1 border-2 border-primary transition-colors ${saved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+        ><span className="material-symbols-outlined text-[20px]" style={saved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span></button>
       </div>
       <div className="p-md lg:p-lg flex flex-col justify-between flex-1">
         <div className="flex flex-col gap-xs">
@@ -66,7 +72,23 @@ export default function FindStayPage() {
   const [selectedUniversity, setSelectedUniversity] = useState('All Kolkata');
   const [selectedType, setSelectedType] = useState('All types');
   const [catalog, setCatalog] = useState(properties);
+  const [savedIds, setSavedIds] = useState({});
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(isSupabaseConfigured);
+  const [saveError, setSaveError] = useState('');
+
+  const handleToggleSave = async (propertyId) => {
+    if (!isSupabaseConfigured) {
+      setSaveError('Sign in to save properties. Supabase is not configured for this deployment.');
+      return;
+    }
+    try {
+      const result = await toggleSavedProperty(propertyId);
+      setSavedIds((current) => ({ ...current, [propertyId]: result.saved }));
+      setSaveError('');
+    } catch (err) {
+      setSaveError(err.message);
+    }
+  };
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -104,11 +126,12 @@ export default function FindStayPage() {
 
   return <div>
     <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg">
+      {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{saveError}</div>}
       <div><p className="font-label-caps text-label-caps text-electric-purple uppercase mb-sm">KeyLo Kolkata rental guide</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary tracking-tight uppercase font-bold">Find your next place.</h1><p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Browse verified flats and PGs grouped by the university you are studying near in Kolkata.</p></div>
       <div className="flex flex-col lg:flex-row gap-md items-start lg:items-center"><form className="relative w-full lg:w-[520px] h-[64px] border-2 border-primary bg-surface-container-lowest focus-within:ring-4 ring-acid-lime flex items-center pr-2" onSubmit={(event) => event.preventDefault()}><span className="material-symbols-outlined absolute left-4 text-primary">search</span><input id="rental-search" name="rentalSearch" className="w-full h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-body-lg text-primary placeholder:text-on-surface-variant" placeholder="Search university, area, PG, or flat..." type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /><button type="submit" className="h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary whitespace-nowrap">Search</button></form><div className="flex gap-sm"><button onClick={() => setSelectedType('All types')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'All types' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>All types</button><button onClick={() => setSelectedType('PG')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'PG' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>PGs</button><button onClick={() => setSelectedType('Flat')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'Flat' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>Flats</button></div></div>
       <div className="flex gap-sm overflow-x-auto pb-xs" aria-label="Filter rentals by university">{universities.map((university) => <button key={university} onClick={() => setSelectedUniversity(university)} className={`shrink-0 px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${selectedUniversity === university ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]' : 'bg-surface-container-lowest hover:bg-acid-lime'}`}>{university === 'All Kolkata' ? university : `Near ${university}`}</button>)}</div>
     </section>
-    <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list"><div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">{isLoadingCatalog ? 'Loading live Kolkata stays...' : `Showing ${filteredProperties.length} stays near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
+    <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list"><div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">{isLoadingCatalog ? 'Loading live Kolkata stays...' : `Showing ${filteredProperties.length} stays near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} saved={Boolean(savedIds[property.id])} onToggleSave={() => handleToggleSave(property.id)} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
     <section className="hidden lg:block h-[360px] bg-[#dfe8e4] relative border-b-2 border-primary overflow-hidden" aria-label="Kolkata university rental map"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'linear-gradient(28deg, transparent 48%, #8fa59c 49%, #8fa59c 50%, transparent 51%), linear-gradient(112deg, transparent 47%, #8fa59c 48%, #8fa59c 49%, transparent 50%), linear-gradient(#b7c8c1 1px, transparent 1px), linear-gradient(90deg, #b7c8c1 1px, transparent 1px)', backgroundSize: '240px 180px, 300px 220px, 48px 48px, 48px 48px' }} /><div className="absolute inset-0 flex flex-col items-center justify-center gap-lg p-xl"><div className="px-lg py-sm bg-surface-container-lowest border-2 border-primary font-h3 text-h3 text-primary shadow-[-4px_4px_0px_0px_#000000]">Kolkata University Rental Map</div><div className="flex flex-wrap justify-center gap-md">{['Adamas University', 'Jadavpur University', 'University of Calcutta', "St. Xavier's University"].map((university) => <button key={university} onClick={() => setSelectedUniversity(university === "St. Xavier's University" ? "St. Xavier's University Kolkata" : university)} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-primary shadow-[-3px_3px_0px_0px_#000000] hover:-translate-y-0.5">Near {university}</button>)}</div><p className="font-label-caps text-label-caps text-primary bg-surface-container-lowest px-md py-sm border-2 border-primary">Showing rental zones around Kolkata campuses</p></div></section>
   </div>;
 }
