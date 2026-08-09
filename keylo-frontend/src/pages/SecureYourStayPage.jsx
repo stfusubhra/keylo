@@ -16,9 +16,10 @@ export default function SecureYourStayPage() {
   const [bookingError, setBookingError] = useState('');
   const [isBooking, setIsBooking] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('upi');
-  const [property, setProperty] = useState(null); // { name, rent, deposit } resolved row or demo
+  const [property, setProperty] = useState(null); // { name, rent, deposit, area, city, distance, university } resolved row or demo
   const [isLoadingProperty, setIsLoadingProperty] = useState(isSupabaseConfigured);
   const [propertyError, setPropertyError] = useState('');
+  const [completedBooking, setCompletedBooking] = useState(null); // created booking row (real or demo)
 
   useEffect(() => {
     let active = true;
@@ -28,8 +29,12 @@ export default function SecureYourStayPage() {
           name: demo.name,
           rent: Number(String(demo.price).replace(/[^\d]/g, '')) || 8500,
           deposit: Number(String(demo.deposit).replace(/[^\d]/g, '')) || 10000,
+          area: demo.area,
+          city: 'Kolkata',
+          distance: demo.distance,
+          university: demo.university,
         }
-      : { name: 'Lake View Student PG', rent: 9500, deposit: 12000 };
+      : { name: 'Lake View Student PG', rent: 9500, deposit: 12000, area: 'Jadavpur', city: 'Kolkata', distance: '0.6 km', university: 'Jadavpur University' };
     if (!isSupabaseConfigured) {
       setProperty(demoFallback);
       return () => { active = false; };
@@ -41,7 +46,15 @@ export default function SecureYourStayPage() {
            setPropertyError('This property is no longer available. Return to Find a Stay to browse current listings.');
            return;
          }
-         setProperty({ name: row.name, rent: Number(row.monthly_rent), deposit: Number(row.security_deposit) });
+         setProperty({
+           name: row.name,
+           rent: Number(row.monthly_rent),
+           deposit: Number(row.security_deposit),
+           area: row.area,
+           city: row.city || 'Kolkata',
+           distance: `${row.distance_to_university_km} km`,
+           university: row.universities?.name || 'a Kolkata university',
+         });
        })
       .catch((error) => { if (active) setPropertyError(error.message || 'We could not load this property. Please try again.'); })
       .finally(() => { if (active) setIsLoadingProperty(false); });
@@ -52,6 +65,11 @@ export default function SecureYourStayPage() {
   const depositAmount = property?.deposit ?? 12000;
   const propertyName = property?.name || 'Lake View Student PG';
   const baseTotal = rentAmount + depositAmount + 997;
+
+  // Unique, human-readable reference derived from the real booking id.
+  const bookingRef = completedBooking
+    ? `KYL-${String(completedBooking.id).replace(/-/g, '').slice(0, 8).toUpperCase()}`
+    : '';
 
   // These are included in the booking experience; KeyLo does not sell subscriptions.
   const addonPrices = {
@@ -80,6 +98,7 @@ export default function SecureYourStayPage() {
   const simulateCheckout = async () => {
     setBookingError('');
     if (!isSupabaseConfigured) {
+      setCompletedBooking({ id: `demo-${Date.now()}-${Math.floor(Math.random() * 1000)}` });
       setShowSuccess(true);
       document.body.style.overflow = 'hidden';
       return;
@@ -88,6 +107,7 @@ export default function SecureYourStayPage() {
     try {
       const booking = await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount, depositAmount });
       await createTestPayment({ booking, method: paymentMethod });
+      setCompletedBooking(booking);
       setShowSuccess(true);
       document.body.style.overflow = 'hidden';
     } catch (error) {
@@ -180,7 +200,7 @@ export default function SecureYourStayPage() {
                       <span className="material-symbols-outlined text-[18px]">
                         location_on
                       </span>
-                      Jadavpur, Kolkata • 0.6 km from Jadavpur University
+                      {property?.area || 'Kolkata'}, {property?.city || 'Kolkata'} • {property?.distance || '0.6 km'} from {property?.university || 'a Kolkata university'}
                     </p>
                   </div>
                   <div className="mt-md pt-md border-t-2 border-primary border-dashed grid grid-cols-2 gap-md">
@@ -487,8 +507,11 @@ export default function SecureYourStayPage() {
                   Booking Ref
                 </p>
                 <p className="font-h3 text-[20px] font-mono text-primary tracking-widest">
-                  #KYL-9984
+                  {bookingRef || '#KYL-PENDING'}
                 </p>
+                {!isSupabaseConfigured && (
+                  <p className="font-label-caps text-[10px] uppercase text-on-surface-variant mt-xs">Demo reference — no database record</p>
+                )}
               </div>
               <span className="material-symbols-outlined text-primary text-[32px]">
                 qr_code_2

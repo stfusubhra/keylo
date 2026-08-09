@@ -1,7 +1,45 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { completeHandover, getHandoverBooking } from '../lib/supabaseData';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function DigitalHandoverPage() {
+  const navigate = useNavigate();
   const [currentStep] = useState(3);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [handoverStatus, setHandoverStatus] = useState(''); // '', 'error', 'success'
+  const [handoverMessage, setHandoverMessage] = useState('');
+
+  const handleComplete = async () => {
+    if (isCompleting) return;
+    setHandoverStatus('');
+    setHandoverMessage('');
+    if (!isSupabaseConfigured) {
+      setHandoverStatus('error');
+      setHandoverMessage('Handover records are stored per booking — demo mode has no booking to attach this to.');
+      return;
+    }
+    setIsCompleting(true);
+    try {
+      const booking = await getHandoverBooking();
+      if (!booking) {
+        setHandoverStatus('error');
+        setHandoverMessage('No confirmed booking found. Complete a booking first, then return here to finish your handover.');
+      } else {
+        await completeHandover({
+          bookingId: booking.id,
+          checklist: { room_condition: true, meter_readings: true, agreement_signed: true },
+        });
+        setHandoverStatus('success');
+        setHandoverMessage(`Handover recorded for ${booking.properties?.name || 'your stay'}. Your deposit is now protected by KeyLo Vault.`);
+      }
+    } catch (error) {
+      setHandoverStatus('error');
+      setHandoverMessage(error.message || 'Unable to record handover. Please try again.');
+    } finally {
+      setIsCompleting(false);
+    }
+  };
 
   const steps = [
     { id: 1, label: 'ID Verify', icon: 'verified', status: 'done' },
@@ -184,14 +222,29 @@ export default function DigitalHandoverPage() {
 
         {/* Action Area */}
         <div className="flex justify-between items-center pt-lg border-t-2 border-primary">
-          <button className="font-label-caps text-label-caps text-on-surface hover:opacity-70 transition-opacity uppercase">
+          <button onClick={() => navigate(-1)} className="font-label-caps text-label-caps text-on-surface hover:opacity-70 transition-opacity uppercase">
             ← Back
           </button>
-          <button className="bg-acid-lime border-2 border-primary px-xl py-lg font-h3 text-h3 text-primary uppercase hover:shadow-[8px_8px_0px_0px_#000000] hover:-translate-y-1 transition-all flex items-center gap-sm">
-            COMPLETE HANDOVER
+          <button
+            type="button"
+            onClick={handleComplete}
+            disabled={isCompleting}
+            className="bg-acid-lime border-2 border-primary px-xl py-lg font-h3 text-h3 text-primary uppercase hover:shadow-[8px_8px_0px_0px_#000000] hover:-translate-y-1 transition-all flex items-center gap-sm disabled:opacity-50"
+          >
+            {isCompleting ? 'RECORDING...' : 'COMPLETE HANDOVER'}
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
+        {handoverStatus && (
+          <div role="status" className={`mt-lg border-2 border-primary p-md flex items-start gap-md ${handoverStatus === 'success' ? 'bg-surface-container-lowest' : 'bg-error-container'}`}>
+            <span className={`material-symbols-outlined mt-1 ${handoverStatus === 'success' ? 'text-primary' : 'text-on-error-container'}`}>
+              {handoverStatus === 'success' ? 'verified' : 'error'}
+            </span>
+            <p className={`font-body-md text-body-md ${handoverStatus === 'success' ? 'text-on-surface' : 'text-on-error-container'}`}>
+              {handoverMessage}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -37,7 +37,7 @@ export default function PropertyDetailsPage() {
     return () => { active = false; };
   }, [id]);
 
-  const demo = demoProperties.find((p) => p.id === id) || demoProperties.find((p) => p.id === 'jadavpur-pg');
+  const demo = demoProperties.find((p) => p.id === id) || demoProperties.find((p) => p.name === row?.name) || demoProperties.find((p) => p.id === 'jadavpur-pg');
 
   const name = row?.name || demo?.name || 'Lake View Student PG';
   const area = row?.area || demo?.area || 'Jadavpur';
@@ -64,7 +64,7 @@ export default function PropertyDetailsPage() {
   const isVerified = row?.is_documents_verified ?? true;
   const coverImage = row?.cover_image_url || demo?.image || FALLBACK_IMAGES[0];
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
-  const ownerRating = row?.profiles?.owner_rating || '4.9';
+  const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
   const propertyImages = [coverImage, ...FALLBACK_IMAGES.slice(1)];
 
   if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;

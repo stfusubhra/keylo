@@ -5,13 +5,13 @@ export default function KeyloVaultPage() {
     {
       id: 1,
       label: 'Received',
-      date: 'Oct 12, 2023',
+      date: 'Oct 12, 2026',
       status: 'completed',
     },
     {
       id: 2,
       label: 'Move-in Done',
-      date: 'Oct 15, 2023',
+      date: 'Oct 15, 2026',
       status: 'completed',
     },
     {
@@ -117,7 +117,7 @@ export default function KeyloVaultPage() {
         <div className="flex justify-between items-center mb-lg border-b-2 border-primary pb-sm">
           <h2 className="font-h3 text-h3 text-primary">Vault Timeline</h2>
           <Link
-            to="/vault"
+            to="/dashboard"
             className="bg-primary text-on-primary font-label-caps text-label-caps px-md py-sm border-2 border-transparent hover:border-acid-lime transition-colors flex items-center gap-xs"
           >
             VIEW DETAILS

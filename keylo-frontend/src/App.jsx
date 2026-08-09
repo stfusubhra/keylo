@@ -26,6 +26,13 @@ const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const ForOwnersPage = lazy(() => import('./pages/ForOwnersPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const SupportPage = lazy(() => import('./pages/SupportPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 
 const ErrorBoundary = (
   <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface flex items-center justify-center">
@@ -84,6 +91,9 @@ const router = createBrowserRouter([
       { path: 'maintenance', element: <MaintenancePage /> },
       { path: 'how-it-works', element: <HowItWorksPage /> },
       { path: 'for-owners', element: <ForOwnersPage /> },
+      { path: 'privacy', element: <PrivacyPage /> },
+      { path: 'terms', element: <TermsPage /> },
+      { path: 'support', element: <SupportPage /> },
     ],
   },
   {
@@ -118,33 +128,9 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDisputeCenterPage /> },
       { path: 'disputes', element: <AdminDisputesPage /> },
-      {
-        path: 'users',
-        element: (
-          <div className="p-8 text-center">
-            <h1 className="font-h1 text-h1 text-on-surface mb-4">Admin Panel</h1>
-            <p className="font-body-lg text-on-surface-variant">Admin dashboard.</p>
-          </div>
-        ),
-      },
-      {
-        path: 'properties',
-        element: (
-          <div className="p-8 text-center">
-            <h1 className="font-h1 text-h1 text-on-surface mb-4">Admin Panel</h1>
-            <p className="font-body-lg text-on-surface-variant">Admin panel.</p>
-          </div>
-        ),
-      },
-      {
-        path: 'analytics',
-        element: (
-          <div className="p-8 text-center">
-            <h1 className="font-h1 text-h1 text-on-surface mb-4">Admin Panel</h1>
-            <p className="font-body-lg text-on-surface-variant">Analytics dashboard.</p>
-          </div>
-        ),
-      },
+      { path: 'users', element: <AdminUsersPage /> },
+      { path: 'properties', element: <AdminDisputeCenterPage /> },
+      { path: 'analytics', element: <AdminAnalyticsPage /> },
     ],
   },
   {
@@ -155,6 +141,16 @@ const router = createBrowserRouter([
   {
     path: '/signup',
     element: <SignupPage />,
+    errorElement: ErrorBoundary,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+    errorElement: ErrorBoundary,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
     errorElement: ErrorBoundary,
   },
   {

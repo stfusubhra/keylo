@@ -228,11 +228,21 @@ const categoryImages = {
 
 export default function RentEssentialsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+  const [rentNotice, setRentNotice] = useState('');
 
   const filteredItems =
     activeCategory === 'all'
       ? rentalItems
       : rentalItems.filter((item) => item.category === activeCategory);
+
+  const priceValue = (item) => Number(String(item.price).replace(/[^\d]/g, '')) || 0;
+  const visibleItems = [...filteredItems].sort((a, b) => {
+    if (sortBy === 'price-asc') return priceValue(a) - priceValue(b);
+    if (sortBy === 'price-desc') return priceValue(b) - priceValue(a);
+    if (sortBy === 'name') return a.name.localeCompare(b.name);
+    return 0;
+  });
 
   return (
     <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface">
@@ -286,15 +296,27 @@ export default function RentEssentialsPage() {
             Showing {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
             {activeCategory !== 'all' && ` in ${rentalCategories.find((c) => c.id === activeCategory)?.label}`}
           </span>
-          <button className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary flex items-center gap-xs">
-            <span>Sort by: Popular</span>
-            <span className="material-symbols-outlined text-[16px]">sort</span>
-          </button>
+          <div className="flex items-center gap-xs">
+            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">sort</span>
+            <select
+              value={sortBy}
+              onChange={(event) => setSortBy(event.target.value)}
+              aria-label="Sort rentals"
+              className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary bg-transparent border-2 border-primary px-md py-sm focus:outline-none cursor-pointer"
+            >
+              <option value="popular">Sort by: Popular</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="name">Name: A to Z</option>
+            </select>
+          </div>
         </div>
+
+        {rentNotice && <div role="status" className="mb-xl bg-surface-container border-2 border-primary p-md flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">{rentNotice}</p></div>}
 
         {/* Rental Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-          {filteredItems.map((item) => (
+          {visibleItems.map((item) => (
             <div
               key={item.id}
               className="group bg-surface flex flex-col border-2 border-primary shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300"
@@ -328,7 +350,7 @@ export default function RentEssentialsPage() {
                   </div>
                 </div>
                 <div className="mt-auto pt-lg">
-                  <button className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-sm">
+                  <button onClick={() => setRentNotice(`"${item.name}" rentals are not bookable yet — the KeyLo marketplace launches soon.`)} className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-sm">
                     RENT NOW <span className="material-symbols-outlined text-sm">arrow_forward</span>
                   </button>
                 </div>

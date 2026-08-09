@@ -16,7 +16,7 @@ export default function Footer() {
           <Link to="/terms" className="text-on-primary/70 hover:text-on-primary font-label-caps text-label-caps transition-colors">Terms</Link>
           <Link to="/support" className="text-on-primary/70 hover:text-on-primary font-label-caps text-label-caps transition-colors">Support</Link>
         </div>
-        <p className="font-body-md text-on-primary/50 text-center whitespace-nowrap">© 2024 KeyLo Inc. Built for Students.</p>
+        <p className="font-body-md text-on-primary/50 text-center whitespace-nowrap">© {new Date().getFullYear()} KeyLo Inc. Built for Students.</p>
       </div>
     </footer>
   );

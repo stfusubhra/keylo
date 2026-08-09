@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { cancelBooking, getDashboardData } from '../lib/supabaseData';
+import { cancelBooking, getDashboardData, sendMessage } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
+import { formatDate, formatDateTime } from '../lib/format';
 
 const dashboardSections = {
   '/dashboard/bookings': {
@@ -24,14 +25,19 @@ const dashboardSections = {
   },
 };
 
-function DashboardSection({ section, pathname, liveData, onCancelBooking, cancellingBookingId }) {
+function DashboardSection({ section, pathname, liveData, onCancelBooking, cancellingBookingId, reload, onError }) {
   const isMessages = pathname.endsWith('messages');
   const isBookings = pathname.endsWith('bookings');
   const liveSaved = liveData?.saved?.length;
   const [messageText, setMessageText] = useState('');
-  const [localMessages, setLocalMessages] = useState([]);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const messageCards = (liveData?.messages || [])
+    .map((message) => {
+      const fromMe = message.sender_id === liveData.user.id;
+      return [fromMe ? 'You' : 'Your landlord', message.body, fromMe ? 'SENT' : message.read_at ? 'READ' : 'NEW', formatDateTime(message.created_at), fromMe ? 'send' : 'inbox'];
+    });
   const cards = isBookings && liveData?.bookings?.length
-    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${booking.move_in_date}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id])
+    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${formatDate(booking.move_in_date)}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id])
     : isBookings
     ? [
         ['College Street Co-Living', 'University of Calcutta · Room 304', 'ACTIVE', '₹7,800 / month', 'directions_walk'],
@@ -39,11 +45,9 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
         ['Rajarhat Campus Flat', "St. Xavier's University · Completed", 'COMPLETED', '₹19,500 / month', 'history'],
       ]
     : isMessages
-      ? [...localMessages,
-          ['Riya Sen · Lake View Student PG', 'Your inspection report is ready to review.', '2 min ago', 'verified_user'],
-          ['KeyLo Support', 'Your deposit release timeline has been updated.', 'Yesterday', 'support_agent'],
-          ['Property manager', 'The Wi-Fi installation is scheduled for move-in day.', '12 Oct', 'wifi'],
-        ]
+      ? (messageCards.length
+          ? messageCards
+          : [['You', liveData ? 'No messages yet — send your landlord a note below.' : 'Your messages with landlords will appear here.', liveData ? 'NOW' : '—', 'chat_bubble', null, null]])
       : liveSaved
       ? liveData.saved.map((saved) => [saved.properties?.name || 'Saved stay', `${saved.properties?.area || 'Kolkata'} · ${saved.properties?.property_type === 'pg' ? 'PG' : 'Flat'} · ₹${Number(saved.properties?.monthly_rent || 0).toLocaleString('en-IN')}/mo`, `${saved.properties?.profiles?.owner_rating || '4.8'} ★`, 'favorite'])
       : [
@@ -51,7 +55,8 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
           ['Adamas Green PG', 'Near Adamas University · PG · ₹8,500/mo', '4.8 ★', 'favorite'],
           ['Rajarhat Campus Flat', "Near St. Xavier's University · Flat · ₹19,500/mo", '4.6 ★', 'favorite'],
         ];
-  const isDemo = isMessages || (isBookings && !liveData?.bookings?.length) || (!isBookings && !isMessages && !liveSaved);
+  const isDemo = !liveData;
+  const landlordId = liveData?.bookings?.find((b) => b.status !== 'cancelled')?.properties?.owner_id || liveData?.bookings?.[0]?.properties?.owner_id;
 
   return (
     <div className="bg-surface min-h-screen font-body-md text-on-surface p-lg lg:p-xl">
@@ -60,7 +65,7 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
           <div className="flex items-start justify-between gap-md"><div><p className="font-label-caps text-label-caps text-acid-lime uppercase mb-sm">{section.eyebrow}</p><h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1><p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p></div><span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span></div>
         </div>
          <div className="flex flex-col gap-md">{cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => <article key={`${title}-${meta}`} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg"><div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">{icon}</span></div><div className="flex-1"><h2 className="font-h3 text-h3 text-primary">{title}</h2><p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p></div><div className="md:text-right"><span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span><p className="font-label-caps text-label-caps text-on-surface-variant mt-sm">{meta}</p></div>{pathname.endsWith('bookings') && <><Link to={propertyId ? `/secure-your-stay/${propertyId}` : '/secure-your-stay/jadavpur-pg'} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>{bookingId && status === 'PENDING' && <button type="button" onClick={() => onCancelBooking(bookingId)} disabled={cancellingBookingId === bookingId} className="px-md py-sm bg-surface border-2 border-primary font-label-caps text-label-caps text-primary text-center disabled:opacity-50">{cancellingBookingId === bookingId ? 'Cancelling...' : 'Cancel'}</button>}</>}</article>)}</div>
-         {isMessages && <form className="mt-lg flex flex-col sm:flex-row gap-sm" onSubmit={(event) => { event.preventDefault(); if (!messageText.trim()) return; setLocalMessages((current) => [[`You · KeyLo Support`, messageText.trim(), 'Just now', 'send'], ...current]); setMessageText(''); }}><label className="sr-only" htmlFor="dashboard-message">Write a message</label><input id="dashboard-message" value={messageText} onChange={(event) => setMessageText(event.target.value)} className="flex-1 border-2 border-primary bg-surface px-md py-md text-primary" placeholder="Ask KeyLo support a question..." /><button className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary" type="submit">SEND</button></form>}
+         {isMessages && <form className="mt-lg flex flex-col sm:flex-row gap-sm" onSubmit={async (event) => { event.preventDefault(); if (!messageText.trim() || sendingMessage) return; if (!liveData || !landlordId) { onError('Book a stay first — messages are attached to a confirmed booking.'); return; } setSendingMessage(true); try { await sendMessage({ bookingId: liveData.bookings[0].id, recipientId: landlordId, body: messageText }); setMessageText(''); await reload(); } catch (error) { onError(error.message || 'Unable to send message.'); } finally { setSendingMessage(false); } }}><label className="sr-only" htmlFor="dashboard-message">Write a message</label><input id="dashboard-message" value={messageText} onChange={(event) => setMessageText(event.target.value)} disabled={!liveData} className="flex-1 border-2 border-primary bg-surface px-md py-md text-primary disabled:opacity-50" placeholder={liveData ? 'Ask your landlord a question about your stay...' : 'Messaging activates once KeyLo backend is connected.'} /><button className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary disabled:opacity-50" type="submit" disabled={!liveData || !landlordId || sendingMessage || !messageText.trim()}>{sendingMessage ? 'SENDING...' : 'SEND'}</button></form>}
         {isDemo && <div className="mt-xl bg-surface-container border-2 border-primary p-lg flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">These demo records will become live once KeyLo connects to the booking and messaging backend.</p></div>}
       </div>
     </div>
@@ -96,9 +101,19 @@ export default function DashboardPage() {
     return () => { active = false; };
   }, []);
 
-  if (section) return <><DashboardSection section={section} pathname={location.pathname} liveData={liveData} onCancelBooking={handleCancelBooking} cancellingBookingId={cancellingBookingId} />{bookingError && <div role="alert" className="fixed bottom-4 right-4 max-w-md border-2 border-error bg-error/10 p-md font-body-md text-error">{bookingError}</div>}</>;
+  if (section) return <><DashboardSection section={section} pathname={location.pathname} liveData={liveData} onCancelBooking={handleCancelBooking} cancellingBookingId={cancellingBookingId} reload={reload} onError={(message) => setBookingError(message)} />{bookingError && <div role="alert" className="fixed bottom-4 right-4 max-w-md border-2 border-error bg-error/10 p-md font-body-md text-error">{bookingError}</div>}</>;
 
-  const activityLog = [
+  const activityLog = liveData?.bookings?.length
+    ? liveData.bookings.map((booking, index) => ({
+        id: booking.id,
+        title: `Booking ${booking.status === 'pending' ? 'Requested' : booking.status === 'confirmed' ? 'Confirmed' : booking.status.toLowerCase()}`,
+        subtitle: `${booking.properties?.name || 'KeyLo booking'} · ${booking.properties?.area || 'Kolkata'}`,
+        time: formatDate(booking.created_at).toUpperCase(),
+        icon: 'event',
+        iconBg: index === 0 ? 'bg-electric-purple' : 'bg-surface-container-lowest',
+        iconColor: index === 0 ? 'text-white' : 'text-primary',
+      }))
+    : [
     {
       id: 1,
       title: 'Rent Payment Successful',
@@ -218,7 +233,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter w-full">
             {/* Deposit Vault */}
             <Link
-              to="/vault"
+              to="/keylo-vault"
               className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
             >
               <div className="flex justify-between items-start">
@@ -304,9 +319,12 @@ export default function DashboardPage() {
           <div className="w-full bg-surface-container-lowest border-2 border-primary p-lg">
             <div className="flex justify-between items-end mb-lg border-b-2 border-primary pb-sm">
               <h3 className="font-h3 text-h3 text-primary">Activity Log</h3>
-              <button className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors">
+              <Link
+                to="/dashboard/bookings"
+                className="font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors"
+              >
                 VIEW ALL
-              </button>
+              </Link>
             </div>
             <div className="flex flex-col relative">
               <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-primary"></div>

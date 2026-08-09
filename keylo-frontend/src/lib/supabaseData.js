@@ -192,13 +192,84 @@ export async function getDashboardData() {
   if (!userData.user) throw new Error('You must be signed in to view dashboard data.');
 
   const [bookings, saved, messages] = await Promise.all([
-    client.from('bookings').select('*, properties(name, area, city), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
+    client.from('bookings').select('*, properties(name, area, city, owner_id), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
     client.from('saved_properties').select('property_id, properties(*, profiles!properties_owner_id_fkey(owner_rating))').eq('student_id', userData.user.id),
-    client.from('messages').select('*').eq('recipient_id', userData.user.id).order('created_at', { ascending: false }),
+    // Conversations include both messages we sent and messages we received.
+    client.from('messages').select('*').or(`sender_id.eq.${userData.user.id},recipient_id.eq.${userData.user.id}`).order('created_at', { ascending: false }),
   ]);
   const failed = [bookings, saved, messages].find((result) => result.error);
   if (failed) throw failed.error;
   return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [] };
+}
+
+// Send a real message row. The recipient is the landlord of one of the
+// student's bookings; the message stays attached to that booking so it
+// survives reloads and appears in both parties' dashboards.
+export async function sendMessage({ bookingId, recipientId, body }) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to send a message.');
+  const text = String(body || '').trim();
+  if (!text) throw new Error('Message cannot be empty.');
+
+  const { data, error } = await client.from('messages').insert({
+    booking_id: bookingId,
+    sender_id: userData.user.id,
+    recipient_id: recipientId,
+    body: text,
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getUnreadMessageCount() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) return 0;
+  const { count, error } = await client
+    .from('messages')
+    .select('id', { count: 'exact', head: true })
+    .eq('recipient_id', userData.user.id)
+    .is('read_at', null);
+  if (error) throw error;
+  return count || 0;
+}
+
+// The student's most recent non-cancelled booking with its property, used by
+// the digital handover flow and the message composer.
+export async function getHandoverBooking() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in.');
+  const { data, error } = await client
+    .from('bookings')
+    .select('id, status, move_in_date, property_id, properties(name, area, owner_id)')
+    .eq('student_id', userData.user.id)
+    .neq('status', 'cancelled')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data || null;
+}
+
+export async function completeHandover({ bookingId, checklist }) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to complete a handover.');
+
+  const { data, error } = await client.from('handover_records').upsert({
+    booking_id: bookingId,
+    student_id: userData.user.id,
+    checklist: checklist || { room_condition: true, meter_readings: true, agreement_signed: true },
+    signed_at: new Date().toISOString(),
+  }, { onConflict: 'booking_id' }).select().single();
+  if (error) throw error;
+  return data;
 }
 
 export async function createProperty({ name, universityId, area, propertyType, monthlyRent, securityDeposit, distance, description }) {
@@ -322,4 +393,34 @@ export async function resolveDepositDispute({ disputeId, decision, refundAmount,
   });
   if (error) throw error;
   return data;
+}
+
+export async function getAdminUsers() {
+  const client = requireSupabase();
+  const { data, error } = await client
+    .from('profiles')
+    .select('id, full_name, role, phone, is_verified, owner_rating, created_at')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getAdminAnalytics() {
+  const client = requireSupabase();
+  const [profiles, properties, bookings, deposits, payments] = await Promise.all([
+    client.from('profiles').select('role, is_verified'),
+    client.from('properties').select('status, trust_score'),
+    client.from('bookings').select('status, rent_amount, tenant_first_booking_fee, landlord_commission_rate'),
+    client.from('deposits').select('status, amount'),
+    client.from('payments').select('payment_type, amount, status'),
+  ]);
+  const failed = [profiles, properties, bookings, deposits, payments].find((result) => result.error);
+  if (failed) throw failed.error;
+  return {
+    users: profiles.data || [],
+    properties: properties.data || [],
+    bookings: bookings.data || [],
+    deposits: deposits.data || [],
+    payments: payments.data || [],
+  };
 }
