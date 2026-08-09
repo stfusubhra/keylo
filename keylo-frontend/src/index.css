@@ -537,7 +537,8 @@
   align-items: center;
   justify-content: center;
   border: 2px solid var(--color-primary);
-  box-shadow: 2px 2px 0 0 var(--color-primary);
+  /* symmetric drop shadow so the pin reads as centred on its location */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 .keylo-pin .material-symbols-outlined {
   font-size: 20px;
@@ -582,6 +583,32 @@
   0% { transform: scale(0.75); opacity: 0.9; }
   70% { transform: scale(1.35); opacity: 0; }
   100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* KeyLo marker cluster bubbles */
+.keylo-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  font-family: var(--font-inter);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-sizing: border-box;
+}
+.keylo-cluster span {
+  line-height: 1;
+}
+.keylo-cluster.colleges {
+  background-color: var(--color-electric-purple);
+  color: var(--color-on-primary);
+}
+.keylo-cluster.stays {
+  background-color: var(--color-acid-lime);
+  color: var(--color-primary);
 }
 
 /* Leaflet popup typography to match the KeyLo design system */
