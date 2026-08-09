@@ -81,13 +81,13 @@ export default function RentItemPage() {
 
       {/* ── Breadcrumb & step bar ── */}
       <div className="w-full bg-surface border-b-2 border-primary px-margin-mobile lg:px-margin-desktop">
-        <div className="flex items-center gap-sm py-md text-on-surface-variant font-label-caps text-label-caps">
-          <Link to="/rentals" className="hover:text-primary transition-colors flex items-center gap-xs">
-            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-            Back to Rentals
+        <div className="flex items-center gap-sm py-md">
+          <Link to="/rentals" className="hover:text-primary transition-colors flex items-center gap-xs text-on-surface-variant">
+            <span className="material-symbols-outlined text-[16px] leading-none">arrow_back</span>
+            <span className="font-label-caps text-label-caps">Back to Rentals</span>
           </Link>
-          <span>/</span>
-          <span className="text-primary truncate">{item.name}</span>
+          <span className="font-label-caps text-label-caps text-on-surface-variant">/</span>
+          <span className="font-label-caps text-label-caps text-primary truncate">{item.name}</span>
         </div>
 
         {/* Step indicator */}
@@ -95,7 +95,7 @@ export default function RentItemPage() {
           {stepLabels.map((label, i) => (
             <div
               key={label}
-              className={`flex-1 py-sm text-center font-label-caps text-label-caps border-r-2 last:border-r-0 border-primary transition-colors ${
+              className={`flex-1 py-sm flex items-center justify-center gap-xs border-r-2 last:border-r-0 border-primary transition-colors ${
                 step === i + 1
                   ? 'bg-acid-lime text-primary'
                   : step > i + 1
@@ -103,10 +103,12 @@ export default function RentItemPage() {
                   : 'bg-surface-container-lowest text-on-surface-variant'
               }`}
             >
-              {step > i + 1
-                ? <span className="material-symbols-outlined text-[16px] align-middle mr-xs">check</span>
-                : `${i + 1}. `}
-              {label}
+              {step > i + 1 && (
+                <span className="material-symbols-outlined text-[16px] leading-none flex-shrink-0">check</span>
+              )}
+              <span className="font-label-caps text-label-caps" style={{ fontFamily: 'inherit', letterSpacing: '0.05em' }}>
+                {step <= i + 1 ? `${i + 1}. ` : ''}{label}
+              </span>
             </div>
           ))}
         </div>
