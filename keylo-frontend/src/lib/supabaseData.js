@@ -39,13 +39,34 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to create a booking.');
 
+  let resolvedPropertyId = propertyId;
+  if (!/^[0-9a-f-]{36}$/i.test(propertyId)) {
+    const propertyNames = {
+      'jadavpur-pg': 'Lake View Student PG',
+      'adamas-pg': 'Adamas Green PG',
+      'adamas-flat': 'North Kolkata Student Flat',
+      'jadavpur-flat': 'South Kolkata 2BHK Flat',
+      'calcutta-pg': 'College Street Co-Living',
+      'calcutta-flat': 'Central Kolkata Student Flat',
+      'xaviers-pg': 'New Town Scholars PG',
+      'xaviers-flat': 'Rajarhat Campus Flat',
+    };
+    const { data: property, error: propertyError } = await client
+      .from('properties')
+      .select('id')
+      .eq('name', propertyNames[propertyId] || propertyId)
+      .single();
+    if (propertyError) throw propertyError;
+    resolvedPropertyId = property.id;
+  }
+
   const tenantFirstBookingFee = 997;
   const landlordCommissionRate = 5;
   const totalDue = Number(rentAmount) + Number(depositAmount) + tenantFirstBookingFee;
 
   const { data, error } = await client.from('bookings').insert({
     student_id: userData.user.id,
-    property_id: propertyId,
+    property_id: resolvedPropertyId,
     room_id: roomId,
     move_in_date: moveInDate,
     rent_amount: rentAmount,
@@ -56,4 +77,20 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
   }).select().single();
   if (error) throw error;
   return data;
+}
+
+export async function getDashboardData() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to view dashboard data.');
+
+  const [bookings, saved, messages] = await Promise.all([
+    client.from('bookings').select('*, properties(name, area, city), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
+    client.from('saved_properties').select('property_id, properties(*)').eq('student_id', userData.user.id),
+    client.from('messages').select('*').eq('recipient_id', userData.user.id).order('created_at', { ascending: false }),
+  ]);
+  const failed = [bookings, saved, messages].find((result) => result.error);
+  if (failed) throw failed.error;
+  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [] };
 }

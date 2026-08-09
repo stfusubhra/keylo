@@ -1,4 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { getDashboardData } from '../lib/supabaseData';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 const dashboardSections = {
   '/dashboard/bookings': {
@@ -21,8 +24,10 @@ const dashboardSections = {
   },
 };
 
-function DashboardSection({ section, pathname }) {
-  const cards = pathname.endsWith('bookings')
+function DashboardSection({ section, pathname, liveData }) {
+  const cards = pathname.endsWith('bookings') && liveData?.bookings?.length
+    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${booking.move_in_date}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today'])
+    : pathname.endsWith('bookings')
     ? [
         ['Urban Nest PG', 'Jadavpur University · Room 304', 'ACTIVE', '₹8,500 / month', 'directions_walk'],
         ['Lake View Student PG', 'Jadavpur University · Move-in 01 Sept', 'UPCOMING', '₹9,500 / month', 'event'],
@@ -56,8 +61,16 @@ function DashboardSection({ section, pathname }) {
 export default function DashboardPage() {
   const location = useLocation();
   const section = dashboardSections[location.pathname];
+  const [liveData, setLiveData] = useState(null);
 
-  if (section) return <DashboardSection section={section} pathname={location.pathname} />;
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    getDashboardData().then((data) => { if (active) setLiveData(data); }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  if (section) return <DashboardSection section={section} pathname={location.pathname} liveData={liveData} />;
 
   const activityLog = [
     {
@@ -127,10 +140,10 @@ export default function DashboardPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="font-h3 text-h3 text-on-surface">
-                    Urban Nest PG
+                     {liveData?.bookings?.[0]?.properties?.name || 'Urban Nest PG'}
                   </h2>
                   <p className="font-body-md text-body-md text-on-surface-variant">
-                    Room 304, North Wing
+                     {liveData?.bookings?.[0]?.properties?.area ? `${liveData.bookings[0].properties.area}, Kolkata` : 'Room 304, North Wing'}
                   </p>
                 </div>
                 <span className="inline-block px-sm py-xs bg-electric-purple text-white font-label-caps text-label-caps border-2 border-primary">
@@ -140,10 +153,10 @@ export default function DashboardPage() {
               <div className="flex items-center gap-md border-t-2 border-primary pt-md mt-sm">
                 <div className="flex-1">
                   <p className="font-price-display text-price-display text-primary">
-                    23
+                     {liveData?.bookings?.[0] ? 'LIVE' : '23'}
                   </p>
                   <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">
-                    Days Remaining
+                     {liveData?.bookings?.[0] ? 'Booking Status' : 'Days Remaining'}
                   </p>
                 </div>
                 <div className="h-10 w-2 bg-primary"></div>

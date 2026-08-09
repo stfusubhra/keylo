@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { createBooking } from '../lib/supabaseData';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function SecureYourStayPage() {
+  const { id = 'jadavpur-pg' } = useParams();
   const [addons, setAddons] = useState({
     'Damage Protection': false,
     'Bi-weekly Deep Cleaning': false,
     'Wi-Fi Pro Package': false,
   });
   const [showSuccess, setShowSuccess] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+  const [isBooking, setIsBooking] = useState(false);
 
   const baseTotal = 19497;
 
@@ -32,9 +38,23 @@ export default function SecureYourStayPage() {
 
   const newTotal = baseTotal + addonsTotal;
 
-  const simulateCheckout = () => {
-    setShowSuccess(true);
-    document.body.style.overflow = 'hidden';
+  const simulateCheckout = async () => {
+    setBookingError('');
+    if (!isSupabaseConfigured) {
+      setShowSuccess(true);
+      document.body.style.overflow = 'hidden';
+      return;
+    }
+    setIsBooking(true);
+    try {
+      await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount: 8500, depositAmount: 10000 });
+      setShowSuccess(true);
+      document.body.style.overflow = 'hidden';
+    } catch (error) {
+      setBookingError(error.message || 'Unable to create booking. Please sign in and try again.');
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const resetCheckout = () => {
@@ -349,12 +369,14 @@ export default function SecureYourStayPage() {
                 </p>
               </div>
               {/* CTA */}
+              {bookingError && <div role="alert" className="border-2 border-error bg-error/10 p-md text-error font-body-md">{bookingError}</div>}
               <button
                 className="mt-lg w-full py-4 bg-acid-lime border-2 border-primary font-h3 text-[20px] text-primary uppercase flex items-center justify-center gap-2 hover:-translate-y-1 shadow-[4px_4px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-all group relative overflow-hidden"
                 onClick={simulateCheckout}
+                disabled={isBooking}
               >
                 <span className="relative z-10 flex items-center gap-2">
-                  Secure Booking
+                   {isBooking ? 'Creating booking...' : 'Secure Booking'}
                   <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
                     arrow_forward
                   </span>
