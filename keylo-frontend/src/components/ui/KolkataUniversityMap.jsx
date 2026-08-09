@@ -34,8 +34,11 @@ export default function KolkataUniversityMap({ properties = [], colleges = [], s
     const map = L.map(containerRef.current, {
       center: [22.545, 88.42],
       zoom: 11,
-      scrollWheelZoom: true,
-      wheelPxPerZoomLevel: 90,
+      // Require Ctrl+scroll to zoom so normal page scrolling never triggers
+      // accidental zoom-outs. 'center' keeps the zoom centred on the viewport
+      // midpoint which feels more predictable than cursor-anchored zoom.
+      scrollWheelZoom: 'center',
+      wheelPxPerZoomLevel: 180,
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -138,8 +141,11 @@ export default function KolkataUniversityMap({ properties = [], colleges = [], s
     return undefined;
   }, [properties, colleges, selectedUniversity, navigate]);
 
+  // isolation:isolate creates a new stacking context so Leaflet's internal
+  // z-indices (tile pane 200, popup 700, control 800) are fully contained
+  // and never paint over the fixed navbar (z-50 / z-index: 50).
   return (
-    <div className="relative">
+    <div className="relative" style={{ isolation: 'isolate' }}>
       <div
         ref={containerRef}
         className="h-[420px] md:h-[520px] w-full border-2 border-primary"
