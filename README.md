@@ -2,7 +2,7 @@
 
 KeyLo is a Kolkata-focused student rental marketplace demo. Students can discover verified PGs and flats near universities, rent study essentials, and manage protected deposits. Landlords can list properties and manage rental workflows.
 
-This repository contains the hackathon frontend prototype. The current data, authentication, payments, bookings, dashboards, and admin workflows are demo-only and are not connected to a production backend.
+This repository contains the hackathon frontend and Supabase-backed prototype. Authentication, listings, bookings, deposits, saved stays, owner moderation, and dashboard data are connected to Supabase. Payments intentionally remain in test mode for the hackathon.
 
 ## Demo scope
 
@@ -37,7 +37,7 @@ Open the local URL printed by Vite, normally `http://localhost:5173`.
 
 ## Supabase setup
 
-The backend foundation is defined in `supabase/migrations/20260809000000_keylo_foundation.sql`.
+The backend is defined in the ordered files under `supabase/migrations/`.
 
 1. Create a Supabase project.
 2. Open the Supabase SQL Editor and run the migration file.
@@ -45,7 +45,7 @@ The backend foundation is defined in `supabase/migrations/20260809000000_keylo_f
 4. Add the project URL and anon key from **Project Settings > API**.
 5. Restart Vite after changing environment variables.
 
-The migration creates profiles, Kolkata universities, properties, rooms, bookings, payments, deposits, inspections, handovers, maintenance, messages, saved properties, enums, indexes, a new-user profile trigger, and initial row-level security policies. The frontend keeps its demo data when Supabase credentials are absent so the public demo remains usable.
+The migrations create profiles, Kolkata universities, properties, rooms, bookings, payments, deposits, inspections, handovers, maintenance, messages, saved properties, enums, indexes, booking guards, atomic test-payment completion, a new-user profile trigger, and row-level security policies. The frontend keeps a clearly labelled demo mode when Supabase credentials are absent so the public prototype remains usable.
 
 ## Verification commands
 
@@ -73,6 +73,9 @@ The frontend uses selected Unsplash image URLs for demo imagery. Review image li
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the team workflow.
 
-## Roadmap to production
+## Production boundaries
 
-The next major work is a backend for real authentication, listings, search, bookings, payment processing, deposit escrow, notifications, and role-based access control. Do not treat the current mock flows as secure or production payment functionality.
+- Test payments use a server-side Supabase RPC for atomic demo records; no real money is charged.
+- Replace `test_mode` with a server-side Stripe/Razorpay integration and webhook verification before accepting money.
+- Rotate demo administrator credentials, configure Supabase email confirmation/redirect URLs, and run Security Advisor before launch.
+- Never add a Supabase service-role key to frontend environment variables or repository files.
