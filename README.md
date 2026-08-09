@@ -31,6 +31,18 @@ npm run dev
 
 Open the local URL printed by Vite, normally `http://localhost:5173`.
 
+## Supabase setup
+
+The backend foundation is defined in `supabase/migrations/20260809000000_keylo_foundation.sql`.
+
+1. Create a Supabase project.
+2. Open the Supabase SQL Editor and run the migration file.
+3. Copy `keylo-frontend/.env.example` to `keylo-frontend/.env.local`.
+4. Add the project URL and anon key from **Project Settings > API**.
+5. Restart Vite after changing environment variables.
+
+The migration creates profiles, Kolkata universities, properties, rooms, bookings, payments, deposits, inspections, handovers, maintenance, messages, saved properties, enums, indexes, a new-user profile trigger, and initial row-level security policies. The frontend keeps its demo data when Supabase credentials are absent so the public demo remains usable.
+
 ## Verification commands
 
 ```bash
