@@ -62,7 +62,8 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
 
   const tenantFirstBookingFee = 997;
   const landlordCommissionRate = 5;
-  const totalDue = Number(rentAmount) + Number(depositAmount) + tenantFirstBookingFee;
+  // total_due and landlord_commission_amount are GENERATED columns in the
+  // schema, so they must not be inserted.
 
   const { data, error } = await client.from('bookings').insert({
     student_id: userData.user.id,
@@ -73,7 +74,6 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
     deposit_amount: depositAmount,
     tenant_first_booking_fee: tenantFirstBookingFee,
     landlord_commission_rate: landlordCommissionRate,
-    total_due: totalDue,
   }).select().single();
   if (error) throw error;
   return data;
