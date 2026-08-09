@@ -17,6 +17,8 @@ export default function SecureYourStayPage() {
   const [isBooking, setIsBooking] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('upi');
   const [property, setProperty] = useState(null); // { name, rent, deposit } resolved row or demo
+  const [isLoadingProperty, setIsLoadingProperty] = useState(isSupabaseConfigured);
+  const [propertyError, setPropertyError] = useState('');
 
   useEffect(() => {
     let active = true;
@@ -34,12 +36,15 @@ export default function SecureYourStayPage() {
     }
     getPropertyById(id)
       .then((row) => {
-        if (!active) return;
-        setProperty(row
-          ? { name: row.name, rent: Number(row.monthly_rent), deposit: Number(row.security_deposit) }
-          : demoFallback);
-      })
-      .catch(() => { if (active) setProperty(demoFallback); });
+         if (!active) return;
+         if (!row) {
+           setPropertyError('This property is no longer available. Return to Find a Stay to browse current listings.');
+           return;
+         }
+         setProperty({ name: row.name, rent: Number(row.monthly_rent), deposit: Number(row.security_deposit) });
+       })
+      .catch((error) => { if (active) setPropertyError(error.message || 'We could not load this property. Please try again.'); })
+      .finally(() => { if (active) setIsLoadingProperty(false); });
     return () => { active = false; };
   }, [id]);
 
@@ -68,6 +73,9 @@ export default function SecureYourStayPage() {
     .reduce((sum, [name]) => sum + addonPrices[name], 0);
 
   const newTotal = baseTotal + addonsTotal;
+
+  if (isLoadingProperty) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading booking details...</div>;
+  if (isSupabaseConfigured && (propertyError || !property)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{propertyError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
 
   const simulateCheckout = async () => {
     setBookingError('');

@@ -1,9 +1,10 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import DashboardLayout from './components/layout/DashboardLayout';
 import OwnerLayout from './components/layout/OwnerLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import PublicLayout from './components/layout/PublicLayout';
+import { isSupabaseConfigured, supabase } from './lib/supabase';
 
 // Lazy-loaded pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -35,6 +36,34 @@ const ErrorBoundary = (
   </div>
 );
 
+function RouteGuard({ role, children }) {
+  const [state, setState] = useState({ loading: isSupabaseConfigured, user: null, role: null });
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    const loadUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (!active) return;
+      if (error || !data.user) {
+        setState({ loading: false, user: null, role: null });
+        return;
+      }
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+      if (active) setState({ loading: false, user: data.user, role: profile?.role || 'student' });
+    };
+    loadUser();
+    const { data: listener } = supabase.auth.onAuthStateChange(() => { loadUser(); });
+    return () => { active = false; listener.subscription.unsubscribe(); };
+  }, []);
+
+  if (!isSupabaseConfigured) return children;
+  if (state.loading) return <div className="min-h-screen flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Checking your session...</div>;
+  if (!state.user) return <Navigate to="/login" replace />;
+  if (role && state.role !== role) return <Navigate to={state.role === 'landlord' ? '/owner' : '/dashboard'} replace />;
+  return children;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -56,7 +85,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
+    element: <RouteGuard><DashboardLayout /></RouteGuard>,
     errorElement: ErrorBoundary,
     children: [
       { index: true, element: <DashboardPage /> },
@@ -67,7 +96,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/owner',
-    element: <OwnerLayout />,
+    element: <RouteGuard role="landlord"><OwnerLayout /></RouteGuard>,
     errorElement: ErrorBoundary,
     children: [
       { index: true, element: <OwnerPortalPage /> },
@@ -80,7 +109,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: <RouteGuard role="admin"><AdminLayout /></RouteGuard>,
     errorElement: ErrorBoundary,
     children: [
       { index: true, element: <AdminDisputeCenterPage /> },

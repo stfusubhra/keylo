@@ -20,13 +20,20 @@ export default function PropertyDetailsPage() {
   const { id = 'jadavpur-pg' } = useParams();
   const [selectedRoom, setSelectedRoom] = useState('twin');
   const [row, setRow] = useState(null); // Supabase row when configured, else null
+  const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
     let active = true;
     getPropertyById(id)
-      .then((property) => { if (active) setRow(property); })
-      .catch(() => {});
+      .then((property) => {
+        if (!active) return;
+        setRow(property);
+        if (!property) setLoadError('This property is no longer available. Return to Find a Stay to browse current listings.');
+      })
+      .catch((error) => { if (active) setLoadError(error.message || 'We could not load this property. Please try again.'); })
+      .finally(() => { if (active) setIsLoading(false); });
     return () => { active = false; };
   }, [id]);
 
@@ -58,6 +65,9 @@ export default function PropertyDetailsPage() {
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
   const ownerRating = row?.profiles?.owner_rating || '4.9';
   const propertyImages = [coverImage, ...FALLBACK_IMAGES.slice(1)];
+
+  if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;
+  if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
 
   return (
     <div className="bg-surface-container-low font-body-md text-on-surface">
