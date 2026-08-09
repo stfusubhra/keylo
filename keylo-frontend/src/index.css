@@ -561,9 +561,15 @@
   /* Remove the built-in descender gap that shifts glyphs off-centre */
   font-feature-settings: 'liga';
   vertical-align: middle;
-  /* Material Symbols draw their ink ~2.5px above the em-box centre (measured
-     at 20px); nudge the glyph down so it is optically centred in the pin. */
+}
+/* Material Symbols draw their ink above the em-box centre; each glyph needs
+   its own nudge so it is optically centred inside the pin (measured from the
+   rendered pixels). The school cap glyph is top-heavy so it needs more. */
+.keylo-pin.property .material-symbols-outlined {
   transform: translateY(2.5px);
+}
+.keylo-pin.college .material-symbols-outlined {
+  transform: translateY(4.5px);
 }
 .keylo-pin.college {
   width: 38px;
@@ -605,8 +611,14 @@
 }
 .keylo-pin.static-legend .material-symbols-outlined {
   font-size: 16px;
-  /* 16px glyphs sit ~1.5px high, not the 2.5px of the 20px map pins */
+}
+.keylo-pin.static-legend.property .material-symbols-outlined {
+  /* 16px house glyph: slightly less nudge than the 20px map pin */
   transform: translateY(1.5px);
+}
+.keylo-pin.static-legend.college .material-symbols-outlined {
+  /* 16px graduation cap glyph: top-heavy like the 20px version, scaled down */
+  transform: translateY(3px);
 }
 .keylo-pin.static-legend.college::after {
   display: none;
