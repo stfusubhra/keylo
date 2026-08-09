@@ -1,6 +1,64 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+
+const dashboardSections = {
+  '/dashboard/bookings': {
+    eyebrow: 'Your stays',
+    title: 'Bookings',
+    description: 'Track upcoming move-ins, active stays, and completed rentals in one place.',
+    icon: 'calendar_today',
+  },
+  '/dashboard/messages': {
+    eyebrow: 'Stay connected',
+    title: 'Messages',
+    description: 'Keep conversations with landlords and KeyLo support attached to each rental.',
+    icon: 'chat_bubble',
+  },
+  '/dashboard/saved': {
+    eyebrow: 'Shortlist',
+    title: 'Saved spaces',
+    description: 'Your bookmarked Kolkata homes, ready for the next comparison.',
+    icon: 'favorite',
+  },
+};
+
+function DashboardSection({ section, pathname }) {
+  const cards = pathname.endsWith('bookings')
+    ? [
+        ['Urban Nest PG', 'Jadavpur University · Room 304', 'ACTIVE', '₹8,500 / month', 'directions_walk'],
+        ['Lake View Student PG', 'Jadavpur University · Move-in 01 Sept', 'UPCOMING', '₹9,500 / month', 'event'],
+        ['Rajarhat Campus Flat', "St. Xavier's University · Completed", 'COMPLETED', '₹19,500 / month', 'history'],
+      ]
+    : pathname.endsWith('messages')
+      ? [
+          ['Riya Sen · Urban Nest PG', 'Your inspection report is ready to review.', '2 min ago', 'verified_user'],
+          ['KeyLo Support', 'Your deposit release timeline has been updated.', 'Yesterday', 'support_agent'],
+          ['Property manager', 'The Wi-Fi installation is scheduled for move-in day.', '12 Oct', 'wifi'],
+        ]
+      : [
+          ['Lake View Student PG', 'Near Jadavpur University · PG · ₹9,500/mo', '4.9 ★', 'favorite'],
+          ['Adamas Green PG', 'Near Adamas University · PG · ₹8,500/mo', '4.8 ★', 'favorite'],
+          ['Rajarhat Campus Flat', "Near St. Xavier's University · Flat · ₹19,500/mo", '4.6 ★', 'favorite'],
+        ];
+
+  return (
+    <div className="bg-surface min-h-screen font-body-md text-on-surface p-lg lg:p-xl">
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-primary text-on-primary border-2 border-primary p-lg lg:p-xl shadow-[8px_8px_0px_0px_#C7F000] mb-xl">
+          <div className="flex items-start justify-between gap-md"><div><p className="font-label-caps text-label-caps text-acid-lime uppercase mb-sm">{section.eyebrow}</p><h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1><p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p></div><span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span></div>
+        </div>
+        <div className="flex flex-col gap-md">{cards.map(([title, detail, status, meta, icon]) => <article key={title} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg"><div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">{icon}</span></div><div className="flex-1"><h2 className="font-h3 text-h3 text-primary">{title}</h2><p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p></div><div className="md:text-right"><span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span><p className="font-label-caps text-label-caps text-on-surface-variant mt-sm">{meta}</p></div>{pathname.endsWith('bookings') && <Link to="/secure-your-stay/jadavpur-pg" className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>}</article>)}</div>
+        <div className="mt-xl bg-surface-container border-2 border-primary p-lg flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">These demo records will become live once KeyLo connects to the booking and messaging backend.</p></div>
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
+  const location = useLocation();
+  const section = dashboardSections[location.pathname];
+
+  if (section) return <DashboardSection section={section} pathname={location.pathname} />;
+
   const activityLog = [
     {
       id: 1,
