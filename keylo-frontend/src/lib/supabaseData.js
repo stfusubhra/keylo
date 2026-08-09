@@ -155,7 +155,7 @@ export async function getDashboardData() {
 
   const [bookings, saved, messages] = await Promise.all([
     client.from('bookings').select('*, properties(name, area, city), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
-    client.from('saved_properties').select('property_id, properties(*, profiles(owner_rating))').eq('student_id', userData.user.id),
+    client.from('saved_properties').select('property_id, properties(*, profiles!properties_owner_id_fkey(owner_rating))').eq('student_id', userData.user.id),
     client.from('messages').select('*').eq('recipient_id', userData.user.id).order('created_at', { ascending: false }),
   ]);
   const failed = [bookings, saved, messages].find((result) => result.error);
