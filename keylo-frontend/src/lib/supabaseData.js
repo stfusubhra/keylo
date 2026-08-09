@@ -150,6 +150,7 @@ export async function toggleSavedProperty(propertyId) {
 
 export async function getDashboardData() {
   const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to view dashboard data.');
 
