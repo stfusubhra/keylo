@@ -1,5 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { listProperties } from '../lib/supabaseData';
 
 const properties = [
   {
@@ -63,12 +65,42 @@ export default function FindStayPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUniversity, setSelectedUniversity] = useState('All Kolkata');
   const [selectedType, setSelectedType] = useState('All types');
-  const filteredProperties = useMemo(() => properties.filter((property) => {
+  const [catalog, setCatalog] = useState(properties);
+  const [isLoadingCatalog, setIsLoadingCatalog] = useState(isSupabaseConfigured);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    listProperties()
+      .then((rows) => {
+        if (!active || !rows.length) return;
+        setCatalog(rows.map((row) => ({
+          id: row.id,
+          university: row.universities?.name || 'Kolkata University',
+          area: row.area,
+          name: row.name,
+          type: row.property_type === 'pg' ? 'PG' : 'Flat',
+          distance: `${row.distance_to_university_km} km`,
+          rating: row.profiles?.owner_rating || '4.8',
+          price: `₹${Number(row.monthly_rent).toLocaleString('en-IN')}`,
+          deposit: `₹${Number(row.security_deposit).toLocaleString('en-IN')}`,
+          badge: row.is_ai_inspected ? 'AI Inspected' : '✓ Verified',
+          badgeClass: row.is_ai_inspected ? 'bg-electric-purple text-white' : 'bg-acid-lime text-primary',
+          amenities: row.amenities || [],
+          image: row.cover_image_url || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=85',
+        })));
+      })
+      .catch(() => {})
+      .finally(() => { if (active) setIsLoadingCatalog(false); });
+    return () => { active = false; };
+  }, []);
+
+  const filteredProperties = useMemo(() => catalog.filter((property) => {
     const query = searchQuery.toLowerCase();
     return (selectedUniversity === 'All Kolkata' || property.university === selectedUniversity)
       && (selectedType === 'All types' || property.type === selectedType)
       && (!query || `${property.name} ${property.area} ${property.university} ${property.type}`.toLowerCase().includes(query));
-  }), [searchQuery, selectedUniversity, selectedType]);
+  }), [catalog, searchQuery, selectedUniversity, selectedType]);
 
   return <div>
     <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg">
@@ -76,7 +108,7 @@ export default function FindStayPage() {
       <div className="flex flex-col lg:flex-row gap-md items-start lg:items-center"><form className="relative w-full lg:w-[520px] h-[64px] border-2 border-primary bg-surface-container-lowest focus-within:ring-4 ring-acid-lime flex items-center pr-2" onSubmit={(event) => event.preventDefault()}><span className="material-symbols-outlined absolute left-4 text-primary">search</span><input id="rental-search" name="rentalSearch" className="w-full h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-body-lg text-primary placeholder:text-on-surface-variant" placeholder="Search university, area, PG, or flat..." type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /><button type="submit" className="h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary whitespace-nowrap">Search</button></form><div className="flex gap-sm"><button onClick={() => setSelectedType('All types')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'All types' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>All types</button><button onClick={() => setSelectedType('PG')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'PG' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>PGs</button><button onClick={() => setSelectedType('Flat')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'Flat' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>Flats</button></div></div>
       <div className="flex gap-sm overflow-x-auto pb-xs" aria-label="Filter rentals by university">{universities.map((university) => <button key={university} onClick={() => setSelectedUniversity(university)} className={`shrink-0 px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${selectedUniversity === university ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]' : 'bg-surface-container-lowest hover:bg-acid-lime'}`}>{university === 'All Kolkata' ? university : `Near ${university}`}</button>)}</div>
     </section>
-    <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list"><div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">Showing {filteredProperties.length} stays near {selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
+    <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list"><div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">{isLoadingCatalog ? 'Loading live Kolkata stays...' : `Showing ${filteredProperties.length} stays near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
     <section className="hidden lg:block h-[360px] bg-[#dfe8e4] relative border-b-2 border-primary overflow-hidden" aria-label="Kolkata university rental map"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'linear-gradient(28deg, transparent 48%, #8fa59c 49%, #8fa59c 50%, transparent 51%), linear-gradient(112deg, transparent 47%, #8fa59c 48%, #8fa59c 49%, transparent 50%), linear-gradient(#b7c8c1 1px, transparent 1px), linear-gradient(90deg, #b7c8c1 1px, transparent 1px)', backgroundSize: '240px 180px, 300px 220px, 48px 48px, 48px 48px' }} /><div className="absolute inset-0 flex flex-col items-center justify-center gap-lg p-xl"><div className="px-lg py-sm bg-surface-container-lowest border-2 border-primary font-h3 text-h3 text-primary shadow-[-4px_4px_0px_0px_#000000]">Kolkata University Rental Map</div><div className="flex flex-wrap justify-center gap-md">{['Adamas University', 'Jadavpur University', 'University of Calcutta', "St. Xavier's University"].map((university) => <button key={university} onClick={() => setSelectedUniversity(university === "St. Xavier's University" ? "St. Xavier's University Kolkata" : university)} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-primary shadow-[-3px_3px_0px_0px_#000000] hover:-translate-y-0.5">Near {university}</button>)}</div><p className="font-label-caps text-label-caps text-primary bg-surface-container-lowest px-md py-sm border-2 border-primary">Showing rental zones around Kolkata campuses</p></div></section>
   </div>;
 }
