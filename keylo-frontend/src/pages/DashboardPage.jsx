@@ -97,7 +97,7 @@ export default function DashboardPage() {
                 </div>
               </div>
               <Link
-                to="/secure-your-stay"
+                to="/secure-your-stay/jadavpur-pg"
                 className="w-full mt-sm px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:shadow-[4px_4px_0px_0px_#000000] transition-all relative overflow-hidden group/btn"
               >
                 <span className="relative z-10 flex items-center justify-center gap-sm">

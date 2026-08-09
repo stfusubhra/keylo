@@ -283,7 +283,7 @@ export default function PropertyDetailsPage() {
               </div>
             </div>
             <Link
-              to="/secure-your-stay"
+              to="/secure-your-stay/jadavpur-pg"
               className="w-full py-md bg-acid-lime border-2 border-primary font-h3 text-h3 text-primary uppercase flex items-center justify-center gap-sm hover:translate-x-[-2px] hover:translate-y-[-2px] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] transition-all group"
             >
               RESERVE THIS SPACE
