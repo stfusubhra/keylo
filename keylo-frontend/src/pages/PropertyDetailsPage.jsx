@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getPropertyById } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
+import { colleges } from '../lib/demoCatalog';
+import PropertyLocationMap from '../components/ui/PropertyLocationMap';
 
 const FALLBACK_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
@@ -269,16 +271,14 @@ export default function PropertyDetailsPage() {
             </div>
             <div>
               <h3 className="font-h3 text-h3 text-primary mb-sm">Location Map</h3>
-              <div
-                className="w-full h-[150px] border-2 border-primary rounded-xl overflow-hidden shadow-[4px_4px_0px_0px_#000000]"
-                data-location={`${area}, Kolkata`}
-                style={{
-                  backgroundImage:
-                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDL0uRgDabT-jpQJI9EjGSIDPDq0mQju2COV0VU34xnDVXd63BrFsfqT22YD940nszEuecax3zvIxu_3VdItC_uBni52cBSOEM0keoMxhxM3rMvI70mZY7a0i8eN-I-9j-FDa4839hkuzmBIvWGZVvibzCm3Kw-vNmJv38VlvoLoAlKnGZopnvsg2PIUo7O7hn4xzmT01uWzV6IFbOvdz3rRWFH4nUBycoJR00unXaY_xqO8MQNMGBw')",
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }}
-              ></div>
+              <PropertyLocationMap
+                lat={demo?.lat}
+                lng={demo?.lng}
+                name={name}
+                area={area}
+                distance={distance}
+                campus={colleges.find((c) => c.name === universityName)}
+              />
             </div>
           </section>
 
