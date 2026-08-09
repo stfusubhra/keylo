@@ -357,14 +357,14 @@ export default function RentItemPage() {
                     <span>₹99</span>
                   </div>
                 )}
-                <div className="flex justify-between font-label-caps text-label-caps text-primary border-t-2 border-primary mt-sm pt-sm">
-                  <span className="uppercase">Total payable</span>
-                  <span className="font-price-display text-price-display">₹{total.toLocaleString('en-IN')}</span>
+                <div className="flex justify-between items-center border-t-2 border-primary mt-sm pt-sm">
+                  <span className="font-label-caps text-label-caps text-primary uppercase">Total payable</span>
+                  <span className="font-price-display text-price-display text-primary">₹{total.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             </div>
 
-            <p className="font-label-caps text-label-caps text-on-surface-variant text-center border-2 border-primary bg-surface-container-lowest px-lg py-sm">
+            <p className="font-body-md text-body-md text-on-surface-variant text-center border-2 border-primary bg-surface-container-lowest px-lg py-sm">
               By confirming you agree to KeyLo's rental terms. Payment is collected at pickup or delivery.
             </p>
 
