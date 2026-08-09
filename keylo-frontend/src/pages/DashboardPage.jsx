@@ -62,9 +62,42 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
     <div className="bg-surface min-h-screen font-body-md text-on-surface p-lg lg:p-xl">
       <div className="max-w-5xl mx-auto">
         <div className="bg-primary text-on-primary border-2 border-primary p-lg lg:p-xl shadow-[8px_8px_0px_0px_#C7F000] mb-xl">
-          <div className="flex items-start justify-between gap-md"><div><p className="font-label-caps text-label-caps text-acid-lime uppercase mb-sm">{section.eyebrow}</p><h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1><p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p></div><span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span></div>
+          <div className="flex items-start justify-between gap-md">
+            <div>
+              <p className="font-label-caps text-label-caps text-acid-lime uppercase mb-sm">{section.eyebrow}</p>
+              <h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1>
+              <p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p>
+            </div>
+            <span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span>
+          </div>
         </div>
-         <div className="flex flex-col gap-md">{cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => <article key={`${title}-${meta}`} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg"><div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0"><span className="material-symbols-outlined text-primary">{icon}</span></div><div className="flex-1"><h2 className="font-h3 text-h3 text-primary">{title}</h2><p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p></div><div className="md:text-right"><span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span><p className="font-label-caps text-label-caps text-on-surface-variant mt-sm">{meta}</p></div>{pathname.endsWith('bookings') && <><Link to={propertyId ? `/secure-your-stay/${propertyId}` : '/secure-your-stay/jadavpur-pg'} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>{bookingId && status === 'PENDING' && <button type="button" onClick={() => onCancelBooking(bookingId)} disabled={cancellingBookingId === bookingId} className="px-md py-sm bg-surface border-2 border-primary font-label-caps text-label-caps text-primary text-center disabled:opacity-50">{cancellingBookingId === bookingId ? 'Cancelling...' : 'Cancel'}</button>}</>}</article>)}</div>
+        <div className="flex flex-col gap-md">
+          {cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => (
+            <article key={`${title}-${meta}`} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg">
+              <div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-primary">{icon}</span>
+              </div>
+              <div className="flex-1">
+                <h2 className="font-h3 text-h3 text-primary">{title}</h2>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-xs">{detail}</p>
+              </div>
+              <div className="md:text-right flex flex-row md:flex-col justify-between md:justify-center items-center md:items-end gap-sm border-t border-b md:border-0 border-primary/10 py-sm md:py-0 w-full md:w-auto">
+                <span className="inline-block px-sm py-xs bg-surface-container border-2 border-primary font-label-caps text-label-caps text-primary">{status}</span>
+                <p className="font-label-caps text-label-caps text-on-surface-variant md:mt-sm">{meta}</p>
+              </div>
+              {pathname.endsWith('bookings') && (
+                <div className="flex flex-row md:flex-col gap-sm w-full md:w-auto mt-sm md:mt-0">
+                  <Link to={propertyId ? `/secure-your-stay/${propertyId}` : '/secure-your-stay/jadavpur-pg'} className="flex-1 md:flex-none px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">View</Link>
+                  {bookingId && status === 'PENDING' && (
+                    <button type="button" onClick={() => onCancelBooking(bookingId)} disabled={cancellingBookingId === bookingId} className="flex-1 md:flex-none px-md py-sm bg-surface border-2 border-primary font-label-caps text-label-caps text-primary text-center disabled:opacity-50">
+                      {cancellingBookingId === bookingId ? 'Cancelling...' : 'Cancel'}
+                    </button>
+                  )}
+                </div>
+              )}
+            </article>
+          ))}
+        </div>
          {isMessages && <form className="mt-lg flex flex-col sm:flex-row gap-sm" onSubmit={async (event) => { event.preventDefault(); if (!messageText.trim() || sendingMessage) return; if (!liveData || !landlordId) { onError('Book a stay first — messages are attached to a confirmed booking.'); return; } setSendingMessage(true); try { await sendMessage({ bookingId: liveData.bookings[0].id, recipientId: landlordId, body: messageText }); setMessageText(''); await reload(); } catch (error) { onError(error.message || 'Unable to send message.'); } finally { setSendingMessage(false); } }}><label className="sr-only" htmlFor="dashboard-message">Write a message</label><input id="dashboard-message" value={messageText} onChange={(event) => setMessageText(event.target.value)} disabled={!liveData} className="flex-1 border-2 border-primary bg-surface px-md py-md text-primary disabled:opacity-50" placeholder={liveData ? 'Ask your landlord a question about your stay...' : 'Messaging activates once KeyLo backend is connected.'} /><button className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary disabled:opacity-50" type="submit" disabled={!liveData || !landlordId || sendingMessage || !messageText.trim()}>{sendingMessage ? 'SENDING...' : 'SEND'}</button></form>}
         {isDemo && <div className="mt-xl bg-surface-container border-2 border-primary p-lg flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">These demo records will become live once KeyLo connects to the booking and messaging backend.</p></div>}
       </div>

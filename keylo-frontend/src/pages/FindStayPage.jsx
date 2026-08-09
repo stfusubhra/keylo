@@ -115,8 +115,33 @@ export default function FindStayPage() {
     <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg">
       {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{saveError}</div>}
       <div><p className="font-label-caps text-label-caps text-electric-purple uppercase mb-sm">KeyLo Kolkata rental guide</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary tracking-tight uppercase font-bold">Find your next place.</h1><p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Browse verified flats and PGs grouped by the university you are studying near in Kolkata.</p></div>
-      <div className="flex flex-col lg:flex-row gap-md items-start lg:items-center"><form className="relative w-full lg:w-[520px] h-[64px] border-2 border-primary bg-surface-container-lowest focus-within:ring-4 ring-acid-lime flex items-center pr-2" onSubmit={(event) => event.preventDefault()}><span className="material-symbols-outlined absolute left-4 text-primary">search</span><input id="rental-search" name="rentalSearch" className="w-full h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-body-lg text-primary placeholder:text-on-surface-variant" placeholder="Search university, area, PG, or flat..." type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} /><button type="submit" className="h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary whitespace-nowrap">Search</button></form><div className="flex gap-sm"><button onClick={() => setSelectedType('All types')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'All types' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>All types</button><button onClick={() => setSelectedType('PG')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'PG' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>PGs</button><button onClick={() => setSelectedType('Flat')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'Flat' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>Flats</button></div></div>
-      <div className="flex gap-sm overflow-x-auto pb-xs" aria-label="Filter rentals by university">{universities.map((university) => <button key={university} onClick={() => setSelectedUniversity(university)} className={`shrink-0 px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${selectedUniversity === university ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]' : 'bg-surface-container-lowest hover:bg-acid-lime'}`}>{university === 'All Kolkata' ? university : `Near ${university}`}</button>)}</div>
+      <div className="flex flex-col lg:flex-row gap-md items-start lg:items-center">
+        <form className="relative w-full lg:w-[520px] flex flex-col sm:flex-row bg-surface-container-lowest border-2 border-primary focus-within:ring-4 ring-acid-lime p-2 sm:p-0 sm:h-[64px] sm:items-center sm:pr-2" onSubmit={(event) => event.preventDefault()}>
+          <span className="material-symbols-outlined absolute left-4 top-[22px] sm:top-1/2 sm:-translate-y-1/2 text-primary">search</span>
+          <input id="rental-search" name="rentalSearch" className="w-full h-12 sm:h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-body-lg text-primary placeholder:text-on-surface-variant" placeholder="Search university, area, PG, or flat..." type="search" value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} />
+          <button type="submit" className="w-full sm:w-auto h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary whitespace-nowrap mt-2 sm:mt-0">Search</button>
+        </form>
+        <div className="flex gap-sm">
+          <button onClick={() => setSelectedType('All types')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'All types' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>All types</button>
+          <button onClick={() => setSelectedType('PG')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'PG' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>PGs</button>
+          <button onClick={() => setSelectedType('Flat')} className={`px-md py-sm border-2 border-primary font-label-caps text-primary ${selectedType === 'Flat' ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}>Flats</button>
+        </div>
+      </div>
+      <div className="flex flex-nowrap gap-sm overflow-x-auto pb-xs hide-scrollbar" aria-label="Filter rentals by university">
+        {universities.map((university) => (
+          <button
+            key={university}
+            onClick={() => setSelectedUniversity(university)}
+            className={`shrink-0 px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${
+              selectedUniversity === university
+                ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]'
+                : 'bg-surface-container-lowest hover:bg-acid-lime'
+            }`}
+          >
+            {university === 'All Kolkata' ? university : `Near ${university}`}
+          </button>
+        ))}
+      </div>
     </section>
        <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list">{catalogError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{catalogError}</div>}<div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">{isLoadingCatalog ? 'Loading live Kolkata stays...' : `Showing ${filteredProperties.length} ${filteredProperties.length === 1 ? 'stay' : 'stays'} near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} saved={Boolean(savedIds[property.id])} onToggleSave={() => handleToggleSave(property.id)} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
     <section className="w-full py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg" aria-label="Kolkata university rental map">

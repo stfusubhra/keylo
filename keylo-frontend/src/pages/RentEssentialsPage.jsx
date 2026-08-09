@@ -64,12 +64,12 @@ export default function RentEssentialsPage() {
       {/* Rental Categories & Grid */}
       <section className="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-xl border-t-2 border-primary">
         {/* Category Filters */}
-        <div className="flex flex-wrap items-center gap-md mb-xl overflow-x-auto pb-sm scrollbar-hide">
+        <div className="flex flex-nowrap items-center gap-md mb-xl overflow-x-auto pb-sm hide-scrollbar">
           {rentalCategories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-lg py-md font-label-caps text-label-caps rounded-full border-2 border-primary transition-all whitespace-nowrap ${
+              className={`px-lg py-md font-label-caps text-label-caps rounded-full border-2 border-primary transition-all whitespace-nowrap shrink-0 ${
                 activeCategory === cat.id
                   ? 'bg-primary text-on-primary shadow-[4px_4px_0px_0px_#000000]'
                   : 'bg-surface text-primary hover:bg-[#C7F000]'

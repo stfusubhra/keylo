@@ -89,7 +89,7 @@ export default function ForOwnersPage() {
           {/* Stats Card */}
           <div className="bg-surface-container-lowest border-2 border-primary p-xl shadow-[8px_8px_0px_0px_#000000]">
             <h3 className="font-h3 text-h3 text-primary mb-lg uppercase">KeyLo by the Numbers</h3>
-            <div className="grid grid-cols-2 gap-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
               {stats.map((stat) => (
                 <div key={stat.label} className="border-2 border-primary p-md bg-surface">
                   <p className="font-price-display text-price-display text-primary">{stat.value}</p>

@@ -72,10 +72,9 @@ export default function PropertyDetailsPage() {
 
   return (
     <div className="bg-surface-container-low font-body-md text-on-surface">
-      {/* Image Gallery Grid */}
       <section className="w-full px-margin-mobile md:px-margin-desktop mb-xl mt-md">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-md md:gap-gutter h-[400px] md:h-[500px]">
-          <div className="col-span-1 md:col-span-2 h-full rounded-xl overflow-hidden shadow-md border-2 border-primary">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-md md:gap-gutter h-auto md:h-[500px]">
+          <div className="col-span-1 md:col-span-2 h-[250px] md:h-full rounded-xl overflow-hidden shadow-md border-2 border-primary">
             <img
               className="w-full h-full object-cover"
               src={propertyImages[0]}
@@ -89,7 +88,7 @@ export default function PropertyDetailsPage() {
               alt="Study desk detail"
             />
           </div>
-          <div className="col-span-1 md:col-span-1 flex flex-col gap-md md:gap-gutter h-full">
+          <div className="col-span-1 md:col-span-1 flex-col gap-md md:gap-gutter h-full hidden md:flex">
             <div className="h-1/2 rounded-xl overflow-hidden shadow-md border-2 border-primary">
               <img
                 className="w-full h-full object-cover"
@@ -303,7 +302,7 @@ export default function PropertyDetailsPage() {
         {/* Right Column: Sticky Booking Card & KeyLo Protection */}
         <div className="lg:col-span-4 flex flex-col gap-xl">
           {/* Sticky Booking Widget */}
-          <div className="sticky top-[100px] bg-surface border-2 border-primary rounded-xl p-lg flex flex-col gap-lg shadow-[8px_8px_0px_0px_#000000]">
+          <div className="lg:sticky lg:top-[100px] bg-surface border-2 border-primary rounded-xl p-lg flex flex-col gap-lg shadow-[8px_8px_0px_0px_#000000]">
             <div className="flex justify-between items-end border-b-2 border-primary pb-sm">
               <div className="flex flex-col">
                 <span className="font-price-display text-price-display text-primary">{formatMoney(rent)}</span>

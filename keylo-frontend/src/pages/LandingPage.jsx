@@ -83,16 +83,16 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <h2 className="font-h2 text-h2 text-on-primary mb-10 text-center uppercase tracking-tight">Where are you studying in Kolkata?</h2>
           <div className="w-full flex flex-col gap-4">
-            <div className="relative w-full h-[72px] bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000] group focus-within:ring-4 ring-[#C7F000] ring-offset-0 transition-all flex items-center pr-2">
-              <span className="material-symbols-outlined absolute left-4 text-primary">search</span>
+            <div className="relative w-full flex flex-col sm:flex-row bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000] group focus-within:ring-4 ring-[#C7F000] ring-offset-0 transition-all p-2 sm:p-0 sm:h-[72px] sm:items-center sm:pr-2">
+              <span className="material-symbols-outlined absolute left-4 top-[22px] sm:top-1/2 sm:-translate-y-1/2 text-primary">search</span>
               <input
-                className="w-full h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-primary placeholder:text-on-surface-variant"
+                className="w-full h-12 sm:h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-primary placeholder:text-on-surface-variant"
                 placeholder="Search Adamas, Jadavpur, Calcutta University..."
                 type="text"
                 value={searchQuery}
                 onChange={handleSearch}
               />
-              <button className="h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-surface-container-lowest hover:text-primary transition-colors whitespace-nowrap" onClick={handleSearchSubmit}>
+              <button className="w-full sm:w-auto h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-surface-container-lowest hover:text-primary transition-colors whitespace-nowrap mt-2 sm:mt-0" onClick={handleSearchSubmit}>
                 SEARCH
               </button>
             </div>
