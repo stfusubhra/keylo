@@ -60,6 +60,7 @@ export default function PropertyDetailsPage() {
   const description = row?.description || DEFAULT_DESCRIPTION;
   const amenities = row?.amenities?.length ? row.amenities : (demo?.amenities || ['Gigabit Wi-Fi', 'Daily Housekeeping', 'In-house Laundry', '24/7 Security']);
   const trustScore = row?.trust_score ?? 92;
+  const trustBreakdown = row?.trust_score_breakdown || {};
   const isVerified = row?.is_documents_verified ?? true;
   const coverImage = row?.cover_image_url || demo?.image || FALLBACK_IMAGES[0];
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
@@ -161,6 +162,7 @@ export default function PropertyDetailsPage() {
               </div>
               <span className="px-sm py-xs bg-acid-lime text-primary border-2 border-on-primary font-label-caps text-label-caps">{trustScore} / 100 TRUST SCORE</span>
             </div>
+            {Object.keys(trustBreakdown).length > 0 && <div className="grid grid-cols-2 md:grid-cols-5 gap-sm mb-lg">{[['base', 'Base'], ['documents', 'Documents'], ['inspection', 'Inspection'], ['landlord', 'Landlord'], ['published', 'Published']].map(([key, label]) => <div key={key} className="border border-on-primary/40 p-sm"><p className="font-label-caps text-[10px] text-on-primary/70 uppercase">{label}</p><p className="font-h3 text-h3 text-acid-lime">+{Number(trustBreakdown[key] || 0)}</p></div>)}</div>}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
               {[
                 ['verified_user', 'Landlord identity', 'Verified'],

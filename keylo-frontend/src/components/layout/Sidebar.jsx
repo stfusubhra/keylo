@@ -7,6 +7,7 @@ const sidebarItems = [
   { path: '/dashboard/bookings', label: 'Bookings', icon: 'calendar_today' },
   { path: '/dashboard/messages', label: 'Messages', icon: 'chat_bubble' },
   { path: '/dashboard/saved', label: 'Saved', icon: 'favorite' },
+  { path: '/dashboard/disputes', label: 'Disputes', icon: 'gavel' },
 ];
 
 const ownerSidebarItems = [

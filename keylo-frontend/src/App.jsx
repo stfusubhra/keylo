@@ -18,6 +18,9 @@ const DigitalHandoverPage = lazy(() => import('./pages/DigitalHandoverPage'));
 const OwnerPortalPage = lazy(() => import('./pages/OwnerPortalPage'));
 const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
 const AdminDisputeCenterPage = lazy(() => import('./pages/AdminDisputeCenterPage'));
+const AdminDisputesPage = lazy(() => import('./pages/AdminDisputesPage'));
+const DepositDisputesPage = lazy(() => import('./pages/DepositDisputesPage'));
+const LandlordDisputesPage = lazy(() => import('./pages/LandlordDisputesPage'));
 const RentEssentialsPage = lazy(() => import('./pages/RentEssentialsPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const ForOwnersPage = lazy(() => import('./pages/ForOwnersPage'));
@@ -92,6 +95,7 @@ const router = createBrowserRouter([
       { path: 'bookings', element: <DashboardPage /> },
       { path: 'messages', element: <DashboardPage /> },
       { path: 'saved', element: <DashboardPage /> },
+      { path: 'disputes', element: <DepositDisputesPage /> },
     ],
   },
   {
@@ -104,7 +108,7 @@ const router = createBrowserRouter([
       { path: 'tenants', element: <OwnerPortalPage /> },
       { path: 'rentals', element: <OwnerPortalPage /> },
       { path: 'deposits', element: <OwnerPortalPage /> },
-      { path: 'claims', element: <OwnerPortalPage /> },
+      { path: 'claims', element: <LandlordDisputesPage /> },
     ],
   },
   {
@@ -113,7 +117,7 @@ const router = createBrowserRouter([
     errorElement: ErrorBoundary,
     children: [
       { index: true, element: <AdminDisputeCenterPage /> },
-      { path: 'disputes', element: <AdminDisputeCenterPage /> },
+      { path: 'disputes', element: <AdminDisputesPage /> },
       {
         path: 'users',
         element: (

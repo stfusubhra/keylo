@@ -260,5 +260,66 @@ export async function moderateProperty(propertyId, status) {
   const client = requireSupabase();
   const { data, error } = await client.from('properties').update({ status }).eq('id', propertyId).select().single();
   if (error) throw error;
+  if (status === 'published') {
+    const { error: scoreError } = await client.rpc('refresh_property_trust_score', { p_property_id: propertyId });
+    if (scoreError) throw scoreError;
+  }
+  return data;
+}
+
+const disputeSelect = '*, properties(name, area), student:profiles!disputes_student_id_fkey(full_name), landlord:profiles!disputes_landlord_id_fkey(full_name)';
+
+export async function getStudentDisputes() {
+  const client = requireSupabase();
+  const { data, error } = await client.from('disputes').select(disputeSelect).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getLandlordDisputes() {
+  const client = requireSupabase();
+  const { data, error } = await client.from('disputes').select(disputeSelect).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getAdminDisputes() {
+  const client = requireSupabase();
+  const { data, error } = await client.from('disputes').select(disputeSelect).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function openDepositDispute({ bookingId, reason, evidenceUrls = [] }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('open_deposit_dispute', {
+    p_booking_id: bookingId,
+    p_reason: reason,
+    p_evidence_urls: evidenceUrls,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function respondToDepositDispute({ disputeId, response, recommendedRefund }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('respond_to_deposit_dispute', {
+    p_dispute_id: disputeId,
+    p_response: response,
+    p_recommended_refund: Number(recommendedRefund),
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function resolveDepositDispute({ disputeId, decision, refundAmount, note }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('resolve_deposit_dispute', {
+    p_dispute_id: disputeId,
+    p_decision: decision,
+    p_refund_amount: Number(refundAmount),
+    p_note: note,
+  });
+  if (error) throw error;
   return data;
 }
