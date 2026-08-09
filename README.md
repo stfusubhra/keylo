@@ -19,6 +19,10 @@ This repository contains the hackathon frontend prototype. The current data, aut
   - One-time tenant fee on the first KeyLo booking
   - No subscription plans
 
+## Live demo
+
+Deployed at **https://keylo-frontend.vercel.app** (auto-deploys from the `main` branch). All routes are served as an SPA via `keylo-frontend/vercel.json`, so deep links like `/find-a-stay` work directly.
+
 ## Run locally
 
 Requirements: Node.js 20+ and npm.
