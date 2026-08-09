@@ -79,6 +79,25 @@ export async function createBooking({ propertyId, roomId, moveInDate, rentAmount
   return data;
 }
 
+export async function createTestPayment({ booking, method = 'upi' }) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to make a test payment.');
+
+  const paymentRows = [
+    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.rent_amount, payment_type: 'rent', provider: 'test_mode', provider_reference: `TEST-${booking.id}-RENT`, status: 'paid', paid_at: new Date().toISOString() },
+    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.deposit_amount, payment_type: 'deposit', provider: 'test_mode', provider_reference: `TEST-${booking.id}-DEPOSIT`, status: 'paid', paid_at: new Date().toISOString() },
+    { booking_id: booking.id, payer_id: userData.user.id, amount: booking.tenant_first_booking_fee, payment_type: 'tenant_first_booking_fee', provider: 'test_mode', provider_reference: `TEST-${booking.id}-FEE-${method.toUpperCase()}`, status: 'paid', paid_at: new Date().toISOString() },
+  ];
+  const { error: paymentError } = await client.from('payments').insert(paymentRows);
+  if (paymentError) throw paymentError;
+
+  const { error: depositError } = await client.from('deposits').insert({ booking_id: booking.id, amount: booking.deposit_amount, status: 'held', held_at: new Date().toISOString() });
+  if (depositError) throw depositError;
+  return { status: 'paid', provider: 'test_mode', method };
+}
+
 export async function getDashboardData() {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();

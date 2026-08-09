@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { createBooking } from '../lib/supabaseData';
+import { createBooking, createTestPayment } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 
 export default function SecureYourStayPage() {
@@ -14,6 +14,7 @@ export default function SecureYourStayPage() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [bookingError, setBookingError] = useState('');
   const [isBooking, setIsBooking] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('upi');
 
   const baseTotal = 19497;
 
@@ -47,7 +48,8 @@ export default function SecureYourStayPage() {
     }
     setIsBooking(true);
     try {
-      await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount: 8500, depositAmount: 10000 });
+      const booking = await createBooking({ propertyId: id, moveInDate: '2026-09-01', rentAmount: 8500, depositAmount: 10000 });
+      await createTestPayment({ booking, method: paymentMethod });
       setShowSuccess(true);
       document.body.style.overflow = 'hidden';
     } catch (error) {
@@ -353,6 +355,11 @@ export default function SecureYourStayPage() {
                       </div>
                     ))}
                 </div>
+              </div>
+              <div className="border-2 border-primary bg-surface-container p-md">
+                <div className="flex items-center justify-between gap-md mb-sm"><span className="font-label-caps text-label-caps text-primary uppercase">Payment method</span><span className="font-label-caps text-[10px] px-xs py-[2px] bg-acid-lime border border-primary text-primary">TEST MODE</span></div>
+                <div className="grid grid-cols-2 gap-sm"><button type="button" onClick={() => setPaymentMethod('upi')} className={`py-sm border-2 border-primary font-label-caps text-label-caps ${paymentMethod === 'upi' ? 'bg-primary text-on-primary' : 'bg-surface text-primary'}`}><span className="material-symbols-outlined text-[16px] align-middle mr-xs">account_balance</span>UPI</button><button type="button" onClick={() => setPaymentMethod('card')} className={`py-sm border-2 border-primary font-label-caps text-label-caps ${paymentMethod === 'card' ? 'bg-primary text-on-primary' : 'bg-surface text-primary'}`}><span className="material-symbols-outlined text-[16px] align-middle mr-xs">credit_card</span>Test card</button></div>
+                <p className="font-label-caps text-[10px] text-on-surface-variant mt-sm">No real money is charged. This records a paid test transaction for the demo.</p>
               </div>
               {/* Total */}
               <div className="mt-md pt-md border-t-4 border-primary">
