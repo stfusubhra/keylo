@@ -387,7 +387,7 @@ export default function RentItemPage() {
 
         {/* ══════════════════════════════ STEP 3: Success ══════════════════════════════ */}
         {step === 3 && (
-          <div className="max-w-lg mx-auto flex flex-col items-center text-center gap-lg py-xl">
+          <div className="max-w-2xl mx-auto flex flex-col items-center text-center gap-lg py-xl">
             <div className="w-24 h-24 bg-acid-lime border-2 border-primary flex items-center justify-center shadow-[-6px_6px_0px_0px_#000000]">
               <span className="material-symbols-outlined text-[48px] text-primary" style={{ fontVariationSettings: 'FILL 1' }}>
                 check_circle

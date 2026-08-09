@@ -68,7 +68,7 @@ export default function PropertyDetailsPage() {
   const propertyImages = [coverImage, ...FALLBACK_IMAGES.slice(1)];
 
   if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;
-  if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
+  if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
 
   return (
     <div className="bg-surface-container-low font-body-md text-on-surface">

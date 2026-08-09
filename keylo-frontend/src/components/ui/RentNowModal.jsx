@@ -78,7 +78,7 @@ export default function RentNowModal({ item, onClose }) {
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="w-full sm:max-w-lg max-h-[90vh] bg-surface border-2 border-primary shadow-[-8px_8px_0px_0px_#C7F000] outline-none flex flex-col"
+        className="w-full sm:max-w-2xl max-h-[90vh] bg-surface border-2 border-primary shadow-[-8px_8px_0px_0px_#C7F000] outline-none flex flex-col"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-primary px-lg py-md bg-surface-container-lowest flex-shrink-0">

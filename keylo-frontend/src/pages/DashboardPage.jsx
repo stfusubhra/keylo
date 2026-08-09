@@ -134,7 +134,7 @@ export default function DashboardPage() {
     return () => { active = false; };
   }, []);
 
-  if (section) return <><DashboardSection section={section} pathname={location.pathname} liveData={liveData} onCancelBooking={handleCancelBooking} cancellingBookingId={cancellingBookingId} reload={reload} onError={(message) => setBookingError(message)} />{bookingError && <div role="alert" className="fixed bottom-4 right-4 max-w-md border-2 border-error bg-error/10 p-md font-body-md text-error">{bookingError}</div>}</>;
+  if (section) return <><DashboardSection section={section} pathname={location.pathname} liveData={liveData} onCancelBooking={handleCancelBooking} cancellingBookingId={cancellingBookingId} reload={reload} onError={(message) => setBookingError(message)} />{bookingError && <div role="alert" className="fixed bottom-4 right-4 max-w-2xl border-2 border-error bg-error/10 p-md font-body-md text-error">{bookingError}</div>}</>;
 
   const activityLog = liveData?.bookings?.length
     ? liveData.bookings.map((booking, index) => ({
