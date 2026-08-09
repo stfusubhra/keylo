@@ -561,6 +561,9 @@
   /* Remove the built-in descender gap that shifts glyphs off-centre */
   font-feature-settings: 'liga';
   vertical-align: middle;
+  /* Material Symbols draw their ink ~2.5px above the em-box centre (measured
+     at 20px); nudge the glyph down so it is optically centred in the pin. */
+  transform: translateY(2.5px);
 }
 .keylo-pin.college {
   width: 38px;
@@ -602,6 +605,8 @@
 }
 .keylo-pin.static-legend .material-symbols-outlined {
   font-size: 16px;
+  /* 16px glyphs sit ~1.5px high, not the 2.5px of the 20px map pins */
+  transform: translateY(1.5px);
 }
 .keylo-pin.static-legend.college::after {
   display: none;
