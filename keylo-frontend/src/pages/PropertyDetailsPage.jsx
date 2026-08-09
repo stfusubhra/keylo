@@ -94,6 +94,39 @@ export default function PropertyDetailsPage() {
             </p>
           </section>
 
+          {/* Trust & Verification */}
+          <section className="bg-primary text-on-primary border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#7C3AED]">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-md mb-lg">
+              <div>
+                <p className="font-label-caps text-label-caps text-acid-lime uppercase mb-xs">KeyLo Trust Check</p>
+                <h2 className="font-h3 text-h3 text-on-primary">Verified before you book.</h2>
+              </div>
+              <span className="px-sm py-xs bg-acid-lime text-primary border-2 border-on-primary font-label-caps text-label-caps">92 / 100 TRUST SCORE</span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
+              {[
+                ['verified_user', 'Landlord identity', 'Verified'],
+                ['document_scanner', 'Property documents', 'Checked'],
+                ['camera', 'Room inspection', '12 Oct 2026'],
+                ['payments', 'Deposit rules', 'Transparent'],
+              ].map(([icon, title, value]) => (
+                <div key={title} className="border-2 border-on-primary/40 p-sm bg-primary-container">
+                  <span className="material-symbols-outlined text-acid-lime">{icon}</span>
+                  <p className="font-label-caps text-[10px] text-on-primary/70 uppercase mt-sm">{title}</p>
+                  <p className="font-label-caps text-label-caps text-on-primary mt-xs">{value}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Inspection Evidence */}
+          <section className="flex flex-col gap-md">
+            <div className="flex items-end justify-between border-b-2 border-primary pb-sm gap-md"><div><p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Evidence, not promises</p><h2 className="font-h3 text-h3 text-primary">AI inspection report</h2></div><span className="font-label-caps text-label-caps text-on-surface-variant">Last checked 12 Oct 2026</span></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+              {['Walls & paint', 'Furniture condition', 'Safety & utilities'].map((item) => <div key={item} className="bg-surface-container-lowest border-2 border-primary p-md"><div className="flex items-center justify-between mb-md"><span className="material-symbols-outlined text-electric-purple">fact_check</span><span className="font-label-caps text-[10px] bg-acid-lime border border-primary px-xs py-[2px] text-primary">PASS</span></div><h3 className="font-label-caps text-label-caps text-primary uppercase">{item}</h3><p className="font-body-md text-body-md text-on-surface-variant mt-xs">No major issues detected during move-in scan.</p></div>)}
+            </div>
+          </section>
+
           {/* Amenities Bento Grid */}
           <section className="flex flex-col gap-md">
             <h2 className="font-h3 text-h3 text-primary">Amenities</h2>
@@ -199,6 +232,22 @@ export default function PropertyDetailsPage() {
               ></div>
             </div>
           </section>
+
+          {/* Handover & Deposit Timeline */}
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-lg border-t-2 border-primary pt-lg">
+            <div>
+              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Digital handover</p>
+              <h3 className="font-h3 text-h3 text-primary mb-md">Move in with proof.</h3>
+              <div className="flex flex-col gap-sm">
+                {['Confirm room condition', 'Upload meter readings', 'Sign digital handover', 'Get your move-in record'].map((step, index) => <div key={step} className="flex items-center gap-sm"><span className="w-7 h-7 flex items-center justify-center bg-acid-lime border-2 border-primary font-label-caps text-label-caps">{index + 1}</span><span className="font-body-md text-body-md text-on-surface-variant">{step}</span></div>)}
+              </div>
+            </div>
+            <div className="bg-surface-container border-2 border-primary p-md">
+              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Deposit release plan</p>
+              <h3 className="font-h3 text-h3 text-primary mb-md">₹10,000 protected</h3>
+              <div className="flex flex-col gap-md">{[['today', 'Deposit held in KeyLo Vault'], ['move-out', 'AI condition check'], ['within 7 days', 'Refund released or dispute opened']].map(([label, text], index) => <div key={label} className="flex gap-sm"><div className="flex flex-col items-center"><span className={`w-3 h-3 rounded-full border-2 border-primary ${index === 0 ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}></span>{index < 2 && <span className="w-px h-7 bg-primary"></span>}</div><div><p className="font-label-caps text-[10px] text-on-surface-variant uppercase">{label}</p><p className="font-body-md text-body-md text-primary">{text}</p></div></div>)}</div>
+            </div>
+          </section>
         </div>
 
         {/* Right Column: Sticky Booking Card & KeyLo Protection */}
@@ -277,6 +326,7 @@ export default function PropertyDetailsPage() {
                 <span>Dispute resolution support</span>
               </li>
             </ul>
+            <div className="border-t border-on-primary/30 pt-md mt-xs flex items-center gap-sm relative z-10"><span className="material-symbols-outlined text-acid-lime">verified_user</span><div><p className="font-label-caps text-label-caps text-acid-lime">Landlord verified</p><p className="font-body-md text-body-md text-on-primary/70">Riya Sen · 4.9 owner rating</p></div></div>
           </div>
         </div>
       </div>

@@ -113,6 +113,10 @@ export default function DashboardPage() {
 
         {/* Right Column: Quick Stats & Activity */}
         <div className="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+          <div className="bg-primary text-on-primary border-2 border-primary p-lg shadow-[6px_6px_0px_0px_#C7F000]">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-md mb-md"><div><p className="font-label-caps text-label-caps text-acid-lime uppercase">Your KeyLo protection</p><h2 className="font-h3 text-h3 text-on-primary">Deposit release timeline</h2></div><span className="px-sm py-xs bg-acid-lime text-primary border-2 border-on-primary font-label-caps text-label-caps">ACTIVE</span></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-md">{[['check_circle', 'Move-in record', 'Completed'], ['shield', 'Deposit protected', '₹10,000 held'], ['schedule', 'Move-out review', 'Due at checkout']].map(([icon, title, detail]) => <div key={title} className="flex items-center gap-sm border border-on-primary/30 p-sm"><span className="material-symbols-outlined text-acid-lime">{icon}</span><div><p className="font-label-caps text-[10px] text-on-primary/70 uppercase">{title}</p><p className="font-label-caps text-label-caps text-on-primary mt-xs">{detail}</p></div></div>)}</div>
+          </div>
           {/* Quick Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-gutter w-full">
             {/* Deposit Vault */}
