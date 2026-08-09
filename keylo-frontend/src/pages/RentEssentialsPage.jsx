@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import RentNowModal from '../components/ui/RentNowModal';
 
 const rentalCategories = [
   { id: 'all', label: 'All Rentals' },
@@ -229,7 +230,7 @@ const categoryImages = {
 export default function RentEssentialsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
-  const [rentNotice, setRentNotice] = useState('');
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const filteredItems =
     activeCategory === 'all'
@@ -246,6 +247,7 @@ export default function RentEssentialsPage() {
 
   return (
     <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface">
+      {selectedItem && <RentNowModal item={selectedItem} onClose={() => setSelectedItem(null)} />}
       {/* Hero Section */}
       <section className="w-full bg-surface py-xl px-margin-mobile lg:px-margin-desktop min-h-[400px] lg:min-h-[614px] flex flex-col justify-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -312,7 +314,7 @@ export default function RentEssentialsPage() {
           </div>
         </div>
 
-        {rentNotice && <div role="status" className="mb-xl bg-surface-container border-2 border-primary p-md flex items-center gap-md"><span className="material-symbols-outlined text-electric-purple">info</span><p className="font-body-md text-body-md text-on-surface-variant">{rentNotice}</p></div>}
+
 
         {/* Rental Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
@@ -350,7 +352,10 @@ export default function RentEssentialsPage() {
                   </div>
                 </div>
                 <div className="mt-auto pt-lg">
-                  <button onClick={() => setRentNotice(`"${item.name}" rentals are not bookable yet — the KeyLo marketplace launches soon.`)} className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-sm">
+                  <button
+                    onClick={() => setSelectedItem(item)}
+                    className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-sm"
+                  >
                     RENT NOW <span className="material-symbols-outlined text-sm">arrow_forward</span>
                   </button>
                 </div>
