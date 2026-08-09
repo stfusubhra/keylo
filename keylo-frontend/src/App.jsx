@@ -22,6 +22,7 @@ const AdminDisputesPage = lazy(() => import('./pages/AdminDisputesPage'));
 const DepositDisputesPage = lazy(() => import('./pages/DepositDisputesPage'));
 const LandlordDisputesPage = lazy(() => import('./pages/LandlordDisputesPage'));
 const RentEssentialsPage = lazy(() => import('./pages/RentEssentialsPage'));
+const RentItemPage = lazy(() => import('./pages/RentItemPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const ForOwnersPage = lazy(() => import('./pages/ForOwnersPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
@@ -85,6 +86,7 @@ const router = createBrowserRouter([
       { path: 'property/:id', element: <PropertyDetailsPage /> },
       { path: 'secure-your-stay/:id', element: <SecureYourStayPage /> },
       { path: 'rentals', element: <RentEssentialsPage /> },
+      { path: 'rentals/rent/:id', element: <RentItemPage /> },
       { path: 'keylo-vault', element: <KeyloVaultPage /> },
       { path: 'ai-room-inspection', element: <AIRoomInspectionPage /> },
       { path: 'digital-handover', element: <DigitalHandoverPage /> },
