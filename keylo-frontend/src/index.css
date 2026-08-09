@@ -543,6 +543,12 @@
 .keylo-pin .material-symbols-outlined {
   font-size: 20px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Remove the built-in descender gap that shifts glyphs off-centre */
+  font-feature-settings: 'liga';
+  vertical-align: middle;
 }
 .keylo-pin.college {
   width: 38px;
