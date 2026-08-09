@@ -39,6 +39,8 @@ function DashboardSection({ section, pathname, liveData }) {
           ['KeyLo Support', 'Your deposit release timeline has been updated.', 'Yesterday', 'support_agent'],
           ['Property manager', 'The Wi-Fi installation is scheduled for move-in day.', '12 Oct', 'wifi'],
         ]
+      : liveData?.saved?.length
+      ? liveData.saved.map((saved) => [saved.properties?.name || 'Saved stay', `${saved.properties?.area || 'Kolkata'} · ${saved.properties?.property_type === 'pg' ? 'PG' : 'Flat'} · ₹${Number(saved.properties?.monthly_rent || 0).toLocaleString('en-IN')}/mo`, `${saved.properties?.profiles?.owner_rating || '4.8'} ★`, 'favorite'])
       : [
           ['Lake View Student PG', 'Near Jadavpur University · PG · ₹9,500/mo', '4.9 ★', 'favorite'],
           ['Adamas Green PG', 'Near Adamas University · PG · ₹8,500/mo', '4.8 ★', 'favorite'],
