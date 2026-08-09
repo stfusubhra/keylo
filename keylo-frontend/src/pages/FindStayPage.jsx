@@ -70,7 +70,7 @@ export default function FindStayPage() {
           return;
         }
         setCatalog(rows.map((row) => {
-          const demo = demoProperties.find((d) => d.id === row.id) || {};
+          const demo = demoProperties.find((d) => d.id === row.id) || demoProperties.find((d) => d.name === row.name) || {};
           return {
           id: row.id,
           university: row.universities?.name || 'Kolkata University',
