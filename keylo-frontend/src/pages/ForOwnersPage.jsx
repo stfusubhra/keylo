@@ -114,7 +114,7 @@ export default function ForOwnersPage() {
             {features.map((feature) => (
               <div key={feature.title} className="group bg-surface border-2 border-primary p-lg hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer">
                 <div className={`w-12 h-12 ${feature.color} border-2 border-primary flex items-center justify-center mb-md group-hover:scale-110 transition-transform`}>
-                  <span className="material-symbols-outlined text-primary">{feature.icon}</span>
+                  <span className={`material-symbols-outlined ${feature.color === 'bg-primary' ? 'text-on-primary' : 'text-primary'}`}>{feature.icon}</span>
                 </div>
                 <h3 className="font-h3 text-h3 text-primary mb-xs uppercase">{feature.title}</h3>
                 <p className="font-body-md text-body-md text-on-surface-variant">{feature.desc}</p>
