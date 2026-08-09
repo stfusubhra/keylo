@@ -47,6 +47,23 @@ The backend is defined in the ordered files under `supabase/migrations/`.
 
 The migrations create profiles, Kolkata universities, properties, rooms, bookings, payments, deposits, inspections, handovers, maintenance, messages, saved properties, enums, indexes, booking guards, atomic test-payment completion, a new-user profile trigger, and row-level security policies. The frontend keeps a clearly labelled demo mode when Supabase credentials are absent so the public prototype remains usable.
 
+## Demo accounts and dispute fixture
+
+Demo identities (passwords live in the team vault, never in this repository):
+
+- `student.demo@keylo.in` — student
+- `landlord.demo@keylo.in` — landlord
+
+Create them once in Supabase **Authentication > Users** (emails above), then run the last migration (`20260809007000_keylo_dispute_fixture.sql`) in the SQL editor. It seeds a published, fully verified demo property (Jadavpur, ₹9,000 rent / ₹12,000 deposit), a confirmed booking, three test-mode payments, and a held deposit — and is safe to re-run.
+
+Walk the full deposit-dispute chain to demo the trust loop:
+
+1. **Student** — `/dashboard/disputes`: open a dispute on the confirmed stay. KeyLo records the AI recommendation (full/partial refund by property trust score, e.g. ≥90 → recommend full refund at 88% confidence).
+2. **Landlord** — `/owner/claims`: respond and propose a refund; the case moves to `admin_review`.
+3. **Admin** — `/admin/disputes`: refund or deny. A refund releases the held deposit; a **partial** refund also drops the property trust score by 5, which is visible on the listing and in the score breakdown.
+
+The fixture's verification query (commented at the bottom of the migration) reports the booking, payment count, deposit status, dispute status, final refund, and trust score.
+
 ## Verification commands
 
 ```bash

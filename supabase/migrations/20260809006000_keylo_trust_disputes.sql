@@ -119,7 +119,7 @@ begin
   if p_refund_amount < 0 or p_refund_amount > dispute_row.claimed_amount then raise exception 'Refund must be between zero and the claimed deposit'; end if;
   final_status := case when p_decision = 'refund' then 'resolved' else 'denied' end;
   update public.disputes set status = final_status, final_refund = case when p_decision = 'refund' then p_refund_amount else 0 end, admin_note = p_note, resolved_by = auth.uid(), resolved_at = now(), updated_at = now() where id = p_dispute_id returning * into dispute_row;
-  update public.deposits set status = case when p_decision = 'refund' then 'released' else 'held' end, released_at = case when p_decision = 'refund' then now() else null end where booking_id = dispute_row.booking_id;
+  update public.deposits set status = (case when p_decision = 'refund' then 'released' else 'held' end)::public.deposit_status, released_at = case when p_decision = 'refund' then now() else null end where booking_id = dispute_row.booking_id;
   if p_decision = 'refund' and p_refund_amount < dispute_row.claimed_amount then update public.properties set trust_score = greatest(0, coalesce(trust_score, 0) - 5), updated_at = now() where id = dispute_row.property_id; end if;
   return dispute_row;
 end;
@@ -131,5 +131,7 @@ grant execute on function public.open_deposit_dispute(uuid, text, text[]) to aut
 grant execute on function public.respond_to_deposit_dispute(uuid, text, numeric) to authenticated;
 grant execute on function public.resolve_deposit_dispute(uuid, text, numeric, text) to authenticated;
 
+drop policy if exists "Dispute participants read disputes" on public.disputes;
 create policy "Dispute participants read disputes" on public.disputes for select using (student_id = auth.uid() or landlord_id = auth.uid() or public.is_admin());
+drop policy if exists "Students create disputes" on public.disputes;
 create policy "Students create disputes" on public.disputes for insert with check (student_id = auth.uid());
