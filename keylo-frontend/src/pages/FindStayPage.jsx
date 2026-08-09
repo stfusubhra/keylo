@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties, toggleSavedProperty, getSavedPropertyIds } from '../lib/supabaseData';
-import { demoProperties, universities } from '../lib/demoCatalog';
+import { demoProperties, universities, colleges } from '../lib/demoCatalog';
+import KolkataUniversityMap from '../components/ui/KolkataUniversityMap';
 
 function PropertyCard({ property, saved, onToggleSave }) {
   return (
@@ -68,7 +69,9 @@ export default function FindStayPage() {
           setCatalog([]);
           return;
         }
-        setCatalog(rows.map((row) => ({
+        setCatalog(rows.map((row) => {
+          const demo = demoProperties.find((d) => d.id === row.id) || {};
+          return {
           id: row.id,
           university: row.universities?.name || 'Kolkata University',
           area: row.area,
@@ -82,7 +85,10 @@ export default function FindStayPage() {
           badgeClass: row.is_ai_inspected ? 'bg-electric-purple text-white' : 'bg-acid-lime text-primary',
           amenities: row.amenities || [],
           image: row.cover_image_url || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=85',
-        })));
+          lat: demo.lat,
+          lng: demo.lng,
+          };
+        }));
       })
       .catch((err) => {
         if (!active) return;
@@ -100,6 +106,11 @@ export default function FindStayPage() {
       && (!query || `${property.name} ${property.area} ${property.university} ${property.type}`.toLowerCase().includes(query));
   }), [catalog, searchQuery, selectedUniversity, selectedType]);
 
+  const handleSelectUniversity = (universityName) => {
+    setSelectedUniversity(universityName);
+    document.getElementById('property-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return <div>
     <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg">
       {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{saveError}</div>}
@@ -108,6 +119,18 @@ export default function FindStayPage() {
       <div className="flex gap-sm overflow-x-auto pb-xs" aria-label="Filter rentals by university">{universities.map((university) => <button key={university} onClick={() => setSelectedUniversity(university)} className={`shrink-0 px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${selectedUniversity === university ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]' : 'bg-surface-container-lowest hover:bg-acid-lime'}`}>{university === 'All Kolkata' ? university : `Near ${university}`}</button>)}</div>
     </section>
        <section className="w-full px-margin-mobile lg:px-margin-desktop py-xl border-b-2 border-primary bg-surface flex flex-col gap-xl" id="property-list">{catalogError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{catalogError}</div>}<div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary"><span className="font-label-caps text-label-caps text-primary">{isLoadingCatalog ? 'Loading live Kolkata stays...' : `Showing ${filteredProperties.length} ${filteredProperties.length === 1 ? 'stay' : 'stays'} near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}</span><span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span></div>{filteredProperties.length ? filteredProperties.map((property) => <PropertyCard key={property.id} property={property} saved={Boolean(savedIds[property.id])} onToggleSave={() => handleToggleSave(property.id)} />) : <div className="py-xl text-center"><h2 className="font-h3 text-h3 text-primary">No stays found</h2><p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p></div>}</section>
-    <section className="hidden lg:block h-[360px] bg-[#dfe8e4] relative border-b-2 border-primary overflow-hidden" aria-label="Kolkata university rental map"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: 'linear-gradient(28deg, transparent 48%, #8fa59c 49%, #8fa59c 50%, transparent 51%), linear-gradient(112deg, transparent 47%, #8fa59c 48%, #8fa59c 49%, transparent 50%), linear-gradient(#b7c8c1 1px, transparent 1px), linear-gradient(90deg, #b7c8c1 1px, transparent 1px)', backgroundSize: '240px 180px, 300px 220px, 48px 48px, 48px 48px' }} /><div className="absolute inset-0 flex flex-col items-center justify-center gap-lg p-xl"><div className="px-lg py-sm bg-surface-container-lowest border-2 border-primary font-h3 text-h3 text-primary shadow-[-4px_4px_0px_0px_#000000]">Kolkata University Rental Map</div><div className="flex flex-wrap justify-center gap-md">{['Adamas University', 'Jadavpur University', 'University of Calcutta', "St. Xavier's University"].map((university) => <button key={university} onClick={() => setSelectedUniversity(university === "St. Xavier's University" ? "St. Xavier's University Kolkata" : university)} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-primary shadow-[-3px_3px_0px_0px_#000000] hover:-translate-y-0.5">Near {university}</button>)}</div><p className="font-label-caps text-label-caps text-primary bg-surface-container-lowest px-md py-sm border-2 border-primary">Showing rental zones around Kolkata campuses</p></div></section>
+    <section className="w-full py-xl border-b-2 border-primary bg-surface flex flex-col gap-lg" aria-label="Kolkata university rental map">
+      <div className="px-margin-mobile lg:px-margin-desktop flex flex-wrap items-end justify-between gap-md">
+        <div>
+          <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-sm">Campus map</p>
+          <h2 className="font-h2 text-h2 text-primary uppercase tracking-tight">Kolkata University Rental Map</h2>
+          <p className="font-body-md text-body-md text-on-surface-variant mt-xs max-w-2xl">Campuses are highlighted on the map — tap a pin to jump to stays near that college, or tap a stay to open it.</p>
+        </div>
+        <div className="flex flex-wrap gap-sm">{['Adamas University', 'Jadavpur University', 'University of Calcutta', "St. Xavier's University Kolkata"].map((university) => <button key={university} onClick={() => handleSelectUniversity(university)} className={`px-md py-sm border-2 border-primary font-label-caps text-primary transition-colors ${selectedUniversity === university ? 'bg-acid-lime shadow-[-3px_3px_0px_0px_#000000]' : 'bg-surface-container-lowest hover:bg-acid-lime'}`}>Near {university}</button>)}</div>
+      </div>
+      <div className="px-margin-mobile lg:px-margin-desktop">
+        <KolkataUniversityMap properties={catalog} colleges={colleges} selectedUniversity={selectedUniversity} onSelectUniversity={handleSelectUniversity} />
+      </div>
+    </section>
   </div>;
 }
