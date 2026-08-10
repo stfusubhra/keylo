@@ -378,7 +378,7 @@ function ProfileSection({ profile, onRefresh }) {
   useEffect(() => {
     setForm({ name: profile?.name || '', email: profile?.email || '', phone: profile?.phone || '' });
     setPhoto(profile?.photo || '');
-  }, [profile?.id]);
+  }, [profile?.id, profile?.name, profile?.email, profile?.phone, profile?.photo]);
 
   const handlePhoto = async (e) => {
     const file = e.target.files?.[0];
@@ -462,7 +462,7 @@ function ProfileSection({ profile, onRefresh }) {
   );
 }
 
-function SettingsSection({ profile, onRefresh }) {
+function SettingsSection() {
   const [settings, setSettings] = useState(() => getListerSettings() || {});
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -709,13 +709,13 @@ export default function ListerDashboardPage() {
       ) : section === 'listings' ? (
         <ListingsSection items={items} profile={profile} onRefresh={() => setRefresh((n) => n + 1)} />
       ) : section === 'requests' ? (
-        <ListerRequestsSection requests={requests} profile={profile} onRefresh={() => setRefresh((n) => n + 1)} />
+        <ListerRequestsSection requests={requests} onRefresh={() => setRefresh((n) => n + 1)} />
       ) : section === 'earnings' ? (
         <EarningsSection earnings={earnings} />
       ) : section === 'profile' ? (
         <ProfileSection profile={profile} onRefresh={() => setRefresh((n) => n + 1)} />
       ) : section === 'settings' ? (
-        <SettingsSection profile={profile} onRefresh={() => setRefresh((n) => n + 1)} />
+        <SettingsSection />
       ) : (
         <OverviewSection profile={profile} items={items} requests={requests} earnings={earnings} />
       )}

@@ -65,7 +65,7 @@ function RequestDetailModal({ request, onClose }) {
   );
 }
 
-export default function ListerRequestsSection({ requests, profile, onRefresh }) {
+export default function ListerRequestsSection({ requests, onRefresh }) {
   const [busyId, setBusyId] = useState(null);
   const [detail, setDetail] = useState(null);
   const [notice, setNotice] = useState('');

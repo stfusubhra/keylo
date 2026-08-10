@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://keylo-frontend.vercel.app/</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/find-a-stay</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/rentals</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/how-it-works</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/for-owners</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/for-listers</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/privacy</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/terms</loc></url>
+  <url><loc>https://keylo-frontend.vercel.app/support</loc></url>
+</urlset>
