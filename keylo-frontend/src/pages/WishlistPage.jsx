@@ -24,7 +24,7 @@ export default function WishlistPage() {
   const savedRentals = wishlist.rentals.map((saved) => ({ ...saved, item: rentalItems.find((item) => item.id === Number(saved.item_id)) })).filter((saved) => saved.item);
   const total = wishlist.properties.length + savedRentals.length;
 
-  return <div className="bg-surface min-h-screen font-body-md text-on-surface">
+  return <div className="w-full">
     <header className="border-b-2 border-primary pb-lg mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg"><div><p className="font-label-caps text-label-caps text-electric-purple uppercase mb-sm">Your shortlist</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary uppercase font-bold">Wishlist</h1><p className="font-body-lg text-body-lg text-on-surface-variant mt-sm">Keep homes and rental essentials together while you compare your next move.</p></div><span className="font-label-caps text-label-caps text-on-surface-variant">{total} saved</span></header>
     {error && <div role="alert" className="border-2 border-error bg-error/10 p-md mb-lg text-error">{error}</div>}
     {!isSupabaseConfigured && <div className="border-2 border-primary border-dashed p-lg text-center text-on-surface-variant">Sign in with Supabase enabled to use your wishlist.</div>}

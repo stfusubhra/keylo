@@ -8,7 +8,7 @@ export default function OwnerLayout() {
       <Sidebar variant="owner" />
       <div className="lg:ml-72 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-margin-mobile lg:p-margin-desktop pt-20 pb-20">
+        <main className="flex-1 p-margin-mobile lg:p-margin-desktop pt-24 pb-12">
           <Outlet />
         </main>
       </div>

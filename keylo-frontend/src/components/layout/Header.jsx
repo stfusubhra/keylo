@@ -99,7 +99,7 @@ export default function Header() {
   );
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
       <div className="relative h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center" aria-label="KeyLo Home">

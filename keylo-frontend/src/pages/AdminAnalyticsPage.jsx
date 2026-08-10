@@ -60,7 +60,7 @@ export default function AdminAnalyticsPage() {
   const totalBookings = data?.bookings?.length || 0;
 
   return (
-    <div className="bg-surface min-h-screen font-body-md text-on-surface">
+    <div className="w-full">
       <header className="border-b-2 border-primary pb-lg mb-xl">
         <p className="font-label-caps text-label-caps text-hot-pink uppercase mb-sm">Admin insights</p>
         <h1 className="font-heading text-h1-mobile md:text-h1 text-primary uppercase font-bold">Analytics</h1>

@@ -62,7 +62,7 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
   const landlordId = liveData?.bookings?.find((b) => b.status !== 'cancelled')?.properties?.owner_id || liveData?.bookings?.[0]?.properties?.owner_id;
 
   return (
-    <div className="bg-surface min-h-screen font-body-md text-on-surface p-lg lg:p-xl">
+    <div className="w-full">
       <div className="max-w-5xl mx-auto">
         <div className="bg-primary text-on-primary border-2 border-primary p-lg lg:p-xl shadow-[8px_8px_0px_0px_#C7F000] mb-xl">
           <div className="flex items-start justify-between gap-md">

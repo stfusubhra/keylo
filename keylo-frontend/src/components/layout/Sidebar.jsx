@@ -27,18 +27,6 @@ const adminSidebarItems = [
   { path: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
 ];
 
-function KeyLoLogo() {
-  return (
-    <div className="flex items-center gap-2">
-      <svg className="h-8 w-8 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="0" y="0" width="40" height="40" rx="6" fill="#000000"/>
-        <path d="M20 10 L20 30 M10 20 L30 20" stroke="#C7F000" strokeWidth="3" strokeLinecap="round"/>
-      </svg>
-      <span className="font-h3 text-h3 tracking-tight text-primary whitespace-nowrap">keylo</span>
-    </div>
-  );
-}
-
 export default function Sidebar({ variant = 'student' }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -80,8 +68,10 @@ export default function Sidebar({ variant = 'student' }) {
 
   const sidebarContent = (
     <>
-      <div className="h-20 px-lg flex items-center border-b-2 border-primary bg-surface">
-        <KeyLoLogo />
+      <div className="px-lg py-md border-b-2 border-primary bg-surface-container-low">
+        <p className="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">
+          {variant === 'owner' ? 'Owner Workspace' : variant === 'admin' ? 'Admin Portal' : 'Student Hub'}
+        </p>
       </div>
       <nav className="flex-1 p-md flex flex-col gap-xs overflow-y-auto" aria-label={`${variant} dashboard navigation`}>
         {items.map((item) => (
@@ -118,13 +108,13 @@ export default function Sidebar({ variant = 'student' }) {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex fixed left-0 top-0 h-full w-72 bg-surface-container-low border-r-2 border-primary z-50 flex-col">
+      <aside className="hidden lg:flex fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-surface-container-low border-r-2 border-primary z-40 flex-col">
         {sidebarContent}
       </aside>
 
       {/* Mobile Sidebar Toggle Button */}
       <button
-        className="lg:hidden fixed top-20 left-0 z-50 px-md py-md bg-primary text-on-primary border-2 border-primary rounded-r-lg shadow-[2px_2px_0px_0px_#000000]"
+        className="lg:hidden fixed top-24 left-0 z-40 px-md py-md bg-primary text-on-primary border-2 border-primary rounded-r-lg shadow-[2px_2px_0px_0px_#000000]"
         onClick={() => setMobileOpen(!mobileOpen)}
         aria-label={mobileOpen ? 'Close sidebar' : 'Open sidebar'}
         aria-expanded={mobileOpen}
@@ -135,7 +125,7 @@ export default function Sidebar({ variant = 'student' }) {
       {/* Mobile Sidebar Overlay */}
       {mobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 top-20 bg-black/50 z-30"
           onClick={() => setMobileOpen(false)}
           aria-hidden="true"
         />
@@ -143,7 +133,7 @@ export default function Sidebar({ variant = 'student' }) {
 
       {/* Mobile Sidebar Drawer */}
       <aside
-        className={`lg:hidden fixed left-0 top-0 h-full w-72 bg-surface-container-low border-r-2 border-primary z-50 flex flex-col transition-transform duration-300 ${
+        className={`lg:hidden fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-surface-container-low border-r-2 border-primary z-40 flex flex-col transition-transform duration-300 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >

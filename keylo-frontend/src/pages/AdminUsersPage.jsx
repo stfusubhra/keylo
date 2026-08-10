@@ -25,7 +25,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="bg-surface min-h-screen font-body-md text-on-surface">
+    <div className="w-full">
       <header className="border-b-2 border-primary pb-lg mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
         <div>
           <p className="font-label-caps text-label-caps text-hot-pink uppercase mb-sm">Admin directory</p>

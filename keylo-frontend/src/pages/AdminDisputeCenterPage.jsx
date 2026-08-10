@@ -17,7 +17,7 @@ export default function AdminDisputeCenterPage() {
 
   const visible = properties.filter((property) => filter === 'all' || property.status === filter);
   return (
-    <div className="bg-surface min-h-screen font-body-md text-on-surface">
+    <div className="w-full">
       <header className="border-b-2 border-primary pb-lg mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg"><div><p className="font-label-caps text-label-caps text-hot-pink uppercase mb-sm">Admin moderation</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary uppercase font-bold">Trust control room</h1><p className="font-body-lg text-body-lg text-on-surface-variant mt-sm">Review property evidence and decide what students are allowed to see.</p></div><div className="bg-electric-purple text-white border-2 border-primary px-md py-sm font-label-caps text-label-caps">AI assists · humans decide</div></header>
       {message && <div className="bg-acid-lime border-2 border-primary p-md mb-lg text-primary">{message}</div>}
       {error && <div role="alert" className="bg-error/10 border-2 border-error p-md mb-lg text-error">{error}</div>}

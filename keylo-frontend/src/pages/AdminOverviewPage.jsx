@@ -40,7 +40,7 @@ export default function AdminOverviewPage() {
   const disputed = (data?.disputes || []).filter((item) => !['resolved', 'denied'].includes(item.status));
   const latestUsers = users.slice(0, 8);
 
-  return <div className="bg-surface min-h-screen font-body-md text-on-surface">
+  return <div className="w-full">
     <header className="border-b-2 border-primary pb-lg mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
       <div><p className="font-label-caps text-label-caps text-hot-pink uppercase mb-sm">Admin operations</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary uppercase font-bold">Platform overview</h1><p className="font-body-lg text-body-lg text-on-surface-variant mt-sm">Tenants, landlords, stays, Rent Essentials, money movement, and trust controls in one view.</p></div>
       <div className="flex gap-sm"><Link to="/admin/users" className="px-md py-sm bg-surface-container-lowest border-2 border-primary font-label-caps text-label-caps text-primary">USER DIRECTORY</Link><Link to="/admin/analytics" className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">ANALYTICS</Link></div>
