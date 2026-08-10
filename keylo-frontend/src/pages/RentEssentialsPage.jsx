@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
@@ -149,7 +149,16 @@ export default function RentEssentialsPage() {
           {visibleItems.map((item) => (
             <div
               key={item.id}
-              className="group bg-surface flex flex-col border-2 border-primary shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300"
+              role="link"
+              tabIndex={0}
+              onClick={() => navigate(`/rentals/rent/${item.id}`)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  navigate(`/rentals/rent/${item.id}`);
+                }
+              }}
+              className="group bg-surface flex flex-col border-2 border-primary shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
             >
               <div className="relative w-full aspect-[4/3] sm:aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
                 <div className="absolute top-md left-md z-10 flex gap-sm flex-wrap">
@@ -168,7 +177,16 @@ export default function RentEssentialsPage() {
                   alt={item.name}
                 />
                 {!item.listerItemId && (
-                <button type="button" onClick={() => handleToggleSave(item.id)} aria-label={`${savedIds[item.id] ? 'Remove' : 'Save'} ${item.name} ${savedIds[item.id] ? 'from' : 'to'} wishlist`} aria-pressed={Boolean(savedIds[item.id])} className={`absolute top-md right-md z-10 p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleToggleSave(item.id);
+                  }}
+                  aria-label={`${savedIds[item.id] ? 'Remove' : 'Save'} ${item.name} ${savedIds[item.id] ? 'from' : 'to'} wishlist`}
+                  aria-pressed={Boolean(savedIds[item.id])}
+                  className={`absolute top-md right-md z-10 p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}
+                >
                   <span className="material-symbols-outlined" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
                 </button>
                 )}
@@ -185,12 +203,11 @@ export default function RentEssentialsPage() {
                   </div>
                 </div>
                 <div className="mt-auto pt-sm sm:pt-lg">
-                  <Link
-                    to={`/rentals/rent/${item.id}`}
+                  <div
                     className="w-full py-sm sm:py-md bg-primary text-on-primary font-label-caps text-[10px] sm:text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-xs sm:gap-sm"
                   >
                     RENT <span className="material-symbols-outlined text-xs sm:text-sm">arrow_forward</span>
-                  </Link>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
@@ -94,9 +94,26 @@ function StayCard({ property }) {
   );
 }
 
-function RentalCard({ item }) {
+function RentalCard({ item, navigate }) {
+  const handleCardClick = () => {
+    navigate(`/rentals/rent/${item.id}`);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
-    <article className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300">
+    <article
+      role="link"
+      tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
+    >
       {/* Image */}
       <div className="relative w-full aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
         <div className="absolute top-md left-md z-10 flex gap-sm flex-wrap">
@@ -134,12 +151,11 @@ function RentalCard({ item }) {
             <span className="font-price-display text-price-display text-primary tracking-tight">{item.price}</span>
             <span className="font-body-md text-body-md text-on-surface-variant">{item.period}</span>
           </div>
-          <Link
-            to={`/rentals/rent/${item.id}`}
+          <div
             className="px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-acid-lime hover:text-primary transition-colors whitespace-nowrap"
           >
             View Details
-          </Link>
+          </div>
         </div>
       </div>
     </article>
@@ -159,6 +175,7 @@ export default function SearchResultsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const resultsRef = useRef(null);
+  const navigate = useNavigate();
 
   // Keep the header input in sync when navigating between searches.
   useEffect(() => {
@@ -325,7 +342,7 @@ export default function SearchResultsPage() {
               {results.map((result) =>
                 result.kind === 'stay'
                   ? <StayCard key={`stay-${result.id}`} property={result} />
-                  : <RentalCard key={`rental-${result.id}`} item={result} />
+                  : <RentalCard key={`rental-${result.id}`} item={result} navigate={navigate} />
               )}
             </div>
           )}
