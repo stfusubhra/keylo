@@ -184,7 +184,7 @@ begin
   if v_user_id is null then raise exception 'You must be signed in to book a rental'; end if;
   select * into v_item from public.rental_items where id = p_item_id and active;
   if v_item.id is null then raise exception 'Rental item not found'; end if;
-  if p_duration is null or p_duration < 1 or p_duration > case when v_item.period = 'day' then 30 else 12 end then
+  if p_duration is null or p_duration < 1 or p_duration > (case when v_item.period = 'day' then 30 else 12 end) then
     raise exception 'Invalid rental duration';
   end if;
   if p_start_date is null or p_start_date < current_date then raise exception 'Choose a valid future start date'; end if;
