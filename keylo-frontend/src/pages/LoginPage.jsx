@@ -74,13 +74,15 @@ export default function LoginPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({ email: formData.email, password: formData.password });
+    const { data: authData, error } = await supabase.auth.signInWithPassword({ email: formData.email, password: formData.password });
     setIsLoading(false);
     if (error) {
       setErrors({ submit: error.message });
       return;
     }
-    navigate(returnTo, { replace: true });
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', authData.user.id).maybeSingle();
+    const roleHome = profile?.role === 'landlord' ? '/owner' : profile?.role === 'admin' ? '/admin' : '/dashboard';
+    navigate(location.state?.from || roleHome, { replace: true });
   };
 
   return (
