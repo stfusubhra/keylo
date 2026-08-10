@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { rentalItems, categoryImages } from '../lib/rentalCatalog';
+import { isSupabaseConfigured } from '../lib/supabase';
+import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 
 const rentalCategories = [
   { id: 'all', label: 'All Rentals' },
@@ -20,6 +22,30 @@ const rentalCategories = [
 export default function RentEssentialsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
+  const [savedIds, setSavedIds] = useState({});
+  const [saveError, setSaveError] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    getSavedRentalIds().then((ids) => { if (active) setSavedIds(ids); }).catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  const handleToggleSave = async (itemId) => {
+    try {
+      const result = await toggleSavedRental(itemId);
+      setSavedIds((current) => ({ ...current, [itemId]: result.saved }));
+      setSaveError('');
+    } catch (error) {
+      if (error.message?.includes('signed in')) {
+        navigate('/login', { state: { from: '/rentals' } });
+        return;
+      }
+      setSaveError(error.message || 'Unable to update your wishlist.');
+    }
+  };
 
   const filteredItems =
     activeCategory === 'all'
@@ -63,6 +89,7 @@ export default function RentEssentialsPage() {
 
       {/* Rental Categories & Grid */}
       <section className="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-xl border-t-2 border-primary">
+        {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md mb-lg text-error">{saveError}</div>}
         {/* Category Filters */}
         <div className="flex flex-nowrap items-center gap-md mb-xl overflow-x-auto pb-sm hide-scrollbar">
           {rentalCategories.map((cat) => (
@@ -127,6 +154,9 @@ export default function RentEssentialsPage() {
                   src={item.useImage ? item.image : categoryImages[item.category] || item.image}
                   alt={item.name}
                 />
+                <button type="button" onClick={() => handleToggleSave(item.id)} aria-label={`${savedIds[item.id] ? 'Remove' : 'Save'} ${item.name} ${savedIds[item.id] ? 'from' : 'to'} wishlist`} aria-pressed={Boolean(savedIds[item.id])} className={`absolute top-md right-md z-10 p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}>
+                  <span className="material-symbols-outlined" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                </button>
               </div>
               <div className="p-lg flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-md">

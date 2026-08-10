@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties, toggleSavedProperty, getSavedPropertyIds, getReviewStats } from '../lib/supabaseData';
 import { demoProperties, universities, colleges } from '../lib/demoCatalog';
@@ -41,6 +41,7 @@ export default function FindStayPage() {
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(isSupabaseConfigured);
   const [saveError, setSaveError] = useState('');
   const [catalogError, setCatalogError] = useState('');
+  const navigate = useNavigate();
 
   const handleToggleSave = async (propertyId) => {
     if (!isSupabaseConfigured) {
@@ -52,6 +53,10 @@ export default function FindStayPage() {
       setSavedIds((current) => ({ ...current, [propertyId]: result.saved }));
       setSaveError('');
     } catch (err) {
+      if (err.message?.includes('signed in')) {
+        navigate('/login', { state: { from: '/find-a-stay' } });
+        return;
+      }
       setSaveError(err.message);
     }
   };

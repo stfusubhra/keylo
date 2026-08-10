@@ -12,6 +12,7 @@ const FindStayPage = lazy(() => import('./pages/FindStayPage'));
 const PropertyDetailsPage = lazy(() => import('./pages/PropertyDetailsPage'));
 const SecureYourStayPage = lazy(() => import('./pages/SecureYourStayPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
 const KeyloVaultPage = lazy(() => import('./pages/KeyloVaultPage'));
 const AIRoomInspectionPage = lazy(() => import('./pages/AIRoomInspectionPage'));
 const DigitalHandoverPage = lazy(() => import('./pages/DigitalHandoverPage'));
@@ -107,7 +108,7 @@ const router = createBrowserRouter([
       { index: true, element: <DashboardPage /> },
       { path: 'bookings', element: <DashboardPage /> },
       { path: 'messages', element: <DashboardPage /> },
-      { path: 'saved', element: <DashboardPage /> },
+      { path: 'saved', element: <WishlistPage /> },
       { path: 'disputes', element: <DepositDisputesPage /> },
     ],
   },

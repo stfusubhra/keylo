@@ -185,6 +185,50 @@ export async function toggleSavedProperty(propertyId) {
   return { saved: true };
 }
 
+export async function getSavedRentalIds() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) return {};
+  const { data, error } = await client.from('saved_rentals').select('item_id').eq('student_id', userData.user.id);
+  if (error?.code === '42P01') return {};
+  if (error) throw error;
+  return (data || []).reduce((acc, row) => ({ ...acc, [row.item_id]: true }), {});
+}
+
+export async function toggleSavedRental(itemId) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to save a rental.');
+  const existing = await client.from('saved_rentals').select('item_id').eq('student_id', userData.user.id).eq('item_id', Number(itemId)).maybeSingle();
+  if (existing.error?.code === '42P01') throw new Error('Wishlist is not available until the latest database migration is applied.');
+  if (existing.error) throw existing.error;
+  if (existing.data) {
+    const { error } = await client.from('saved_rentals').delete().eq('student_id', userData.user.id).eq('item_id', Number(itemId));
+    if (error) throw error;
+    return { saved: false };
+  }
+  const { error } = await client.from('saved_rentals').insert({ student_id: userData.user.id, item_id: Number(itemId) });
+  if (error) throw error;
+  return { saved: true };
+}
+
+export async function getWishlistData() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to view your wishlist.');
+  const [properties, rentals] = await Promise.all([
+    client.from('saved_properties').select('created_at, properties(id, name, area, city, property_type, monthly_rent, security_deposit, cover_image_url, profiles!properties_owner_id_fkey(full_name, owner_rating), universities(name))').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
+    client.from('saved_rentals').select('item_id, created_at').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
+  ]);
+  if (rentals.error?.code === '42P01') return { properties: properties.data || [], rentals: [] };
+  const failed = [properties, rentals].find((result) => result.error);
+  if (failed) throw failed.error;
+  return { properties: properties.data || [], rentals: rentals.data || [] };
+}
+
 export async function getDashboardData() {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();

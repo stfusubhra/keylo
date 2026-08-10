@@ -6,7 +6,7 @@ const sidebarItems = [
   { path: '/dashboard', label: 'Overview', icon: 'grid_view' },
   { path: '/dashboard/bookings', label: 'Bookings', icon: 'calendar_today' },
   { path: '/dashboard/messages', label: 'Messages', icon: 'chat_bubble' },
-  { path: '/dashboard/saved', label: 'Saved', icon: 'favorite' },
+  { path: '/dashboard/saved', label: 'Wishlist', icon: 'favorite' },
   { path: '/dashboard/disputes', label: 'Disputes', icon: 'gavel' },
 ];
 
