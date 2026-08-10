@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../../lib/supabase';
-import { getUnreadMessageCount } from '../../lib/supabaseData';
+import { getUnreadMessageCount, getWishlistData } from '../../lib/supabaseData';
 
 const navItems = [
   { path: '/', label: 'Home', icon: 'home' },
@@ -42,6 +42,7 @@ export default function Header({ variant = 'default' }) {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [authUser, setAuthUser] = useState(null); // { name, email } when signed in
   const [unreadCount, setUnreadCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
@@ -69,11 +70,15 @@ export default function Header({ variant = 'default' }) {
   useEffect(() => {
     if (!isSupabaseConfigured || !authUser) {
       setUnreadCount(0);
+      setWishlistCount(0);
       return undefined;
     }
     let active = true;
     getUnreadMessageCount()
       .then((count) => { if (active) setUnreadCount(count); })
+      .catch(() => {});
+    getWishlistData()
+      .then((data) => { if (active) setWishlistCount((data.properties?.length || 0) + (data.rentals?.length || 0)); })
       .catch(() => {});
     return () => { active = false; };
   }, [authUser, location.pathname]);
@@ -143,8 +148,23 @@ export default function Header({ variant = 'default' }) {
 
         {/* Right Side Actions */}
          <div className="flex items-center gap-2 sm:gap-md min-w-0">
-          {!isAdmin && authUser && notificationsLink}
-          {!isAdmin && <div className="w-px h-6 bg-outline-variant mx-xs hidden sm:block" aria-hidden="true"></div>}
+           {!isAdmin && authUser && notificationsLink}
+           {!isAdmin && authUser && (
+             <Link
+               to="/dashboard/saved"
+               className="relative p-xs text-on-surface-variant hover:text-primary transition-colors"
+               aria-label={`Wishlist${wishlistCount ? ` (${wishlistCount})` : ''}`}
+               title="Wishlist"
+             >
+               <span className="material-symbols-outlined">favorite</span>
+               {wishlistCount > 0 && (
+                 <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center">
+                   {wishlistCount > 9 ? '9+' : wishlistCount}
+                 </span>
+               )}
+             </Link>
+           )}
+           {!isAdmin && <div className="w-px h-6 bg-outline-variant mx-xs hidden sm:block" aria-hidden="true"></div>}
 
            {authUser ? (
              <>
@@ -208,8 +228,23 @@ export default function Header({ variant = 'default' }) {
                 {item.label}
               </Link>
             ))}
+            {authUser && (
+              <Link
+                to="/dashboard/saved"
+                className="flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all text-on-surface"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="material-symbols-outlined">favorite</span>
+                Wishlist
+                {wishlistCount > 0 && (
+                  <span className="ml-auto min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center">
+                    {wishlistCount > 9 ? '9+' : wishlistCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <div className="flex flex-col gap-sm mt-md pt-md border-t-2 border-primary">
-              {authUser ? (
+               {authUser ? (
                 <>
                   <div className="px-md py-lg border-2 border-primary bg-surface-container-lowest flex items-center gap-md">
                     <span className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
