@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -10,9 +11,8 @@ export default function LandingPage() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      console.log('Searching for:', searchQuery);
-    }
+    const q = searchQuery.trim();
+    navigate(q ? `/search?q=${encodeURIComponent(q)}` : '/search');
   };
 
   return (
@@ -83,7 +83,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <h2 className="font-h2 text-h2 text-on-primary mb-8 text-center uppercase tracking-tight">Where are you studying in Kolkata?</h2>
           <div className="w-full flex flex-col gap-4">
-            <div className="relative w-full flex flex-col sm:flex-row bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000] group focus-within:ring-4 ring-[#C7F000] ring-offset-0 transition-all p-2 sm:p-0 sm:h-[72px] sm:items-center sm:pr-2">
+            <form className="relative w-full flex flex-col sm:flex-row bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000] group focus-within:ring-4 ring-[#C7F000] ring-offset-0 transition-all p-2 sm:p-0 sm:h-[72px] sm:items-center sm:pr-2" onSubmit={handleSearchSubmit}>
               <span className="material-symbols-outlined absolute left-4 top-[22px] sm:top-1/2 sm:-translate-y-1/2 text-primary">search</span>
               <input
                 className="w-full h-12 sm:h-full pl-12 pr-4 bg-transparent outline-none font-body-lg text-primary placeholder:text-on-surface-variant"
@@ -92,28 +92,28 @@ export default function LandingPage() {
                 value={searchQuery}
                 onChange={handleSearch}
               />
-              <button className="w-full sm:w-auto h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-surface-container-lowest hover:text-primary transition-colors whitespace-nowrap mt-2 sm:mt-0" onClick={handleSearchSubmit}>
+              <button type="submit" className="w-full sm:w-auto h-12 px-6 bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-surface-container-lowest hover:text-primary transition-colors whitespace-nowrap mt-2 sm:mt-0">
                 SEARCH
               </button>
-            </div>
-            {/* Quick filter tags — wrap naturally on mobile */}
+            </form>
+            {/* Quick filter tags — navigate to a pre-filtered search */}
             <div className="flex flex-wrap justify-center gap-3 mt-4">
-              <button className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
+              <Link to="/search?category=stay" className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
                 <span className="material-symbols-outlined text-[18px]">bed</span>
                 Stay
-              </button>
-              <button className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
+              </Link>
+              <Link to="/search?category=mobility" className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
                 <span className="material-symbols-outlined text-[18px]">electric_scooter</span>
                 Mobility
-              </button>
-              <button className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
+              </Link>
+              <Link to="/search?category=electronics" className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
                 <span className="material-symbols-outlined text-[18px]">devices</span>
                 Electronics
-              </button>
-              <button className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
+              </Link>
+              <Link to="/search?category=furniture" className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
                 <span className="material-symbols-outlined text-[18px]">chair</span>
                 Furniture
-              </button>
+              </Link>
             </div>
           </div>
         </div>
