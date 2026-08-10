@@ -7,7 +7,7 @@ export default function AdminLayout() {
     <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface">
       <Sidebar variant="admin" />
       <div className="lg:ml-72 flex flex-col min-h-screen">
-        <Header />
+        <Header variant="admin" />
         <main className="flex-1 p-margin-mobile lg:p-margin-desktop pt-32 pb-12">
           <Outlet />
         </main>

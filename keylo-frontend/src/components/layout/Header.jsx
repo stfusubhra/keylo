@@ -34,7 +34,8 @@ function KeyLoLogo({ className = '', textClass = 'text-primary' }) {
   );
 }
 
-export default function Header() {
+export default function Header({ variant = 'default' }) {
+  const isAdmin = variant === 'admin';
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -116,39 +117,41 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
       <div className="relative h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
         {/* Logo */}
-        <Link to={isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'}>
+        <Link to={isAdmin ? '/admin' : isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isAdmin ? 'KeyLo Admin Portal' : isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'}>
           <KeyLoLogo />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label="Main navigation">
-          {!isLandlord && navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`transition-all py-2 ${
-                isActive(item.path)
-                  ? 'text-primary font-bold border-b-2 border-primary'
-                  : 'font-label-caps text-label-caps text-on-surface-variant hover:text-primary'
-              }`}
-              aria-current={isActive(item.path) ? 'page' : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {!isAdmin && (
+          <nav className="hidden lg:flex items-center gap-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label="Main navigation">
+            {!isLandlord && navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`transition-all py-2 ${
+                  isActive(item.path)
+                    ? 'text-primary font-bold border-b-2 border-primary'
+                    : 'font-label-caps text-label-caps text-on-surface-variant hover:text-primary'
+                }`}
+                aria-current={isActive(item.path) ? 'page' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Right Side Actions */}
          <div className="flex items-center gap-2 sm:gap-md min-w-0">
-          {authUser && notificationsLink}
-          <div className="w-px h-6 bg-outline-variant mx-xs hidden sm:block" aria-hidden="true"></div>
+          {!isAdmin && authUser && notificationsLink}
+          {!isAdmin && <div className="w-px h-6 bg-outline-variant mx-xs hidden sm:block" aria-hidden="true"></div>}
 
            {authUser ? (
              <>
                <div className="relative">
                  <button type="button" onClick={() => setAccountMenuOpen((open) => !open)} aria-label="Open account menu" aria-expanded={accountMenuOpen} className="flex items-center gap-sm px-sm sm:px-md py-sm border-2 border-primary bg-surface-container-lowest text-primary max-w-[min(48vw,220px)] hover:bg-acid-lime transition-colors">
                    <span className="w-7 h-7 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-on-primary text-[18px]">person</span></span>
-                   <span className="hidden sm:block font-label-caps text-label-caps truncate">{authUser.name}</span>
+                   <span className="hidden sm:block font-label-caps text-label-caps truncate">{isAdmin ? 'admin' : authUser.name}</span>
                    <span className="material-symbols-outlined text-[18px]">{accountMenuOpen ? 'expand_less' : 'expand_more'}</span>
                  </button>
                  {accountMenuOpen && <div className="absolute right-0 top-full mt-2 z-[60] w-72 max-w-[calc(100vw-2rem)] bg-surface border-2 border-primary shadow-[6px_6px_0px_0px_#000000] p-md">
@@ -160,7 +163,7 @@ export default function Header() {
                  </div>}
                </div>
              </>
-          ) : (
+           ) : isAdmin ? null : (
             <>
               <Link to="/login" className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-hard transition-all hidden sm:inline-flex">
                 Log In
@@ -172,19 +175,21 @@ export default function Header() {
           )}
 
           {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-xs text-on-surface-variant hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileMenuOpen}
-          >
-            <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
-          </button>
+          {!isAdmin && (
+            <button
+              className="lg:hidden p-xs text-on-surface-variant hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+            >
+              <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
+            </button>
+          )}
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
+      {!isAdmin && mobileMenuOpen && (
         <div className="lg:hidden bg-surface border-t-2 border-primary px-margin-mobile py-md">
           <nav className="flex flex-col gap-sm" aria-label="Mobile navigation">
             {headerNav.map((item) => (
