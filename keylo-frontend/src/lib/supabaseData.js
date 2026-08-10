@@ -198,9 +198,10 @@ export async function getDashboardData() {
     client.from('messages').select('*').or(`sender_id.eq.${userData.user.id},recipient_id.eq.${userData.user.id}`).order('created_at', { ascending: false }),
     client.from('rentals').select('*').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
   ]);
-  const failed = [bookings, saved, messages, rentals].find((result) => result.error);
+  const rentalResult = rentals.error?.code === '42P01' ? { data: [], error: null } : rentals;
+  const failed = [bookings, saved, messages, rentalResult].find((result) => result.error);
   if (failed) throw failed.error;
-  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [], rentals: rentals.data || [] };
+  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [], rentals: rentalResult.data || [] };
 }
 
 // Send a real message row. The recipient is the landlord of one of the
@@ -435,6 +436,7 @@ export async function getPropertyReviews(propertyId) {
     .select('id, property_id, student_id, rating, comment, created_at, updated_at, profiles!reviews_student_id_fkey(full_name)')
     .eq('property_id', property.id)
     .order('created_at', { ascending: false });
+  if (error?.code === '42P01') return [];
   if (error) throw error;
   return data || [];
 }
@@ -442,6 +444,7 @@ export async function getPropertyReviews(propertyId) {
 export async function getReviewStats() {
   const client = requireSupabase();
   const { data, error } = await client.from('reviews').select('property_id, rating');
+  if (error?.code === '42P01') return {};
   if (error) throw error;
   return (data || []).reduce((stats, review) => {
     const current = stats[review.property_id] || { count: 0, total: 0 };
