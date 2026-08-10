@@ -18,6 +18,7 @@ const DigitalHandoverPage = lazy(() => import('./pages/DigitalHandoverPage'));
 const OwnerPortalPage = lazy(() => import('./pages/OwnerPortalPage'));
 const MaintenancePage = lazy(() => import('./pages/MaintenancePage'));
 const AdminDisputeCenterPage = lazy(() => import('./pages/AdminDisputeCenterPage'));
+const AdminOverviewPage = lazy(() => import('./pages/AdminOverviewPage'));
 const AdminDisputesPage = lazy(() => import('./pages/AdminDisputesPage'));
 const DepositDisputesPage = lazy(() => import('./pages/DepositDisputesPage'));
 const LandlordDisputesPage = lazy(() => import('./pages/LandlordDisputesPage'));
@@ -128,7 +129,7 @@ const router = createBrowserRouter([
     element: <RouteGuard role="admin"><AdminLayout /></RouteGuard>,
     errorElement: ErrorBoundary,
     children: [
-      { index: true, element: <AdminDisputeCenterPage /> },
+      { index: true, element: <AdminOverviewPage /> },
       { path: 'disputes', element: <AdminDisputesPage /> },
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'properties', element: <AdminDisputeCenterPage /> },

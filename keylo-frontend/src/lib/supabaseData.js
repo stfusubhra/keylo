@@ -427,6 +427,16 @@ export async function getAdminAnalytics() {
   };
 }
 
+export async function getAdminOverview() {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('get_admin_overview');
+  if (error) throw error;
+  return data || {
+    users: [], properties: [], bookings: [], rentals: [], payments: [],
+    deposits: [], disputes: [], reviews: [],
+  };
+}
+
 export async function getPropertyReviews(propertyId) {
   const client = requireSupabase();
   const property = await getPropertyById(propertyId);
