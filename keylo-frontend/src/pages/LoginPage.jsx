@@ -82,7 +82,8 @@ export default function LoginPage() {
     }
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', authData.user.id).maybeSingle();
     const roleHome = profile?.role === 'landlord' ? '/owner' : profile?.role === 'admin' ? '/admin' : '/dashboard';
-    navigate(location.state?.from || roleHome, { replace: true });
+    const workspaceRoles = profile?.role === 'landlord' || profile?.role === 'admin';
+    navigate(workspaceRoles ? roleHome : location.state?.from || roleHome, { replace: true });
   };
 
   return (

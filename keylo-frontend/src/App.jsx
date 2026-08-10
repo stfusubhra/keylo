@@ -49,7 +49,7 @@ const ErrorBoundary = (
   </div>
 );
 
-function RouteGuard({ role, children }) {
+function useAuthRole() {
   const [state, setState] = useState({ loading: isSupabaseConfigured, user: null, role: null });
 
   useEffect(() => {
@@ -69,11 +69,29 @@ function RouteGuard({ role, children }) {
     const { data: listener } = supabase.auth.onAuthStateChange(() => { loadUser(); });
     return () => { active = false; listener.subscription.unsubscribe(); };
   }, []);
+  return state;
+}
 
+function LoadingSession() {
+  return <div className="min-h-screen flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Checking your session...</div>;
+}
+
+function RouteGuard({ role, children }) {
+  const state = useAuthRole();
   if (!isSupabaseConfigured) return children;
-  if (state.loading) return <div className="min-h-screen flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Checking your session...</div>;
+  if (state.loading) return <LoadingSession />;
   if (!state.user) return <Navigate to="/login" replace />;
   if (role && state.role !== role) return <Navigate to={state.role === 'landlord' ? '/owner' : '/dashboard'} replace />;
+  return children;
+}
+
+// Keeps signed-in owners inside their workspace: marketing/student pages and
+// auth pages redirect to /owner so owners cannot browse the site like students.
+function PublicRouteGuard({ children }) {
+  const state = useAuthRole();
+  if (!isSupabaseConfigured) return children;
+  if (state.loading) return <LoadingSession />;
+  if (state.user && state.role === 'landlord') return <Navigate to="/owner" replace />;
   return children;
 }
 
@@ -83,18 +101,18 @@ const router = createBrowserRouter([
     element: <PublicLayout />,
     errorElement: ErrorBoundary,
     children: [
-      { index: true, element: <LandingPage /> },
-      { path: 'find-a-stay', element: <FindStayPage /> },
-      { path: 'property/:id', element: <PropertyDetailsPage /> },
-      { path: 'secure-your-stay/:id', element: <SecureYourStayPage /> },
-      { path: 'rentals', element: <RentEssentialsPage /> },
-      { path: 'rentals/rent/:id', element: <RentItemPage /> },
-      { path: 'keylo-vault', element: <KeyloVaultPage /> },
-      { path: 'ai-room-inspection', element: <AIRoomInspectionPage /> },
-      { path: 'digital-handover', element: <DigitalHandoverPage /> },
-      { path: 'maintenance', element: <MaintenancePage /> },
-      { path: 'how-it-works', element: <HowItWorksPage /> },
-      { path: 'for-owners', element: <ForOwnersPage /> },
+      { index: true, element: <PublicRouteGuard><LandingPage /></PublicRouteGuard> },
+      { path: 'find-a-stay', element: <PublicRouteGuard><FindStayPage /></PublicRouteGuard> },
+      { path: 'property/:id', element: <PublicRouteGuard><PropertyDetailsPage /></PublicRouteGuard> },
+      { path: 'secure-your-stay/:id', element: <PublicRouteGuard><SecureYourStayPage /></PublicRouteGuard> },
+      { path: 'rentals', element: <PublicRouteGuard><RentEssentialsPage /></PublicRouteGuard> },
+      { path: 'rentals/rent/:id', element: <PublicRouteGuard><RentItemPage /></PublicRouteGuard> },
+      { path: 'keylo-vault', element: <PublicRouteGuard><KeyloVaultPage /></PublicRouteGuard> },
+      { path: 'ai-room-inspection', element: <PublicRouteGuard><AIRoomInspectionPage /></PublicRouteGuard> },
+      { path: 'digital-handover', element: <PublicRouteGuard><DigitalHandoverPage /></PublicRouteGuard> },
+      { path: 'maintenance', element: <PublicRouteGuard><MaintenancePage /></PublicRouteGuard> },
+      { path: 'how-it-works', element: <PublicRouteGuard><HowItWorksPage /></PublicRouteGuard> },
+      { path: 'for-owners', element: <PublicRouteGuard><ForOwnersPage /></PublicRouteGuard> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: 'support', element: <SupportPage /> },
@@ -140,12 +158,12 @@ const router = createBrowserRouter([
   },
   {
     path: '/login',
-    element: <LoginPage />,
+    element: <PublicRouteGuard><LoginPage /></PublicRouteGuard>,
     errorElement: ErrorBoundary,
   },
   {
     path: '/signup',
-    element: <SignupPage />,
+    element: <PublicRouteGuard><SignupPage /></PublicRouteGuard>,
     errorElement: ErrorBoundary,
   },
   {

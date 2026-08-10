@@ -11,6 +11,16 @@ const navItems = [
   { path: '/for-owners', label: 'For Owners', icon: 'business' },
 ];
 
+const ownerNavItems = [
+  { path: '/owner', label: 'Overview', icon: 'grid_view' },
+  { path: '/owner/properties', label: 'Properties', icon: 'apartment' },
+  { path: '/owner/tenants', label: 'Tenants', icon: 'group' },
+  { path: '/owner/rentals', label: 'Rentals', icon: 'receipt_long' },
+  { path: '/owner/messages', label: 'Messages', icon: 'chat_bubble' },
+  { path: '/owner/deposits', label: 'Deposits', icon: 'account_balance_wallet' },
+  { path: '/owner/claims', label: 'Claims', icon: 'gavel' },
+];
+
 function KeyLoLogo({ className = '', textClass = 'text-primary' }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
@@ -78,9 +88,12 @@ export default function Header() {
   };
 
   const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
+    if (path === '/' || path === '/owner') return location.pathname === path;
     return location.pathname.startsWith(path);
   };
+
+  const isLandlord = authUser?.role === 'landlord';
+  const headerNav = isLandlord ? ownerNavItems : navItems;
 
   const notificationsLink = (
     <Link
@@ -102,13 +115,13 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
       <div className="relative h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center" aria-label="KeyLo Home">
+        <Link to={isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'}>
           <KeyLoLogo />
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2" aria-label="Main navigation">
-          {navItems.map((item) => (
+          {!isLandlord && navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
@@ -173,11 +186,11 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="lg:hidden bg-surface border-t-2 border-primary px-margin-mobile py-md">
           <nav className="flex flex-col gap-sm" aria-label="Mobile navigation">
-            {navItems.map((item) => (
+            {headerNav.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
+                className={`flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
                   isActive(item.path)
                     ? 'bg-primary text-on-primary'
                     : 'text-on-surface'
@@ -185,6 +198,7 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
                 aria-current={isActive(item.path) ? 'page' : undefined}
               >
+                <span className="material-symbols-outlined">{item.icon}</span>
                 {item.label}
               </Link>
             ))}
