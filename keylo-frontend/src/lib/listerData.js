@@ -1,43 +1,13 @@
-// ============================================================================
-// KeyLo Lister data layer.
-//
-// Frontend-first store backed by localStorage so the full lister flow works
-// today. Every function mirrors the async style of src/lib/supabaseData.js so
-// the layer can later be swapped for Supabase tables (lister_profiles,
-// lister_items, lister_requests, lister_earnings) without touching the UI.
-//
-// Storage keys are namespaced keylo_lister_* and never contain secrets.
-// ============================================================================
-
-const USERS_KEY = 'keylo_lister_users';
-const SESSION_KEY = 'keylo_lister_session';
-const ITEMS_KEY = 'keylo_lister_items';
-const REQUESTS_KEY = 'keylo_lister_requests';
-const LEDGER_KEY = 'keylo_lister_earnings';
-const SETTINGS_KEY = 'keylo_lister_settings';
-
-const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms));
+import { supabase } from './supabase';
 
 export const listerCategories = [
-  { id: 'electronics', label: 'Electronics' },
-  { id: 'cameras', label: 'Cameras' },
-  { id: 'gaming', label: 'Gaming' },
-  { id: 'laptops', label: 'Laptops' },
-  { id: 'phones', label: 'Phones' },
-  { id: 'gadgets', label: 'Gadgets' },
-  { id: 'bikes', label: 'Bikes' },
-  { id: 'sports', label: 'Sports Equipment' },
-  { id: 'furniture', label: 'Furniture' },
-  { id: 'events', label: 'Event Equipment' },
-  { id: 'other', label: 'Other' },
+  { id: 'electronics', label: 'Electronics' }, { id: 'cameras', label: 'Cameras' }, { id: 'gaming', label: 'Gaming' },
+  { id: 'laptops', label: 'Laptops' }, { id: 'phones', label: 'Phones' }, { id: 'gadgets', label: 'Gadgets' },
+  { id: 'bikes', label: 'Bikes' }, { id: 'sports', label: 'Sports Equipment' }, { id: 'furniture', label: 'Furniture' },
+  { id: 'events', label: 'Event Equipment' }, { id: 'other', label: 'Other' },
 ];
-
-export const listerCategoryLabel = (categoryId) =>
-  listerCategories.find((c) => c.id === categoryId)?.label || 'Other';
-
+export const listerCategoryLabel = (id) => listerCategories.find((category) => category.id === id)?.label || 'Other';
 export const itemConditions = ['New', 'Like New', 'Good', 'Fair'];
-
-// Category artwork used as photo fallbacks so every listing card looks rich.
 export const listerCategoryImages = {
   electronics: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1000&q=85',
   cameras: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85',
@@ -52,447 +22,46 @@ export const listerCategoryImages = {
   other: 'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1000&q=85',
 };
 
-// ─────────────────────────── Storage helpers ───────────────────────────
+const requireClient = () => {
+  if (!supabase) throw new Error('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+  return supabase;
+};
+const user = async () => {
+  const { data, error } = await requireClient().auth.getUser();
+  if (error) throw error;
+  if (!data.user) throw new Error('You are not signed in.');
+  return data.user;
+};
+const mapProfile = (row, authUser) => row && ({ id: row.id, name: row.display_name, email: authUser?.email || '', phone: row.phone || '', photo: row.avatar_url || '' });
+const mapItem = (row) => ({ ...row, listerId: row.lister_id, pricePerDay: Number(row.price_per_day), pricePerWeek: Number(row.price_per_week), timesRented: row.times_rented, createdAt: row.created_at, updatedAt: row.updated_at });
+const mapRequest = (row) => ({ ...row, listerId: row.lister_id, itemId: row.item_id, renterName: row.renter_name, renterEmail: row.renter_email, startDate: row.start_date, endDate: row.end_date, createdAt: row.created_at, respondedAt: row.responded_at });
+const mapSetting = (row) => ({ publicProfile: row?.public_profile ?? true, emailAlerts: row?.email_alerts ?? true, smsAlerts: row?.sms_alerts ?? false, payoutMode: row?.payout_mode || 'upi', payoutDetail: row?.payout_detail || '' });
 
-function read(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function write(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-function uid(prefix = 'id') {
-  return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
-}
-
-const inr = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
-
-// ─────────────────────────── Photo helper ───────────────────────────
-
-// Reads an image file, downscales it to a compact JPEG data URL so photos
-// stay inside localStorage limits. Swap with Supabase Storage later.
 export function fileToDataUrl(file, maxDim = 800, quality = 0.72) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.max(1, Math.round(img.width * scale));
-        canvas.height = Math.max(1, Math.round(img.height * scale));
-        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = () => reject(new Error('Could not read that image. Try another file.'));
-      img.src = reader.result;
-    };
-    reader.onerror = () => reject(new Error('Could not read that file.'));
-    reader.readAsDataURL(file);
-  });
+  return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => { const img = new Image(); img.onload = () => { const scale = Math.min(1, maxDim / Math.max(img.width, img.height)); const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(img.width * scale)); canvas.height = Math.max(1, Math.round(img.height * scale)); canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', quality)); }; img.onerror = () => reject(new Error('Could not read that image. Try another file.')); img.src = reader.result; }; reader.onerror = () => reject(new Error('Could not read that file.')); reader.readAsDataURL(file); });
 }
 
-// ─────────────────────────── Auth ───────────────────────────
+export async function getListerSession() { const { data } = await requireClient().auth.getSession(); return data.session?.user || null; }
+export async function getListerProfile() { const authUser = await user(); const { data, error } = await requireClient().from('lister_profiles').select('*').eq('id', authUser.id).maybeSingle(); if (error) throw error; return mapProfile(data, authUser); }
+export async function listerSignup({ name, email, phone, password, photo }) { const client = requireClient(); const { data, error } = await client.auth.signUp({ email: email.trim().toLowerCase(), password, options: { data: { role: 'lister', full_name: name.trim(), phone: String(phone || '').trim(), avatar_url: photo || null } } }); if (error) throw error; if (!data.session) throw new Error('Account created. Check your email to confirm your account, then sign in.'); return mapProfile({ id: data.user.id, display_name: name, phone, avatar_url: photo }, data.user); }
+export async function listerLogin({ email, password }) { const { error } = await requireClient().auth.signInWithPassword({ email: email.trim().toLowerCase(), password }); if (error) throw error; return getListerProfile(); }
+export async function listerLogout() { const { error } = await requireClient().auth.signOut(); if (error) throw error; }
+export async function updateListerProfile({ name, phone, photo }) { const authUser = await user(); const { data, error } = await requireClient().from('lister_profiles').update({ display_name: String(name).trim(), phone: String(phone || '').trim(), avatar_url: photo || null, updated_at: new Date().toISOString() }).eq('id', authUser.id).select().single(); if (error) throw error; await requireClient().from('profiles').update({ full_name: String(name).trim(), phone: String(phone || '').trim() }).eq('id', authUser.id); return mapProfile(data, authUser); }
+export async function getListerSettings() { const authUser = await user(); const { data, error } = await requireClient().from('lister_settings').select('*').eq('lister_id', authUser.id).maybeSingle(); if (error) throw error; return mapSetting(data); }
+export async function updateListerSettings(patch) { const authUser = await user(); const values = { lister_id: authUser.id, public_profile: patch.publicProfile, email_alerts: patch.emailAlerts, sms_alerts: patch.smsAlerts, payout_mode: patch.payoutMode, payout_detail: patch.payoutDetail, updated_at: new Date().toISOString() }; Object.keys(values).forEach((key) => values[key] === undefined && delete values[key]); const { data, error } = await requireClient().from('lister_settings').upsert(values).select().single(); if (error) throw error; return mapSetting(data); }
 
-export function getListerSession() {
-  return read(SESSION_KEY, null);
-}
+export async function getListerItems(listerId) { const { data, error } = await requireClient().from('lister_items').select('*').eq('lister_id', listerId).order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapItem); }
+export async function getListerItemById(itemId) { const { data, error } = await requireClient().from('lister_items').select('*').eq('id', itemId).maybeSingle(); if (error) throw error; return data ? mapItem(data) : null; }
+const itemPayload = (data, listerId) => ({ lister_id: listerId, name: data.name.trim(), category: data.category, description: data.description.trim(), photos: data.photos || [], price_per_day: Number(data.pricePerDay) || 0, price_per_week: Number(data.pricePerWeek) || 0, deposit: Number(data.deposit) || 0, condition: data.condition, location: data.location.trim(), availability: data.availability === 'unavailable' ? 'unavailable' : 'available', status: data.status || 'available', rules: data.rules?.trim() || '', fulfilment: data.fulfilment?.trim() || '', updated_at: new Date().toISOString() });
+export async function createListerItem(lister, data) { const { data: row, error } = await requireClient().from('lister_items').insert(itemPayload(data, lister.id)).select().single(); if (error) throw error; return mapItem(row); }
+export async function updateListerItem(itemId, lister, data) { const { data: row, error } = await requireClient().from('lister_items').update(itemPayload(data, lister.id)).eq('id', itemId).eq('lister_id', lister.id).select().single(); if (error) throw error; return mapItem(row); }
+export async function deleteListerItem(itemId, lister) { const { error } = await requireClient().from('lister_items').delete().eq('id', itemId).eq('lister_id', lister.id); if (error) throw error; }
+export async function getPublishedListerItems() { if (!supabase) return []; const { data, error } = await supabase.from('lister_items').select('*').eq('availability', 'available').order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapItem); }
 
-export function getListerProfile() {
-  const session = getListerSession();
-  if (!session) return null;
-  const users = read(USERS_KEY, []);
-  return users.find((u) => u.id === session.userId) || null;
-}
-
-export async function listerSignup({ name, email, phone, password, photo }) {
-  await delay();
-  const users = read(USERS_KEY, []);
-  const existing = users.find((u) => u.email.toLowerCase() === String(email || '').toLowerCase());
-  if (existing) throw new Error('An account with this email already exists. Try signing in.');
-  const user = {
-    id: uid('lister'),
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    phone: String(phone || '').trim(),
-    password,
-    photo: photo || null,
-    createdAt: new Date().toISOString(),
-  };
-  users.push(user);
-  write(USERS_KEY, users);
-  write(SESSION_KEY, { userId: user.id, createdAt: new Date().toISOString() });
-  seedDemoData(user.id);
-  return user;
-}
-
-export async function listerLogin({ email, password }) {
-  await delay();
-  const users = read(USERS_KEY, []);
-  const user = users.find((u) => u.email.toLowerCase() === String(email || '').toLowerCase());
-  if (!user || user.password !== password) throw new Error('Invalid email or password.');
-  write(SESSION_KEY, { userId: user.id, createdAt: new Date().toISOString() });
-  return user;
-}
-
-export async function listerLogout() {
-  await delay(120);
-  localStorage.removeItem(SESSION_KEY);
-}
-
-export async function updateListerProfile({ name, phone, photo }) {
-  await delay();
-  const session = getListerSession();
-  if (!session) throw new Error('You are not signed in.');
-  const users = read(USERS_KEY, []);
-  const idx = users.findIndex((u) => u.id === session.userId);
-  if (idx === -1) throw new Error('Account not found.');
-  if (name !== undefined) users[idx].name = String(name).trim();
-  if (phone !== undefined) users[idx].phone = String(phone).trim();
-  if (photo !== undefined) users[idx].photo = photo;
-  write(USERS_KEY, users);
-  return users[idx];
-}
-
-export function getListerSettings() {
-  const session = getListerSession();
-  if (!session) return null;
-  const all = read(SETTINGS_KEY, {});
-  return all[session.userId] || { publicProfile: true, emailAlerts: true, smsAlerts: false, payoutMode: 'upi', payoutDetail: '' };
-}
-
-export async function updateListerSettings(patch) {
-  await delay(120);
-  const session = getListerSession();
-  if (!session) throw new Error('You are not signed in.');
-  const all = read(SETTINGS_KEY, {});
-  all[session.userId] = { ...getListerSettings(), ...patch };
-  write(SETTINGS_KEY, all);
-  return all[session.userId];
-}
-
-// ─────────────────────────── Items ───────────────────────────
-
-export function getListerItems(listerId) {
-  return read(ITEMS_KEY, []).filter((i) => i.listerId === listerId);
-}
-
-export function getListerItemById(itemId) {
-  return read(ITEMS_KEY, []).find((i) => i.id === itemId) || null;
-}
-
-export async function createListerItem(lister, data) {
-  await delay();
-  const items = read(ITEMS_KEY, []);
-  const item = {
-    id: uid('item'),
-    listerId: lister.id,
-    name: data.name.trim(),
-    category: data.category,
-    description: data.description.trim(),
-    photos: data.photos || [],
-    pricePerDay: Number(data.pricePerDay) || 0,
-    pricePerWeek: Number(data.pricePerWeek) || 0,
-    deposit: Number(data.deposit) || 0,
-    condition: data.condition,
-    location: data.location.trim(),
-    availability: data.availability === 'unavailable' ? 'unavailable' : 'available',
-    rules: data.rules.trim(),
-    fulfilment: data.fulfilment.trim(),
-    timesRented: 0,
-    status: 'available',
-    createdAt: new Date().toISOString(),
-  };
-  items.unshift(item);
-  write(ITEMS_KEY, items);
-  return item;
-}
-
-export async function updateListerItem(itemId, lister, data) {
-  await delay();
-  const items = read(ITEMS_KEY, []);
-  const idx = items.findIndex((i) => i.id === itemId && i.listerId === lister.id);
-  if (idx === -1) throw new Error('Listing not found.');
-  const current = items[idx];
-  items[idx] = {
-    ...current,
-    name: data.name.trim(),
-    category: data.category,
-    description: data.description.trim(),
-    photos: data.photos || current.photos,
-    pricePerDay: Number(data.pricePerDay) || 0,
-    pricePerWeek: Number(data.pricePerWeek) || 0,
-    deposit: Number(data.deposit) || 0,
-    condition: data.condition,
-    location: data.location.trim(),
-    availability: data.availability === 'unavailable' ? 'unavailable' : 'available',
-    rules: data.rules.trim(),
-    fulfilment: data.fulfilment.trim(),
-  };
-  write(ITEMS_KEY, items);
-  return items[idx];
-}
-
-export async function deleteListerItem(itemId, lister) {
-  await delay();
-  write(ITEMS_KEY, read(ITEMS_KEY, []).filter((i) => !(i.id === itemId && i.listerId === lister.id)));
-}
-
-// Items that are live on the public marketplace (available to rent).
-export function getPublishedListerItems() {
-  return read(ITEMS_KEY, []).filter((i) => i.availability === 'available');
-}
-
-// ─────────────────────────── Rental requests ───────────────────────────
-
-export function getListerRequests(listerId) {
-  return read(REQUESTS_KEY, [])
-    .filter((r) => r.listerId === listerId)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-}
-
-export function getListerRequestById(requestId) {
-  return read(REQUESTS_KEY, []).find((r) => r.id === requestId) || null;
-}
-
-export async function createRentalRequest({ itemId, renterName, renterEmail, startDate, endDate, message = '' }) {
-  await delay();
-  const item = getListerItemById(itemId);
-  if (!item) throw new Error('This item is no longer listed.');
-  const days = Math.max(1, Math.round((new Date(endDate) - new Date(startDate)) / 86400000) + 1);
-  const amount = Math.round(item.pricePerDay * days);
-  const renter = String(renterName || '').trim() || 'Student renter';
-  const renterMail = String(renterEmail || '').trim() || 'renter@keylo.in';
-  const requests = read(REQUESTS_KEY, []);
-  const request = {
-    id: uid('req'),
-    listerId: item.listerId,
-    itemId: item.id,
-    itemName: item.name,
-    renterName: renter,
-    renterEmail: renterMail,
-    startDate,
-    endDate,
-    days,
-    amount,
-    status: 'pending',
-    message: message.trim(),
-    createdAt: new Date().toISOString(),
-  };
-  requests.push(request);
-  write(REQUESTS_KEY, requests);
-  return request;
-}
-
-export async function respondToRentalRequest(requestId, decision) {
-  await delay();
-  const requests = read(REQUESTS_KEY, []);
-  const idx = requests.findIndex((r) => r.id === requestId);
-  if (idx === -1) throw new Error('Request not found.');
-  if (requests[idx].status !== 'pending') throw new Error('This request was already handled.');
-  requests[idx].status = decision; // 'accepted' | 'declined'
-  requests[idx].respondedAt = new Date().toISOString();
-  write(REQUESTS_KEY, requests);
-
-  if (decision === 'accepted') {
-    // Simulated payout + availability bookkeeping. Swap for a real transaction later.
-    const items = read(ITEMS_KEY, []);
-    const itemIdx = items.findIndex((i) => i.id === requests[idx].itemId);
-    if (itemIdx !== -1) {
-      items[itemIdx].timesRented += 1;
-      items[itemIdx].status = 'rented';
-      items[itemIdx].availability = 'unavailable';
-      write(ITEMS_KEY, items);
-    }
-    const ledger = read(LEDGER_KEY, []);
-    ledger.unshift({
-      id: uid('earn'),
-      listerId: requests[idx].listerId,
-      itemId: requests[idx].itemId,
-      itemName: requests[idx].itemName,
-      amount: requests[idx].amount,
-      label: `Rental payout · ${requests[idx].renterName}`,
-      date: new Date().toISOString(),
-    });
-    write(LEDGER_KEY, ledger);
-  }
-  return requests[idx];
-}
-
-// ─────────────────────────── Earnings ───────────────────────────
-
-export function getListerEarnings(listerId) {
-  const ledger = read(LEDGER_KEY, []).filter((e) => e.listerId === listerId);
-  const items = getListerItems(listerId);
-  const byItem = items.map((item) => {
-    const earned = ledger.filter((e) => e.itemId === item.id).reduce((sum, e) => sum + e.amount, 0);
-    return { item, earned, rentals: item.timesRented };
-  });
-  return {
-    total: ledger.reduce((sum, e) => sum + e.amount, 0),
-    ledger,
-    byItem: byItem.filter((row) => row.earned > 0 || row.rentals > 0),
-  };
-}
-
-// ─────────────────────────── Demo seed ───────────────────────────
-
-function seedDemoData(listerId) {
-  const items = read(ITEMS_KEY, []);
-  if (items.some((i) => i.listerId === listerId)) return;
-
-  const mkItem = (overrides) => ({
-    id: uid('item'),
-    listerId,
-    name: '',
-    category: 'other',
-    description: '',
-    photos: [],
-    pricePerDay: 0,
-    pricePerWeek: 0,
-    deposit: 0,
-    condition: 'Good',
-    location: 'Kolkata',
-    availability: 'available',
-    rules: '',
-    fulfilment: 'Pickup preferred',
-    timesRented: 0,
-    status: 'available',
-    createdAt: new Date().toISOString(),
-    ...overrides,
-  });
-
-  const camera = mkItem({
-    name: 'Sony Alpha Camera Kit',
-    category: 'cameras',
-    description: 'Mirrorless kit with two lenses, spare battery and a carry case. Great for vlogs, shoots and events.',
-    photos: [listerCategoryImages.cameras],
-    pricePerDay: 550,
-    pricePerWeek: 3000,
-    deposit: 3000,
-    condition: 'Like New',
-    location: 'Jadavpur, Kolkata',
-    fulfilment: 'Pickup from Jadavpur or paid delivery within Kolkata (₹99).',
-    timesRented: 1,
-  });
-  const switchItem = mkItem({
-    name: 'Nintendo Switch + Games',
-    category: 'gaming',
-    description: 'OLED model with two joy-con sets and Mario Kart / Smash cartridges. Perfect for hostel weekends.',
-    photos: [listerCategoryImages.gaming],
-    pricePerDay: 400,
-    pricePerWeek: 2200,
-    deposit: 2500,
-    condition: 'Good',
-    location: 'Salt Lake, Kolkata',
-    fulfilment: 'Pickup from Salt Lake.',
-  });
-
-  items.push(camera, switchItem);
-  write(ITEMS_KEY, items);
-
-  const requests = read(REQUESTS_KEY, []);
-  const now = Date.now();
-  const iso = (offsetDays) => new Date(now + offsetDays * 86400000).toISOString().slice(0, 10);
-
-  requests.push(
-    {
-      id: uid('req'),
-      listerId,
-      itemId: camera.id,
-      itemName: camera.name,
-      renterName: 'Riya Sen',
-      renterEmail: 'riya.sen@demo.keylo.in',
-      startDate: iso(3),
-      endDate: iso(6),
-      days: 4,
-      amount: 2200,
-      status: 'pending',
-      message: 'Hi! Need it for a college fest shoot from the 14th. Happy to pick it up.',
-      createdAt: new Date(now - 2 * 86400000).toISOString(),
-    },
-    {
-      id: uid('req'),
-      listerId,
-      itemId: switchItem.id,
-      itemName: switchItem.name,
-      renterName: 'Arjun Mehta',
-      renterEmail: 'arjun.mehta@demo.keylo.in',
-      startDate: iso(9),
-      endDate: iso(15),
-      days: 7,
-      amount: 2800,
-      status: 'pending',
-      message: 'Need it for a week while my friends visit. Can pick up on Friday evening.',
-      createdAt: new Date(now - 1 * 86400000).toISOString(),
-    },
-    {
-      id: uid('req'),
-      listerId,
-      itemId: camera.id,
-      itemName: camera.name,
-      renterName: 'Sneha Roy',
-      renterEmail: 'sneha.roy@demo.keylo.in',
-      startDate: iso(-12),
-      endDate: iso(-10),
-      days: 3,
-      amount: 1650,
-      status: 'accepted',
-      message: 'For a documentary assignment. Thanks!',
-      createdAt: new Date(now - 15 * 86400000).toISOString(),
-    }
-  );
-  write(REQUESTS_KEY, requests);
-
-  const ledger = read(LEDGER_KEY, []);
-  ledger.unshift({
-    id: uid('earn'),
-    listerId,
-    itemId: camera.id,
-    itemName: camera.name,
-    amount: 1650,
-    label: 'Rental payout · Sneha Roy',
-    date: new Date(now - 9 * 86400000).toISOString(),
-  });
-  write(LEDGER_KEY, ledger);
-}
-
-export const listerMoney = inr;
-
-// ─────────────────────────── Password & account ───────────────────────────
-
-export async function changeListerPassword({ current, next }) {
-  await delay();
-  const session = getListerSession();
-  if (!session) throw new Error('You are not signed in.');
-  const users = read(USERS_KEY, []);
-  const idx = users.findIndex((u) => u.id === session.userId);
-  if (idx === -1) throw new Error('Account not found.');
-  if (users[idx].password !== current) throw new Error('Current password is incorrect.');
-  if (!next || String(next).length < 8) throw new Error('New password must be at least 8 characters.');
-  users[idx].password = String(next);
-  write(USERS_KEY, users);
-  return true;
-}
-
-export async function deleteListerAccount() {
-  await delay();
-  const session = getListerSession();
-  if (!session) throw new Error('You are not signed in.');
-  const userId = session.userId;
-  write(USERS_KEY, read(USERS_KEY, []).filter((u) => u.id !== userId));
-  write(ITEMS_KEY, read(ITEMS_KEY, []).filter((i) => i.listerId !== userId));
-  write(REQUESTS_KEY, read(REQUESTS_KEY, []).filter((r) => r.listerId !== userId));
-  write(LEDGER_KEY, read(LEDGER_KEY, []).filter((e) => e.listerId !== userId));
-  const allSettings = read(SETTINGS_KEY, {});
-  delete allSettings[userId];
-  write(SETTINGS_KEY, allSettings);
-  localStorage.removeItem(SESSION_KEY);
-  return true;
-}
+export async function getListerRequests(listerId) { const { data, error } = await requireClient().from('lister_requests').select('*').eq('lister_id', listerId).order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapRequest); }
+export async function createRentalRequest({ itemId, startDate, endDate, message = '' }) { const { data, error } = await requireClient().rpc('create_lister_request', { p_item_id: itemId, p_start_date: startDate, p_end_date: endDate, p_message: message }); if (error) throw error; return mapRequest(data); }
+export async function respondToRentalRequest(requestId, decision) { const { data, error } = await requireClient().rpc('respond_to_lister_request', { p_request_id: requestId, p_decision: decision }); if (error) throw error; return mapRequest(data); }
+export async function getListerEarnings(listerId) { const client = requireClient(); const [{ data: ledger, error: ledgerError }, { data: items, error: itemError }] = await Promise.all([client.from('lister_earnings').select('*').eq('lister_id', listerId).order('created_at', { ascending: false }), client.from('lister_items').select('*').eq('lister_id', listerId)]); if (ledgerError || itemError) throw ledgerError || itemError; const mappedLedger = (ledger || []).map((entry) => ({ ...entry, itemId: entry.item_id, itemName: entry.item_name, date: entry.created_at })); const mappedItems = (items || []).map(mapItem); return { total: mappedLedger.reduce((sum, entry) => sum + Number(entry.amount), 0), ledger: mappedLedger, byItem: mappedItems.map((item) => ({ item, earned: mappedLedger.filter((entry) => entry.itemId === item.id).reduce((sum, entry) => sum + Number(entry.amount), 0), rentals: item.timesRented })).filter((row) => row.earned > 0 || row.rentals > 0) }; }
+export async function changeListerPassword({ current, next }) { if (!current || !next || next.length < 8) throw new Error('New password must be at least 8 characters.'); const authUser = await user(); const client = requireClient(); const { error: signInError } = await client.auth.signInWithPassword({ email: authUser.email, password: current }); if (signInError) throw new Error('Current password is incorrect.'); const { error } = await client.auth.updateUser({ password: next }); if (error) throw error; return true; }
+export async function deleteListerAccount() { await user(); const { error } = await requireClient().rpc('delete_lister_account'); if (error) throw error; await requireClient().auth.signOut(); return true; }
+export const listerMoney = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;

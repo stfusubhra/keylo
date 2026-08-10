@@ -87,7 +87,7 @@ function RouteGuard({ role, children }) {
   if (!isSupabaseConfigured) return children;
   if (state.loading) return <LoadingSession />;
   if (!state.user) return <Navigate to="/login" replace />;
-  if (role && state.role !== role) return <Navigate to={state.role === 'landlord' ? '/owner' : '/dashboard'} replace />;
+  if (role && state.role !== role) return <Navigate to={state.role === 'landlord' ? '/owner' : state.role === 'lister' ? '/lister' : '/dashboard'} replace />;
   return children;
 }
 
@@ -97,7 +97,8 @@ function PublicRouteGuard({ children }) {
   const state = useAuthRole();
   if (!isSupabaseConfigured) return children;
   if (state.loading) return <LoadingSession />;
-  if (state.user && state.role === 'landlord') return <Navigate to="/owner" replace />;
+    if (state.user && state.role === 'landlord') return <Navigate to="/owner" replace />;
+    if (state.user && state.role === 'lister') return <Navigate to="/lister" replace />;
   return children;
 }
 
@@ -166,7 +167,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/lister',
-    element: <ListerLayout />,
+    element: <RouteGuard role="lister"><ListerLayout /></RouteGuard>,
     errorElement: ErrorBoundary,
     children: [
       { index: true, element: <ListerDashboardPage /> },

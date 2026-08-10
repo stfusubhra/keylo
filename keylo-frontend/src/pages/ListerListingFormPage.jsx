@@ -34,8 +34,9 @@ const emptyForm = {
 export default function ListerListingFormPage() {
   const { itemId } = useParams();
   const navigate = useNavigate();
-  const [session] = useState(() => getListerSession());
-  const [profile] = useState(() => getListerProfile());
+  const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const [form, setForm] = useState(emptyForm);
   const [photos, setPhotos] = useState([]);
@@ -45,19 +46,19 @@ export default function ListerListingFormPage() {
   const [submitError, setSubmitError] = useState('');
   const [saving, setSaving] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [loaded, setLoaded] = useState(Boolean(itemId) === false);
+  const [loaded, setLoaded] = useState(false);
 
   const isEdit = Boolean(itemId);
 
   useEffect(() => {
-    if (!isEdit) return;
-    if (!session || !profile) return;
-    const item = getListerItemById(itemId);
-    if (!item || item.listerId !== profile.id) {
-      navigate('/lister/listings', { replace: true });
-      return;
-    }
-    setForm({
+    let active = true;
+    Promise.all([getListerSession(), getListerProfile()]).then(([nextSession, nextProfile]) => {
+      if (!active) return;
+      setSession(nextSession); setProfile(nextProfile);
+      if (!isEdit) { setLoaded(true); setAuthLoading(false); return; }
+      return getListerItemById(itemId).then((item) => {
+        if (!item || item.listerId !== nextProfile.id) { navigate('/lister/listings', { replace: true }); return; }
+        setForm({
       name: item.name,
       category: item.category,
       description: item.description,
@@ -69,11 +70,14 @@ export default function ListerListingFormPage() {
       availability: item.availability,
       rules: item.rules,
       fulfilment: item.fulfilment,
-    });
-    setPhotos(item.photos || []);
-    setLoaded(true);
-  }, [isEdit, itemId, session, profile, navigate]);
+        });
+        setPhotos(item.photos || []); setLoaded(true); setAuthLoading(false);
+      });
+    }).catch(() => { if (active) { setLoaded(true); setAuthLoading(false); } });
+    return () => { active = false; };
+  }, [isEdit, itemId, navigate]);
 
+  if (authLoading) return <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Checking your session...</div>;
   if (!session || !profile) {
     return <Navigate to="/lister/login" replace state={{ from: `/lister/list-an-item${itemId ? `/${itemId}` : ''}` }} />;
   }

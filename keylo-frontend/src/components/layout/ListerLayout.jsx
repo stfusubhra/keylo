@@ -21,12 +21,13 @@ export default function ListerLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profile, setProfile] = useState(getListerProfile());
+  const [profile, setProfile] = useState(null);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setProfile(getListerProfile()), 0);
-    return () => clearTimeout(t);
+    let active = true;
+    getListerProfile().then((next) => { if (active) setProfile(next); }).catch(() => {});
+    return () => { active = false; };
   }, [location.pathname]);
 
   const handleLogout = async () => {

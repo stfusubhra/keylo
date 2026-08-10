@@ -51,7 +51,7 @@ export function toMarketplaceItem(listerItem) {
 
 export async function getMarketplaceItems() {
   const catalog = rentalItems;
-  const published = getPublishedListerItems();
+  const published = await getPublishedListerItems();
   return [...catalog, ...published.map(toMarketplaceItem)];
 }
 
@@ -59,7 +59,7 @@ export async function getMarketplaceItemById(id) {
   const stringId = String(id);
   const catalog = rentalItems.find((r) => String(r.id) === stringId);
   if (catalog) return catalog;
-  const published = getPublishedListerItems();
+  const published = await getPublishedListerItems();
   const match = published.find((i) => `lister-${i.id}` === stringId);
   return match ? toMarketplaceItem(match) : null;
 }

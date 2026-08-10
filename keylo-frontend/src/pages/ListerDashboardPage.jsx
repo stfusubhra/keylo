@@ -463,7 +463,7 @@ function ProfileSection({ profile, onRefresh }) {
 }
 
 function SettingsSection() {
-  const [settings, setSettings] = useState(() => getListerSettings() || {});
+  const [settings, setSettings] = useState({ publicProfile: true, emailAlerts: true, smsAlerts: false, payoutMode: 'upi', payoutDetail: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -477,6 +477,8 @@ function SettingsSection() {
   // Danger zone
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => { getListerSettings().then(setSettings).catch((err) => setError(err.message || 'Could not load settings.')); }, []);
 
   const toggle = (key) => async (e) => {
     const value = e.target.checked;
@@ -668,8 +670,9 @@ function SettingsSection() {
 
 export default function ListerDashboardPage() {
   const location = useLocation();
-  const [session] = useState(() => getListerSession());
-  const [profile, setProfile] = useState(() => getListerProfile());
+  const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [sessionChecked, setSessionChecked] = useState(false);
   const [items, setItems] = useState([]);
   const [requests, setRequests] = useState([]);
   const [earnings, setEarnings] = useState({ total: 0, ledger: [], byItem: [] });
@@ -677,25 +680,30 @@ export default function ListerDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!session) return undefined;
     let active = true;
     (async () => {
       setLoading(true);
+      const currentSession = await getListerSession();
+      if (!currentSession) { if (active) { setLoading(false); setSessionChecked(true); } return; }
+      const currentProfile = await getListerProfile();
+      if (active) { setSession(currentSession); setProfile(currentProfile); }
       const [it, rq, er] = await Promise.all([
-        getListerItems(session.userId),
-        getListerRequests(session.userId),
-        getListerEarnings(session.userId),
+        getListerItems(currentSession.id),
+        getListerRequests(currentSession.id),
+        getListerEarnings(currentSession.id),
       ]);
       if (!active) return;
       setItems(it);
       setRequests(rq);
       setEarnings(er);
-      setProfile(getListerProfile());
-      setLoading(false);
+       setProfile(currentProfile);
+       setLoading(false);
+       setSessionChecked(true);
     })();
     return () => { active = false; };
-  }, [session, refresh]);
+  }, [refresh]);
 
+  if (!sessionChecked) return <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Checking your session...</div>;
   if (!session) return <Navigate to="/lister/login" replace state={{ from: location.pathname }} />;
 
   const section = location.pathname.replace(/^\/lister\/?/, '') || 'overview';
