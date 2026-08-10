@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-import { getPropertyById, getPropertyReviews, submitReview } from '../lib/supabaseData';
+import { getPropertyById, getPropertyReviews, submitReview, getSavedPropertyIds, toggleSavedProperty } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
 import { colleges } from '../lib/demoCatalog';
 import PropertyLocationMap from '../components/ui/PropertyLocationMap';
@@ -30,6 +30,8 @@ export default function PropertyDetailsPage() {
   const [reviewError, setReviewError] = useState('');
   const [reviewSaved, setReviewSaved] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +47,31 @@ export default function PropertyDetailsPage() {
       .finally(() => { if (active) setIsLoading(false); });
     return () => { active = false; };
   }, [id]);
+
+  // Load saved/wishlist state for this property
+  useEffect(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    getSavedPropertyIds()
+      .then((saved) => { if (active) setIsSaved(Boolean(saved[id])); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [id]);
+
+  const handleToggleSave = async () => {
+    if (!isSupabaseConfigured) return;
+    try {
+      const result = await toggleSavedProperty(id);
+      setIsSaved(result.saved);
+      setSaveError('');
+    } catch (err) {
+      if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
+        navigate('/login', { state: { from: `/property/${id}` } });
+        return;
+      }
+      setSaveError(err.message || 'Unable to update wishlist.');
+    }
+  };
 
   const loadReviews = useCallback(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -156,6 +183,7 @@ export default function PropertyDetailsPage() {
         <div className="lg:col-span-8 flex flex-col gap-xl pb-xl">
           {/* Header Info */}
           <div className="flex flex-col gap-md border-b-2 border-primary pb-lg relative">
+            {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-sm font-body-md text-error">{saveError}</div>}
             <div className="flex items-baseline gap-sm">
               <span className="px-sm py-xs bg-hot-pink text-on-primary border-2 border-primary font-label-caps text-label-caps shadow-[2px_2px_0px_0px_#000000]">
                 FAST FILLING
@@ -164,7 +192,21 @@ export default function PropertyDetailsPage() {
                 {isVerified ? 'VERIFIED' : 'VERIFICATION PENDING'}
               </span>
             </div>
-            <h1 className="font-heading text-h1-mobile md:text-h1 text-primary font-bold">{name}</h1>
+            <div className="flex items-start justify-between gap-md">
+              <h1 className="font-heading text-h1-mobile md:text-h1 text-primary font-bold">{name}</h1>
+              <button
+                type="button"
+                onClick={handleToggleSave}
+                aria-label={isSaved ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
+                aria-pressed={isSaved}
+                title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
+                className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+              >
+                <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
+              </button>
+            </div>
+            </div>
             <div className="flex flex-wrap items-center gap-md font-body-md text-body-md text-on-surface-variant">
               <div className="flex items-center gap-xs text-primary font-bold">
                 <span className="material-symbols-outlined text-[#F59E0B]">star</span>

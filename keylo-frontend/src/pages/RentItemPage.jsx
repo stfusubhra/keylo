@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { rentalItems, categoryImages } from '../lib/rentalCatalog';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-import { createRentalBooking } from '../lib/supabaseData';
+import { createRentalBooking, getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 
 const DAILY_CATEGORIES = ['scooters', 'bikes'];
 
@@ -18,6 +18,32 @@ export default function RentItemPage() {
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({});
   const [isBooking, setIsBooking] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !item) return undefined;
+    let active = true;
+    getSavedRentalIds()
+      .then((ids) => { if (active) setIsSaved(Boolean(ids[item.id])); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [item]);
+
+  const handleToggleSave = async () => {
+    if (!item) return;
+    try {
+      const result = await toggleSavedRental(item.id);
+      setIsSaved(result.saved);
+      setSaveError('');
+    } catch (err) {
+      if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
+        navigate('/login', { state: { from: `/rentals/rent/${id}` } });
+        return;
+      }
+      setSaveError(err.message || 'Unable to update wishlist.');
+    }
+  };
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -144,7 +170,21 @@ export default function RentItemPage() {
             <div className="flex flex-col gap-lg">
               <div>
                 <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">{item.categoryLabel}</p>
-                <h1 className="font-heading text-h1-mobile lg:text-h2 text-primary tracking-tight font-bold">{item.name}</h1>
+                <div className="flex items-start justify-between gap-md">
+                  <h1 className="font-heading text-h1-mobile lg:text-h2 text-primary tracking-tight font-bold">{item.name}</h1>
+                  <button
+                    type="button"
+                    onClick={handleToggleSave}
+                    aria-label={isSaved ? `Remove ${item.name} from wishlist` : `Save ${item.name} to wishlist`}
+                    aria-pressed={isSaved}
+                    title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
+                    className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+                  >
+                    <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                    <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
+                  </button>
+                </div>
+                {saveError && <p role="alert" className="mt-xs font-label-caps text-label-caps text-error">{saveError}</p>}
                 <div className="flex flex-wrap gap-xs mt-sm">
                   {item.badges.map((b) => (
                     <span key={b.label} className={`px-sm py-xs ${b.bg} ${b.textColor} font-label-caps text-[10px] uppercase border-2 border-primary`}>
