@@ -15,6 +15,7 @@ const ownerSidebarItems = [
   { path: '/owner/properties', label: 'Properties', icon: 'apartment' },
   { path: '/owner/tenants', label: 'Tenants', icon: 'group' },
   { path: '/owner/rentals', label: 'Rentals', icon: 'receipt_long' },
+  { path: '/owner/messages', label: 'Messages', icon: 'chat_bubble' },
   { path: '/owner/deposits', label: 'Deposits', icon: 'account_balance_wallet' },
   { path: '/owner/claims', label: 'Claims', icon: 'gavel' },
 ];

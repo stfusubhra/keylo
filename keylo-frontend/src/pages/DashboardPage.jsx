@@ -34,7 +34,11 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
   const messageCards = (liveData?.messages || [])
     .map((message) => {
       const fromMe = message.sender_id === liveData.user.id;
-      return [fromMe ? 'You' : 'Your landlord', message.body, fromMe ? 'SENT' : message.read_at ? 'READ' : 'NEW', formatDateTime(message.created_at), fromMe ? 'send' : 'inbox'];
+      const counterpart = fromMe
+        ? message.recipient_name || 'Your landlord'
+        : message.sender_name || 'Your landlord';
+      const detail = message.property_name ? `${message.body} · ${message.property_name}` : message.body;
+      return [fromMe ? 'You' : counterpart, detail, fromMe ? 'SENT' : message.read_at ? 'READ' : 'NEW', formatDateTime(message.created_at), fromMe ? 'send' : 'inbox'];
     });
   const rentalCards = isBookings ? (liveData?.rentals || []).map((rental) => [rental.item_name, `${rental.period === 'day' ? 'Daily' : 'Monthly'} rental · Start ${formatDate(rental.start_date)}`, rental.status.toUpperCase(), `₹${Number(rental.total).toLocaleString('en-IN')} total`, 'inventory_2']) : [];
   const cards = isBookings && (liveData?.bookings?.length || rentalCards.length)

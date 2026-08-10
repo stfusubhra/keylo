@@ -84,7 +84,7 @@ export default function Header() {
 
   const notificationsLink = (
     <Link
-      to="/dashboard/messages"
+      to={authUser?.role === 'landlord' ? '/owner/messages' : '/dashboard/messages'}
       className="relative p-xs text-on-surface-variant hover:text-primary transition-colors"
       aria-label={`Messages${unreadCount ? ` (${unreadCount} unread)` : ''}`}
       title={isSupabaseConfigured ? 'Messages' : 'Messages'}

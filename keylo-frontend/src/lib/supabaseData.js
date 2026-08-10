@@ -238,14 +238,45 @@ export async function getDashboardData() {
   const [bookings, saved, messages, rentals] = await Promise.all([
     client.from('bookings').select('*, properties(name, area, city, owner_id), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
     client.from('saved_properties').select('property_id, properties(*, profiles!properties_owner_id_fkey(owner_rating))').eq('student_id', userData.user.id),
-    // Conversations include both messages we sent and messages we received.
-    client.from('messages').select('*').or(`sender_id.eq.${userData.user.id},recipient_id.eq.${userData.user.id}`).order('created_at', { ascending: false }),
+    // Conversations include both messages we sent and messages we received,
+    // enriched with counterpart names/emails via the security-definer RPC.
+    client.rpc('get_student_messages'),
     client.from('rentals').select('*').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
   ]);
   const rentalResult = rentals.error?.code === '42P01' ? { data: [], error: null } : rentals;
-  const failed = [bookings, saved, messages, rentalResult].find((result) => result.error);
+  const messagesResult = messages.error && ['42883', '42P01'].includes(messages.error.code)
+    ? await client.from('messages').select('*').or(`sender_id.eq.${userData.user.id},recipient_id.eq.${userData.user.id}`).order('created_at', { ascending: false })
+    : messages;
+  const failed = [bookings, saved, messagesResult, rentalResult].find((result) => result.error);
   if (failed) throw failed.error;
-  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [], rentals: rentalResult.data || [] };
+  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messagesResult.data || [], rentals: rentalResult.data || [] };
+}
+
+// The signed-in user's messages (any role) with counterpart identity attached.
+export async function getStudentMessages() {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('get_student_messages');
+  if (error) throw error;
+  return data || [];
+}
+
+// A landlord's messages, scoped to bookings on their own properties.
+export async function getOwnerMessages() {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('get_owner_messages');
+  if (error) throw error;
+  return data || [];
+}
+
+// Mark all messages from a conversation partner on a booking as read.
+export async function markMessagesRead({ bookingId, fromId }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('mark_messages_read', {
+    p_booking_id: bookingId,
+    p_from: fromId,
+  });
+  if (error) throw error;
+  return data;
 }
 
 // Send a real message row. The recipient is the landlord of one of the

@@ -121,6 +121,7 @@ const router = createBrowserRouter([
       { path: 'properties', element: <OwnerPortalPage /> },
       { path: 'tenants', element: <OwnerPortalPage /> },
       { path: 'rentals', element: <OwnerPortalPage /> },
+      { path: 'messages', element: <OwnerPortalPage /> },
       { path: 'deposits', element: <OwnerPortalPage /> },
       { path: 'claims', element: <LandlordDisputesPage /> },
     ],
