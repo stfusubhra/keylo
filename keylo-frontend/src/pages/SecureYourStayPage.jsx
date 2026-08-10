@@ -253,7 +253,7 @@ export default function SecureYourStayPage() {
                   />
                   <div className="bg-surface-container border-2 border-primary p-md flex flex-col sm:flex-row sm:items-center justify-between gap-md transition-all group-has-checked:bg-acid-lime/10 group-has-checked:border-primary group-has-checked:shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-[2px] hover:shadow-[4px_4px_0px_0px_#000000]">
                     <div className="flex items-center gap-md">
-                      <div className="w-12 h-12 bg-primary text-on-primary flex items-center justify-center border-2 border-primary group-has-checked:bg-acid-lime group-has-checked:text-primary transition-colors flex-shrink-0">
+                      <div className="w-12 h-12 bg-surface-container-lowest text-primary flex items-center justify-center border-2 border-primary group-has-checked:bg-acid-lime group-has-checked:text-primary transition-colors flex-shrink-0">
                         <span className="material-symbols-outlined">shield</span>
                       </div>
                       <div>
