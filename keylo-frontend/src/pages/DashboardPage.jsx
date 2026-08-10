@@ -39,13 +39,15 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
   const rentalCards = isBookings ? (liveData?.rentals || []).map((rental) => [rental.item_name, `${rental.period === 'day' ? 'Daily' : 'Monthly'} rental · Start ${formatDate(rental.start_date)}`, rental.status.toUpperCase(), `₹${Number(rental.total).toLocaleString('en-IN')} total`, 'inventory_2']) : [];
   const cards = isBookings && (liveData?.bookings?.length || rentalCards.length)
     ? [...liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${formatDate(booking.move_in_date)}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id]), ...rentalCards]
-    : isBookings
+    : isBookings && !isSupabaseConfigured
     ? [
         ['College Street Co-Living', 'University of Calcutta · Room 304', 'ACTIVE', '₹7,800 / month', 'directions_walk'],
         ['Lake View Student PG', 'Jadavpur University · Move-in 01 Sept', 'UPCOMING', '₹9,500 / month', 'event'],
         ['Rajarhat Campus Flat', "St. Xavier's University · Completed", 'COMPLETED', '₹19,500 / month', 'history'],
       ]
-    : isMessages
+      : isBookings
+      ? []
+      : isMessages
       ? (messageCards.length
           ? messageCards
           : [['You', liveData ? 'No messages yet — send your landlord a note below.' : 'Your messages with landlords will appear here.', liveData ? 'NOW' : '—', 'chat_bubble', null, null]])
@@ -73,6 +75,7 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
           </div>
         </div>
         <div className="flex flex-col gap-md">
+          {isBookings && !cards.length && <div className="bg-surface-container-lowest border-2 border-primary p-lg font-body-md text-body-md text-on-surface-variant">No bookings yet. Browse a stay or rental to get started.</div>}
           {cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => (
             <article key={`${title}-${meta}`} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg">
               <div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0">
@@ -147,7 +150,7 @@ export default function DashboardPage() {
         iconBg: index === 0 ? 'bg-electric-purple' : 'bg-surface-container-lowest',
         iconColor: index === 0 ? 'text-white' : 'text-primary',
       }))
-    : [
+    : !isSupabaseConfigured ? [
     {
       id: 1,
       title: 'Rent Payment Successful',
@@ -175,7 +178,8 @@ export default function DashboardPage() {
       iconBg: 'bg-surface-container-lowest',
       iconColor: 'text-primary',
     },
-  ];
+  ] : [];
+  const activeBooking = liveData?.bookings?.find((booking) => !['cancelled', 'completed'].includes(booking.status));
 
   return (
     <div className="bg-surface font-body-md text-on-surface">
@@ -215,39 +219,39 @@ export default function DashboardPage() {
               <div className="flex justify-between items-start">
                 <div>
                   <h2 className="font-h3 text-h3 text-on-surface">
-                     {liveData?.bookings?.[0]?.properties?.name || 'Lake View Student PG'}
+                     {activeBooking?.properties?.name || (liveData ? 'No active booking' : 'Lake View Student PG')}
                   </h2>
                   <p className="font-body-md text-body-md text-on-surface-variant">
-                     {liveData?.bookings?.[0]?.properties?.area ? `${liveData.bookings[0].properties.area}, Kolkata` : 'Room 304, North Wing'}
+                     {activeBooking?.properties?.area ? `${activeBooking.properties.area}, Kolkata` : (liveData ? 'Browse stays to get started' : 'Room 304, North Wing')}
                   </p>
                 </div>
                 <span className="inline-block px-sm py-xs bg-electric-purple text-white font-label-caps text-label-caps border-2 border-primary">
-                  ACTIVE
+                   {activeBooking ? 'ACTIVE' : liveData ? 'NOT BOOKED' : 'ACTIVE'}
                 </span>
               </div>
               <div className="flex items-center gap-md border-t-2 border-primary pt-md mt-sm">
                 <div className="flex-1">
                   <p className="font-price-display text-price-display text-primary">
-                     {liveData?.bookings?.[0] ? 'LIVE' : '23'}
+                     {activeBooking ? 'LIVE' : liveData ? '—' : '23'}
                   </p>
                   <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">
-                     {liveData?.bookings?.[0] ? 'Booking Status' : 'Days Remaining'}
+                     {activeBooking ? 'Booking Status' : liveData ? 'No active stay' : 'Days Remaining'}
                   </p>
                 </div>
                 <div className="h-10 w-2 bg-primary"></div>
                 <div className="flex-1">
-                  <p className="font-h3 text-h3 text-primary">24 Nov</p>
+                   <p className="font-h3 text-h3 text-primary">{activeBooking?.move_out_date ? formatDate(activeBooking.move_out_date) : liveData ? '—' : '24 Nov'}</p>
                   <p className="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">
                     Checkout
                   </p>
                 </div>
               </div>
               <Link
-                to="/secure-your-stay/jadavpur-pg"
+                 to={activeBooking ? `/secure-your-stay/${activeBooking.property_id}` : '/find-a-stay'}
                 className="w-full mt-sm px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:shadow-[4px_4px_0px_0px_#000000] transition-all relative overflow-hidden group/btn"
               >
                 <span className="relative z-10 flex items-center justify-center gap-sm">
-                  EXTEND STAY{' '}
+                   {activeBooking ? 'EXTEND STAY' : liveData ? 'BROWSE STAYS' : 'EXTEND STAY'}{' '}
                   <span className="material-symbols-outlined text-[18px]">
                     arrow_forward
                   </span>
@@ -361,7 +365,8 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="flex flex-col relative">
-              <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-primary"></div>
+              {!activityLog.length && <p className="font-body-md text-body-md text-on-surface-variant">No activity yet. Your bookings and payments will appear here.</p>}
+              {activityLog.length > 0 && <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-primary"></div>}
               {activityLog.map((item) => (
                 <div
                   key={item.id}
