@@ -98,6 +98,20 @@ export default function LoginPage() {
           <p className="font-body-lg text-body-lg text-on-surface-variant">Sign in to your KeyLo account</p>
         </div>
 
+        {/* Demo credentials helper banner */}
+        <div className="mb-md p-sm bg-acid-lime border-2 border-primary text-primary font-label-caps text-xs flex justify-between items-center">
+          <div>
+            <span className="font-bold">Landlord Demo:</span> landlord.ui.demo@keylo.in
+          </div>
+          <button
+            type="button"
+            onClick={() => setFormData({ email: 'landlord.ui.demo@keylo.in', password: 'KeyLoLandlord2026!', rememberMe: true })}
+            className="px-xs py-[2px] bg-primary text-on-primary border border-primary text-[10px] uppercase hover:bg-electric-purple transition-colors"
+          >
+            Auto-fill
+          </button>
+        </div>
+
         {/* Login Form Card */}
         <div className="bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#000000] p-xl">
           <form onSubmit={handleSubmit} className="flex flex-col gap-lg" noValidate>

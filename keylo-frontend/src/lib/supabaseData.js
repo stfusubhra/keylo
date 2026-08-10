@@ -349,7 +349,11 @@ export async function completeHandover({ bookingId, checklist }) {
   return data;
 }
 
-export async function createProperty({ name, universityId, area, propertyType, monthlyRent, securityDeposit, distance, description }) {
+export async function createProperty({
+  name, universityId, area, address = '', propertyType = 'pg', monthlyRent,
+  securityDeposit, distance, description = '', latitude = null, longitude = null,
+  coverImageUrl = null, images = [], amenities = [], extraServices = [], status = 'draft'
+}) {
   const client = requireSupabase();
   const { data: userData, error: userError } = await client.auth.getUser();
   if (userError) throw userError;
@@ -363,23 +367,108 @@ export async function createProperty({ name, universityId, area, propertyType, m
   if (!Number.isFinite(deposit) || deposit < 0) throw new Error('Security deposit cannot be negative.');
   if (!Number.isFinite(distanceKm) || distanceKm < 0) throw new Error('Distance must be zero or greater.');
 
+  const latNum = latitude != null && latitude !== '' ? Number(latitude) : null;
+  const lngNum = longitude != null && longitude !== '' ? Number(longitude) : null;
+
   const { data, error } = await client.from('properties').insert({
     owner_id: userData.user.id,
     university_id: universityId,
     name,
     property_type: propertyType,
     area,
+    address,
     city: 'Kolkata',
     description,
     monthly_rent: rent,
     security_deposit: deposit,
     distance_to_university_km: distanceKm,
-    status: 'draft',
-    trust_score: 0,
-    amenities: [],
+    latitude: latNum,
+    longitude: lngNum,
+    cover_image_url: coverImageUrl || (images.length > 0 ? images[0] : null),
+    images: images || [],
+    amenities: amenities || [],
+    extra_services: extraServices || [],
+    status: status || 'draft',
+    trust_score: 50,
   }).select().single();
+
   if (error) throw error;
   return data;
+}
+
+export async function updateProperty(propertyId, updates) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in as a landlord to edit a property.');
+
+  const payload = { ...updates, updated_at: new Date().toISOString() };
+
+  if (payload.monthlyRent !== undefined) {
+    payload.monthly_rent = Number(payload.monthlyRent);
+    delete payload.monthlyRent;
+  }
+  if (payload.securityDeposit !== undefined) {
+    payload.security_deposit = Number(payload.securityDeposit);
+    delete payload.securityDeposit;
+  }
+  if (payload.distance !== undefined) {
+    payload.distance_to_university_km = Number(payload.distance);
+    delete payload.distance;
+  }
+  if (payload.universityId !== undefined) {
+    payload.university_id = payload.universityId;
+    delete payload.universityId;
+  }
+  if (payload.propertyType !== undefined) {
+    payload.property_type = payload.propertyType;
+    delete payload.propertyType;
+  }
+  if (payload.coverImageUrl !== undefined) {
+    payload.cover_image_url = payload.coverImageUrl;
+    delete payload.coverImageUrl;
+  }
+  if (payload.extraServices !== undefined) {
+    payload.extra_services = payload.extraServices;
+    delete payload.extraServices;
+  }
+  if (payload.latitude !== undefined) {
+    payload.latitude = payload.latitude != null && payload.latitude !== '' ? Number(payload.latitude) : null;
+  }
+  if (payload.longitude !== undefined) {
+    payload.longitude = payload.longitude != null && payload.longitude !== '' ? Number(payload.longitude) : null;
+  }
+
+  const { data, error } = await client
+    .from('properties')
+    .update(payload)
+    .eq('id', propertyId)
+    .eq('owner_id', userData.user.id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function togglePropertyStatus(propertyId, status) {
+  return updateProperty(propertyId, { status });
+}
+
+export async function deleteProperty(propertyId) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in as a landlord to delete a property.');
+
+  const { error } = await client
+    .from('properties')
+    .delete()
+    .eq('id', propertyId)
+    .eq('owner_id', userData.user.id);
+
+  if (error) throw error;
+  return { success: true };
 }
 
 export async function getOwnerData() {

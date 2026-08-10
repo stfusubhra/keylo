@@ -105,7 +105,7 @@ export default function PropertyDetailsPage() {
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
   const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
-  const propertyImages = [coverImage, ...FALLBACK_IMAGES.slice(1)];
+  const propertyImages = row?.images?.length ? row.images : [coverImage, ...FALLBACK_IMAGES.slice(1)];
 
   if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;
   if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
@@ -239,6 +239,29 @@ export default function PropertyDetailsPage() {
             </div>
           </section>
 
+          {/* Extra Paid Benefits & Add-On Services */}
+          {row?.extra_services?.length > 0 && (
+            <section className="flex flex-col gap-md bg-surface-container border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] rounded-xl">
+              <div>
+                <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Landlord Add-Ons</p>
+                <h2 className="font-h3 text-h3 text-primary">Extra Services & Paid Benefits</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+                {row.extra_services.map((srv, idx) => (
+                  <div key={`${srv.name}-${idx}`} className="bg-surface-container-lowest border-2 border-primary p-md flex items-center justify-between">
+                    <div>
+                      <h3 className="font-h3 text-h3 text-primary">{srv.name}</h3>
+                      <p className="font-body-md text-body-md text-on-surface-variant">Optional service provided by landlord</p>
+                    </div>
+                    <span className="font-h3 text-h3 text-electric-purple bg-acid-lime border-2 border-primary px-md py-xs shadow-[2px_2px_0px_0px_#000]">
+                      ₹{srv.price} {srv.period || '/month'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Room Options */}
           <section className="flex flex-col gap-md">
             <h2 className="font-h3 text-h3 text-primary flex items-center justify-between border-b-2 border-primary pb-sm">
@@ -310,8 +333,8 @@ export default function PropertyDetailsPage() {
             <div>
               <h3 className="font-h3 text-h3 text-primary mb-sm">Location Map</h3>
               <PropertyLocationMap
-                lat={demo?.lat}
-                lng={demo?.lng}
+                lat={row?.latitude != null && row?.latitude !== '' ? Number(row.latitude) : (demo?.lat || 22.4988)}
+                lng={row?.longitude != null && row?.longitude !== '' ? Number(row.longitude) : (demo?.lng || 88.3712)}
                 name={name}
                 area={area}
                 distance={distance}
