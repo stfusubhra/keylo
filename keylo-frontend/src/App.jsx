@@ -27,6 +27,7 @@ const RentEssentialsPage = lazy(() => import('./pages/RentEssentialsPage'));
 const RentItemPage = lazy(() => import('./pages/RentItemPage'));
 const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const ForOwnersPage = lazy(() => import('./pages/ForOwnersPage'));
+const ForListersPage = lazy(() => import('./pages/ForListersPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
@@ -117,6 +118,7 @@ const router = createBrowserRouter([
       { path: 'maintenance', element: <PublicRouteGuard><MaintenancePage /></PublicRouteGuard> },
       { path: 'how-it-works', element: <PublicRouteGuard><HowItWorksPage /></PublicRouteGuard> },
       { path: 'for-owners', element: <PublicRouteGuard><ForOwnersPage /></PublicRouteGuard> },
+      { path: 'for-listers', element: <PublicRouteGuard><ForListersPage /></PublicRouteGuard> },
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: 'support', element: <SupportPage /> },
