@@ -89,7 +89,7 @@ export default function Header() {
       aria-label={`Messages${unreadCount ? ` (${unreadCount} unread)` : ''}`}
       title={isSupabaseConfigured ? 'Messages' : 'Messages'}
     >
-      <span className="material-symbols-outlined">notifications</span>
+      <span className="material-symbols-outlined">chat_bubble</span>
       {unreadCount > 0 && (
         <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center">
           {unreadCount > 9 ? '9+' : unreadCount}
