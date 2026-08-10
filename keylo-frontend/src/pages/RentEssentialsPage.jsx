@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { rentalItems, categoryImages } from '../lib/rentalCatalog';
+import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 
@@ -15,6 +15,11 @@ const rentalCategories = [
   { id: 'gaming', label: 'Gaming' },
   { id: 'tablets', label: 'Tablets' },
   { id: 'projectors', label: 'Projectors' },
+  { id: 'cameras', label: 'Cameras' },
+  { id: 'phones', label: 'Phones' },
+  { id: 'gadgets', label: 'Gadgets' },
+  { id: 'sports', label: 'Sports' },
+  { id: 'events', label: 'Events' },
 ];
 
 
@@ -24,7 +29,15 @@ export default function RentEssentialsPage() {
   const [sortBy, setSortBy] = useState('popular');
   const [savedIds, setSavedIds] = useState({});
   const [saveError, setSaveError] = useState('');
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+    getMarketplaceItems().then((all) => { if (active) setItems(all); }).catch(() => {}).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -49,8 +62,8 @@ export default function RentEssentialsPage() {
 
   const filteredItems =
     activeCategory === 'all'
-      ? rentalItems
-      : rentalItems.filter((item) => item.category === activeCategory);
+      ? items
+      : items.filter((item) => item.category === activeCategory);
 
   const priceValue = (item) => Number(String(item.price).replace(/[^\d]/g, '')) || 0;
   const visibleItems = [...filteredItems].sort((a, b) => {
@@ -151,12 +164,14 @@ export default function RentEssentialsPage() {
                 </div>
                 <img
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
-                  src={item.useImage ? item.image : categoryImages[item.category] || item.image}
+                  src={item.useImage ? item.image : marketplaceCategoryImages[item.category] || item.image}
                   alt={item.name}
                 />
+                {!item.listerItemId && (
                 <button type="button" onClick={() => handleToggleSave(item.id)} aria-label={`${savedIds[item.id] ? 'Remove' : 'Save'} ${item.name} ${savedIds[item.id] ? 'from' : 'to'} wishlist`} aria-pressed={Boolean(savedIds[item.id])} className={`absolute top-md right-md z-10 p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}>
                   <span className="material-symbols-outlined" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
                 </button>
+                )}
               </div>
               <div className="p-sm sm:p-lg flex flex-col flex-grow">
                 <div className="flex justify-between items-start mb-sm sm:mb-md">
@@ -183,7 +198,7 @@ export default function RentEssentialsPage() {
         </div>
 
         {/* Empty State */}
-        {filteredItems.length === 0 && (
+        {!loading && filteredItems.length === 0 && (
           <div className="text-center py-xl">
             <span className="material-symbols-outlined text-[64px] text-on-surface-variant mb-md">inventory_2</span>
             <h3 className="font-h3 text-h3 text-primary mb-xs">No items found</h3>

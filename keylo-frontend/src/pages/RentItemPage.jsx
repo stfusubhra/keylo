@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { rentalItems, categoryImages } from '../lib/rentalCatalog';
+import { getMarketplaceItemById, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { createRentalBooking, getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
+import { createRentalRequest } from '../lib/listerData';
 
 const DAILY_CATEGORIES = ['scooters', 'bikes'];
 
 export default function RentItemPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = rentalItems.find((r) => r.id === Number(id));
+  const [item, setItem] = useState(null);
+  const [itemLoaded, setItemLoaded] = useState(false);
 
   const [step, setStep] = useState(1); // 1=configure, 2=review, 3=success
   const [duration, setDuration] = useState(null); // set after item loads
@@ -45,7 +47,25 @@ export default function RentItemPage() {
     }
   };
 
+  useEffect(() => {
+    let active = true;
+    getMarketplaceItemById(id).then((found) => {
+      if (!active) return;
+      setItem(found);
+      setItemLoaded(true);
+    });
+    return () => { active = false; };
+  }, [id]);
+
   const today = new Date().toISOString().split('T')[0];
+
+  if (!itemLoaded) {
+    return (
+      <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface flex items-center justify-center font-label-caps text-label-caps text-primary">
+        Loading item...
+      </div>
+    );
+  }
 
   if (!item) {
     return (
@@ -59,7 +79,7 @@ export default function RentItemPage() {
     );
   }
 
-  const isDaily = DAILY_CATEGORIES.includes(item.category);
+  const isDaily = item.listerItemId ? true : DAILY_CATEGORIES.includes(item.category);
   const unitLabel = isDaily ? 'day' : 'month';
   const effectiveDuration = duration ?? (isDaily ? 3 : 1);
 
@@ -90,7 +110,7 @@ export default function RentItemPage() {
   const handleNext = async () => {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    if (isSupabaseConfigured) {
+    if (isSupabaseConfigured && !item.listerItemId) {
       const { data } = await supabase.auth.getUser();
       if (!data.user) {
         navigate('/login', { state: { from: `/rentals/rent/${id}` } });
@@ -103,6 +123,31 @@ export default function RentItemPage() {
   };
 
   const handleConfirm = async () => {
+    // Lister items: send a rental request to the owner (local data layer today).
+    if (item.listerItemId) {
+      if (!startDate) { setErrors({ startDate: 'Please choose a start date.' }); setStep(1); return; }
+      setIsBooking(true);
+      setErrors({});
+      try {
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(end.getDate() + effectiveDuration - 1); // inclusive last day
+        await createRentalRequest({
+          itemId: item.listerItemId,
+          startDate,
+          endDate: end.toISOString().slice(0, 10),
+          message: `Rental request from ${startDate} for ${effectiveDuration} day(s). ${delivery === 'delivery' ? `Delivery requested to: ${address || 'address to be shared'}` : 'Self pickup.'}`,
+        });
+        setStep(3);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        setErrors({ submit: error.message || 'Unable to send your request.' });
+      } finally {
+        setIsBooking(false);
+      }
+      return;
+    }
+
     if (!isSupabaseConfigured) { setStep(3); return; }
     setIsBooking(true);
     setErrors({});
@@ -117,7 +162,7 @@ export default function RentItemPage() {
     }
   };
 
-  const itemImage = item.useImage ? item.image : (categoryImages[item.category] || item.image);
+  const itemImage = item.useImage ? item.image : (marketplaceCategoryImages[item.category] || item.image);
 
   // ── Step labels ──
   const stepLabels = ['Configure', 'Review', 'Confirmed'];
@@ -172,17 +217,19 @@ export default function RentItemPage() {
                 <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">{item.categoryLabel}</p>
                 <div className="flex items-start justify-between gap-md">
                   <h1 className="font-heading text-h1-mobile lg:text-h2 text-primary tracking-tight font-bold">{item.name}</h1>
-                  <button
-                    type="button"
-                    onClick={handleToggleSave}
-                    aria-label={isSaved ? `Remove ${item.name} from wishlist` : `Save ${item.name} to wishlist`}
-                    aria-pressed={isSaved}
-                    title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
-                    className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
-                  >
-                    <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
-                    <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
-                  </button>
+                  {!item.listerItemId && (
+                    <button
+                      type="button"
+                      onClick={handleToggleSave}
+                      aria-label={isSaved ? `Remove ${item.name} from wishlist` : `Save ${item.name} to wishlist`}
+                      aria-pressed={isSaved}
+                      title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
+                      className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+                    >
+                      <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                      <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
+                    </button>
+                  )}
                 </div>
                 {saveError && <p role="alert" className="mt-xs font-label-caps text-label-caps text-error">{saveError}</p>}
                 <div className="flex flex-wrap gap-xs mt-sm">
@@ -204,12 +251,16 @@ export default function RentItemPage() {
 
               <div className="border-2 border-primary bg-surface p-lg">
                 <h2 className="font-h3 text-h3 text-primary mb-md uppercase">About this item</h2>
+                {item.description && <p className="font-body-md text-body-md text-on-surface-variant mb-lg">{item.description}</p>}
                 <div className="grid grid-cols-2 gap-md">
                   {[
                     { icon: 'category', label: 'Category', val: item.categoryLabel },
                     { icon: 'payments', label: 'Rate', val: `${item.price} ${item.period}` },
                     { icon: 'verified', label: 'Status', val: item.badges[0]?.label || 'Available' },
-                    { icon: 'local_shipping', label: 'Delivery', val: 'Available · ₹99' },
+                    ...(item.listerItemId ? [{ icon: 'handshake', label: 'Condition', val: item.condition || 'Good' }] : []),
+                    ...(item.listerItemId ? [{ icon: 'location_on', label: 'Pickup', val: item.location || 'KeyLo hub' }] : []),
+                    ...(item.listerItemId && item.deposit ? [{ icon: 'shield', label: 'Deposit', val: `₹${Number(item.deposit).toLocaleString('en-IN')}` }] : []),
+                    { icon: 'local_shipping', label: 'Delivery', val: item.listerItemId ? (item.fulfilment || 'Pickup preferred') : 'Available · ₹99' },
                   ].map(({ icon, label, val }) => (
                     <div key={label} className="flex items-start gap-sm">
                       <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">{icon}</span>
@@ -333,16 +384,22 @@ export default function RentItemPage() {
                     <span>{item.price} × {effectiveDuration} {unitLabel}{effectiveDuration > 1 ? 's' : ''}</span>
                     <span>₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
+                <div className="flex justify-between font-body-md text-body-md text-on-surface-variant mb-xs">
+                  <span>Platform fee (5%)</span>
+                  <span>₹{platformFee.toLocaleString('en-IN')}</span>
+                </div>
+                {item.listerItemId && item.deposit ? (
                   <div className="flex justify-between font-body-md text-body-md text-on-surface-variant mb-xs">
-                    <span>Platform fee (5%)</span>
-                    <span>₹{platformFee.toLocaleString('en-IN')}</span>
+                    <span>Refundable deposit (at return)</span>
+                    <span>₹{Number(item.deposit).toLocaleString('en-IN')}</span>
                   </div>
-                  {delivery === 'delivery' && (
-                    <div className="flex justify-between font-body-md text-body-md text-on-surface-variant mb-xs">
-                      <span>Delivery</span>
-                      <span>₹99</span>
-                    </div>
-                  )}
+                ) : null}
+                {delivery === 'delivery' && (
+                  <div className="flex justify-between font-body-md text-body-md text-on-surface-variant mb-xs">
+                    <span>Delivery charge</span>
+                    <span>₹99</span>
+                  </div>
+                )}
                   <div className="flex justify-between font-label-caps text-label-caps text-primary border-t-2 border-primary mt-sm pt-sm">
                     <span className="uppercase">Total</span>
                     <span className="font-price-display text-price-display">₹{total.toLocaleString('en-IN')}</span>
@@ -412,6 +469,12 @@ export default function RentItemPage() {
                   <span>Platform fee (5%)</span>
                   <span>₹{platformFee.toLocaleString('en-IN')}</span>
                 </div>
+                {item.listerItemId && item.deposit ? (
+                  <div className="flex justify-between font-body-md text-body-md text-on-surface-variant">
+                    <span>Refundable deposit (at return)</span>
+                    <span>₹{Number(item.deposit).toLocaleString('en-IN')}</span>
+                  </div>
+                ) : null}
                 {delivery === 'delivery' && (
                   <div className="flex justify-between font-body-md text-body-md text-on-surface-variant">
                     <span>Delivery charge</span>
@@ -426,7 +489,9 @@ export default function RentItemPage() {
             </div>
 
             <p className="font-body-md text-body-md text-on-surface-variant text-center border-2 border-primary bg-surface-container-lowest px-lg py-sm">
-              By confirming you agree to KeyLo's rental terms. Payment is collected at pickup or delivery.
+              {item.listerItemId
+                ? "By confirming you agree to KeyLo's rental terms. The owner reviews your request and you'll be notified of their reply."
+                : "By confirming you agree to KeyLo's rental terms. Payment is collected at pickup or delivery."}
             </p>
 
             <div className="flex gap-sm">
@@ -457,12 +522,14 @@ export default function RentItemPage() {
             </div>
 
             <div>
-              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Booking confirmed!</p>
+              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">{item.listerItemId ? 'Request sent!' : 'Booking confirmed!'}</p>
               <h1 className="font-h2 text-h2 text-primary mb-sm">{item.name} is reserved for you.</h1>
               <p className="font-body-lg text-body-lg text-on-surface-variant">
-                {delivery === 'pickup'
-                  ? 'Head to the KeyLo hub from your start date to collect your item. Bring a valid ID.'
-                  : 'Your item will be delivered to your address by the start date. Payment collected on delivery.'}
+                {item.listerItemId
+                  ? 'The owner has received your rental request and will confirm shortly. You can track its status in your dashboard.'
+                  : delivery === 'pickup'
+                    ? 'Head to the KeyLo hub from your start date to collect your item. Bring a valid ID.'
+                    : 'Your item will be delivered to your address by the start date. Payment collected on delivery.'}
               </p>
             </div>
 

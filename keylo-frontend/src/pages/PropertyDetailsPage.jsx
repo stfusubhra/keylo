@@ -206,7 +206,6 @@ export default function PropertyDetailsPage() {
                 <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
               </button>
             </div>
-            </div>
             <div className="flex flex-wrap items-center gap-md font-body-md text-body-md text-on-surface-variant">
               <div className="flex items-center gap-xs text-primary font-bold">
                 <span className="material-symbols-outlined text-[#F59E0B]">star</span>

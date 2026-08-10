@@ -3,9 +3,9 @@ import { Suspense, lazy, useEffect, useState } from 'react';
 import DashboardLayout from './components/layout/DashboardLayout';
 import OwnerLayout from './components/layout/OwnerLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import ListerLayout from './components/layout/ListerLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
-
 // Lazy-loaded pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const FindStayPage = lazy(() => import('./pages/FindStayPage'));
@@ -36,6 +36,10 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const SupportPage = lazy(() => import('./pages/SupportPage'));
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
+const ListerDashboardPage = lazy(() => import('./pages/ListerDashboardPage'));
+const ListerSignupPage = lazy(() => import('./pages/ListerSignupPage'));
+const ListerLoginPage = lazy(() => import('./pages/ListerLoginPage'));
+const ListerListingFormPage = lazy(() => import('./pages/ListerListingFormPage'));
 
 const ErrorBoundary = (
   <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface flex items-center justify-center">
@@ -155,6 +159,31 @@ const router = createBrowserRouter([
       { path: 'properties', element: <AdminDisputeCenterPage /> },
       { path: 'analytics', element: <AdminAnalyticsPage /> },
     ],
+  },
+  {
+    path: '/lister',
+    element: <ListerLayout />,
+    errorElement: ErrorBoundary,
+    children: [
+      { index: true, element: <ListerDashboardPage /> },
+      { path: 'listings', element: <ListerDashboardPage /> },
+      { path: 'requests', element: <ListerDashboardPage /> },
+      { path: 'earnings', element: <ListerDashboardPage /> },
+      { path: 'profile', element: <ListerDashboardPage /> },
+      { path: 'settings', element: <ListerDashboardPage /> },
+      { path: 'list-an-item', element: <ListerListingFormPage /> },
+      { path: 'list-an-item/:itemId', element: <ListerListingFormPage /> },
+    ],
+  },
+  {
+    path: '/lister/signup',
+    element: <ListerSignupPage />,
+    errorElement: ErrorBoundary,
+  },
+  {
+    path: '/lister/login',
+    element: <ListerLoginPage />,
+    errorElement: ErrorBoundary,
   },
   {
     path: '/login',

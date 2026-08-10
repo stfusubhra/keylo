@@ -9,6 +9,7 @@ const navItems = [
   { path: '/rentals', label: 'Rentals', icon: 'inventory_2' },
   { path: '/how-it-works', label: 'How It Works', icon: 'psychology' },
   { path: '/for-owners', label: 'For Owners', icon: 'business' },
+  { path: '/lister', label: 'For Listers', icon: 'storefront' },
 ];
 
 const ownerNavItems = [
