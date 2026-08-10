@@ -53,7 +53,7 @@ export default function FindStayPage() {
       setSavedIds((current) => ({ ...current, [propertyId]: result.saved }));
       setSaveError('');
     } catch (err) {
-      if (err.message?.includes('signed in')) {
+      if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
         navigate('/login', { state: { from: '/find-a-stay' } });
         return;
       }

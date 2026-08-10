@@ -39,7 +39,7 @@ export default function RentEssentialsPage() {
       setSavedIds((current) => ({ ...current, [itemId]: result.saved }));
       setSaveError('');
     } catch (error) {
-      if (error.message?.includes('signed in')) {
+      if (error.message?.includes('signed in') || error.message?.toLowerCase().includes('auth session')) {
         navigate('/login', { state: { from: '/rentals' } });
         return;
       }
