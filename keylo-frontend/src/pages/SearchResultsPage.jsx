@@ -296,8 +296,8 @@ export default function SearchResultsPage() {
                 aria-pressed={category === filter.id}
                 className={`flex items-center gap-1.5 px-md py-sm border-2 border-primary font-label-caps text-[10px] sm:text-label-caps transition-colors ${
                   category === filter.id
-                    ? 'bg-acid-lime text-primary shadow-[-3px_3px_0px_0px_#000000]'
-                    : 'bg-surface-container-lowest text-on-primary hover:bg-acid-lime hover:text-primary'
+                    ? 'bg-surface-container-lowest text-primary shadow-[-3px_3px_0px_0px_#000000] hover:bg-acid-lime hover:text-primary'
+                    : 'bg-surface-container-lowest text-primary hover:bg-acid-lime hover:text-primary'
                 }`}
               >
                 <span className="material-symbols-outlined text-[16px]">{filter.icon}</span>
