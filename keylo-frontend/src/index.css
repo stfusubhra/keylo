@@ -630,6 +630,16 @@
   100% { transform: scale(1.35); opacity: 0; }
 }
 
+/* Student Hub overview hero: slow Ken Burns zoom on the high-res background image */
+@keyframes keylo-hero-kenburns {
+  0% { transform: scale(1.02) translate(0, 0); }
+  100% { transform: scale(1.14) translate(-1.5%, -2%); }
+}
+.keylo-hero-bg {
+  animation: keylo-hero-kenburns 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
 /* KeyLo marker cluster bubbles */
 .keylo-cluster {
   display: flex;

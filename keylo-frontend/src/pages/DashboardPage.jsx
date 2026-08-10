@@ -190,10 +190,10 @@ export default function DashboardPage() {
       {/* Hero Section */}
       <div className="relative w-full h-[320px] -mt-24 pt-24 flex flex-col justify-end pb-lg px-lg bg-surface-container overflow-hidden group">
         <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
+          className="absolute inset-0 w-full h-full bg-cover bg-center keylo-hero-bg"
           style={{
             backgroundImage:
-              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtK3SB6TozgnOSRqM_zUZ0r3SzPNZtylbzfu_tVG-SSR0n6xK2pHv3p9YQzAK5J_-GpSdOhtaGAv9pZPaB-KdKen7bYGiWhCpEayzm8iu82scclP1gtv7tmqN4kvLtsC-tm6NzH6pcG-ttkKOFYyEOfMEc01BTiP6KayvbJXi-Db4DCHBBj2-kpPAhzB_LpezluGRFh1FBNsod07cy5BBqqULYhT5ESditMPD2YIsCtnB1uHtRqS4u')",
+              "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtK3SB6TozgnOSRqM_zUZ0r3SzPNZtylbzfu_tVG-SSR0n6xK2pHv3p9YQzAK5J_-GpSdOhtaGAv9pZPaB-KdKen7bYGiWhCpEayzm8iu82scclP1gtv7tmqN4kvLtsC-tm6NzH6pcG-ttkKOFYyEOfMEc01BTiP6KayvbJXi-Db4DCHBBj2-kpPAhzB_LpezluGRFh1FBNsod07cy5BBqqULYhT5ESditMPD2YIsCtnB1uHtRqS4u=s0')",
           }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent opacity-90"></div>
