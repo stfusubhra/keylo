@@ -50,7 +50,7 @@ function ConfirmModal({ open, title, body, confirmLabel = 'Delete', busy, onConf
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[100] bg-primary/60 flex items-center justify-center p-lg" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md bg-surface border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#C7F000]">
+      <div className="w-full max-w-[28rem] bg-surface border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#C7F000]">
         <div className="flex justify-between items-start mb-md">
           <h2 className="font-h3 text-h3 text-primary">{title}</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="material-symbols-outlined text-primary">close</button>
@@ -80,7 +80,7 @@ function OverviewSection({ profile, items, requests, earnings }) {
           <div>
             <p className="font-label-caps text-label-caps text-acid-lime uppercase">Lister overview</p>
             <h2 className="font-h3 text-h3 mt-sm">Good to see you, {profile?.name?.split(' ')[0] || 'Lister'}.</h2>
-            <p className="font-body-md text-body-md text-on-primary/80 mt-sm max-w-xl">
+            <p className="font-body-md text-body-md text-on-primary/80 mt-sm max-w-[36rem]">
               Your gear is earning while you study. Check new rental requests and keep your listings fresh.
             </p>
           </div>

@@ -337,7 +337,7 @@ export default function ListerListingFormPage() {
       {/* ── Preview modal ── */}
       {previewOpen && (
         <div className="fixed inset-0 z-[100] bg-primary/60 flex items-center justify-center p-lg" role="dialog" aria-modal="true">
-          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000]">
+          <div className="w-full max-w-[36rem] max-h-[90vh] overflow-y-auto bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000]">
             <div className="sticky top-0 z-10 bg-surface border-b-2 border-primary px-lg py-md flex items-center justify-between">
               <h2 className="font-h3 text-h3 text-primary uppercase">Preview</h2>
               <button type="button" onClick={() => setPreviewOpen(false)} aria-label="Close preview" className="material-symbols-outlined text-primary">close</button>

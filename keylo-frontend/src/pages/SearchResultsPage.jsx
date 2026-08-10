@@ -364,7 +364,7 @@ export default function SearchResultsPage() {
                         ? <>No results found for “{query}”</>
                         : <>Nothing in {categoryLabel} yet</>}
                   </h2>
-                  <p className="font-body-md text-body-md text-on-surface-variant max-w-md mx-auto mt-sm">
+                  <p className="font-body-md text-body-md text-on-surface-variant max-w-[28rem] mx-auto mt-sm">
                     {query && category !== 'all'
                       ? <>Nothing in {categoryLabel.toLowerCase()} matches “{query}”. Try another category, or search across everything in Kolkata.</>
                       : query

@@ -26,7 +26,7 @@ function RequestDetailModal({ request, onClose }) {
   ];
   return (
     <div className="fixed inset-0 z-[100] bg-primary/60 flex items-center justify-center p-lg" role="dialog" aria-modal="true">
-      <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-surface border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#C7F000]">
+      <div className="w-full max-w-[32rem] max-h-[90vh] overflow-y-auto bg-surface border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#C7F000]">
         <div className="flex justify-between items-start mb-md">
           <div>
             <p className="font-label-caps text-label-caps text-electric-purple uppercase">Rental request</p>
