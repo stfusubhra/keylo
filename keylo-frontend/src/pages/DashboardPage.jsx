@@ -75,7 +75,7 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
               <h1 className="font-heading text-h1-mobile md:text-h1 text-on-primary font-bold uppercase">{section.title}</h1>
               <p className="font-body-lg text-body-lg text-on-primary/80 mt-sm max-w-2xl">{section.description}</p>
             </div>
-            <span className="material-symbols-outlined text-acid-lime text-[48px]">{section.icon}</span>
+            <span className="material-symbols-outlined text-acid-lime text-[32px] sm:text-[48px] flex-shrink-0">{section.icon}</span>
           </div>
         </div>
         <div className="flex flex-col gap-md">
@@ -188,7 +188,7 @@ export default function DashboardPage() {
   return (
     <div className="bg-surface font-body-md text-on-surface">
       {/* Hero Section */}
-      <div className="relative w-full h-[320px] -mt-32 pt-32 flex flex-col justify-end pb-lg px-lg bg-surface-container overflow-hidden group">
+      <div className="relative w-full h-[220px] sm:h-[320px] -mt-32 pt-32 flex flex-col justify-end pb-lg px-margin-mobile lg:px-lg bg-surface-container overflow-hidden group">
         <div
           className="absolute inset-0 w-full h-full bg-cover bg-center keylo-hero-bg"
           style={{
@@ -208,7 +208,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <div className="mt-xl grid grid-cols-12 gap-gutter max-w-[1440px] mx-auto w-full">
+      <div className="mt-lg lg:mt-xl px-margin-mobile lg:px-0 grid grid-cols-12 gap-gutter max-w-[1440px] mx-auto w-full">
         {/* Left Column: Active Rental Card */}
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
           <div className="w-full bg-surface-container-lowest border-2 border-primary relative group">
@@ -276,7 +276,7 @@ export default function DashboardPage() {
             {/* Deposit Vault */}
             <Link
               to="/keylo-vault"
-              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
+              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between min-h-[120px] sm:aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
             >
               <div className="flex justify-between items-start">
                 <span className="material-symbols-outlined text-[32px] text-primary">
@@ -293,7 +293,7 @@ export default function DashboardPage() {
             </Link>
 
             {/* Active Rental */}
-            <div className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer relative overflow-hidden">
+            <div className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between min-h-[120px] sm:aspect-square group hover:bg-acid-lime transition-colors cursor-pointer relative overflow-hidden">
               <div className="absolute -right-4 -top-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <span className="material-symbols-outlined text-[120px]">
                   two_wheeler
@@ -320,7 +320,7 @@ export default function DashboardPage() {
             {/* Maintenance */}
             <Link
               to="/maintenance"
-              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
+              className="bg-surface-container-highest border-2 border-primary p-md flex flex-col justify-between min-h-[120px] sm:aspect-square group hover:bg-acid-lime transition-colors cursor-pointer"
             >
               <div className="flex justify-between items-start">
                 <span className="material-symbols-outlined text-[32px] text-primary">
@@ -339,7 +339,7 @@ export default function DashboardPage() {
             </Link>
 
             {/* Agreement */}
-            <div className="bg-primary border-2 border-primary p-md flex flex-col justify-between aspect-square group hover:bg-surface-container-highest transition-colors cursor-pointer">
+            <div className="bg-primary border-2 border-primary p-md flex flex-col justify-between min-h-[120px] sm:aspect-square group hover:bg-surface-container-highest transition-colors cursor-pointer">
               <div className="flex justify-between items-start">
                 <span className="material-symbols-outlined text-[32px] text-white">
                   draw
@@ -391,7 +391,7 @@ export default function DashboardPage() {
                       {item.subtitle}
                     </p>
                   </div>
-                  <span className="font-label-caps text-label-caps text-on-surface-variant whitespace-nowrap">
+                  <span className="font-label-caps text-[10px] sm:text-label-caps text-on-surface-variant whitespace-nowrap flex-shrink-0">
                     {item.time}
                   </span>
                 </div>

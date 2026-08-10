@@ -11,7 +11,6 @@ export default function LandingPage() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to find a stay with search query
       console.log('Searching for:', searchQuery);
     }
   };
@@ -19,7 +18,7 @@ export default function LandingPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="relative w-full min-h-[90vh] flex items-center pt-24 pb-16 px-margin-mobile md:px-margin-desktop z-10 overflow-hidden">
+      <section className="relative w-full min-h-[80vh] lg:min-h-[90vh] flex items-center pt-16 pb-12 px-margin-mobile md:px-margin-desktop z-10 overflow-hidden">
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-xl">
           {/* Text Content */}
           <div className="lg:col-span-6 flex flex-col justify-center relative z-20 order-2 lg:order-1">
@@ -31,11 +30,12 @@ export default function LandingPage() {
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 text-balance leading-relaxed" style={{ maxWidth: '520px' }}>
               Find verified student homes near Kolkata universities, rent what you need, and keep your security deposit protected — all in one place.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link to="/find-a-stay" className="px-8 py-4 bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000] transition-all flex items-center justify-center gap-2">
+            {/* CTAs — full width on mobile, inline on sm+ */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-10">
+              <Link to="/find-a-stay" className="w-full sm:w-auto px-8 py-4 bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000] transition-all flex items-center justify-center gap-2">
                 FIND MY SPACE <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </Link>
-              <Link to="/rentals" className="px-8 py-4 bg-surface-container-lowest border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000] transition-all flex items-center justify-center">
+              <Link to="/rentals" className="w-full sm:w-auto px-8 py-4 bg-surface-container-lowest border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000] transition-all flex items-center justify-center">
                 EXPLORE RENTALS
               </Link>
             </div>
@@ -52,16 +52,16 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Visual Area */}
-          <div className="lg:col-span-6 relative h-[500px] lg:h-[700px] order-1 lg:order-2">
+          {/* Visual Area — shorter on mobile so text is visible above the fold */}
+          <div className="lg:col-span-6 relative h-[260px] sm:h-[380px] lg:h-[700px] order-1 lg:order-2">
             <div className="absolute inset-0 bg-surface-container-highest border-2 border-primary overflow-hidden shadow-[12px_12px_0px_0px_#000000] transform lg:rotate-2 group">
               <img
                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
                 src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85"
                 alt="A modern, highly aesthetic student dormitory room bathed in natural morning light"
               />
-              {/* UI Overlay 1 */}
-              <div className="absolute top-8 left-[-20px] bg-surface-container-lowest border-2 border-primary p-4 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-3 animate-pulse" style={{ animationDuration: '3s' }}>
+              {/* UI Overlay 1 — hidden on very small screens to avoid clutter */}
+              <div className="hidden sm:flex absolute top-8 left-[-20px] bg-surface-container-lowest border-2 border-primary p-4 shadow-[4px_4px_0px_0px_#000000] items-center gap-3 animate-pulse" style={{ animationDuration: '3s' }}>
                 <span className="material-symbols-outlined text-[#7C3AED] text-3xl">verified</span>
                 <div>
                   <p className="font-label-caps text-[10px] text-on-surface-variant">Status</p>
@@ -69,9 +69,9 @@ export default function LandingPage() {
                 </div>
               </div>
               {/* UI Overlay 2 */}
-              <div className="absolute bottom-12 right-[-10px] bg-[#FF3366] border-2 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-2 transform -rotate-3">
+              <div className="absolute bottom-8 right-[-10px] bg-[#FF3366] border-2 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-2 transform -rotate-3">
                 <span className="material-symbols-outlined text-white text-xl">bolt</span>
-                <p className="font-label-caps text-white">Instant Booking</p>
+                <p className="font-label-caps text-white text-[10px] sm:text-label-caps">Instant Booking</p>
               </div>
             </div>
           </div>
@@ -79,9 +79,9 @@ export default function LandingPage() {
       </section>
 
       {/* Search Section */}
-      <section className="w-full bg-primary py-20 px-margin-mobile md:px-margin-desktop relative z-10 border-y-2 border-primary">
+      <section className="w-full bg-primary py-12 lg:py-20 px-margin-mobile md:px-margin-desktop relative z-10 border-y-2 border-primary">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
-          <h2 className="font-h2 text-h2 text-on-primary mb-10 text-center uppercase tracking-tight">Where are you studying in Kolkata?</h2>
+          <h2 className="font-h2 text-h2 text-on-primary mb-8 text-center uppercase tracking-tight">Where are you studying in Kolkata?</h2>
           <div className="w-full flex flex-col gap-4">
             <div className="relative w-full flex flex-col sm:flex-row bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#C7F000] group focus-within:ring-4 ring-[#C7F000] ring-offset-0 transition-all p-2 sm:p-0 sm:h-[72px] sm:items-center sm:pr-2">
               <span className="material-symbols-outlined absolute left-4 top-[22px] sm:top-1/2 sm:-translate-y-1/2 text-primary">search</span>
@@ -96,7 +96,8 @@ export default function LandingPage() {
                 SEARCH
               </button>
             </div>
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
+            {/* Quick filter tags — wrap naturally on mobile */}
+            <div className="flex flex-wrap justify-center gap-3 mt-4">
               <button className="px-5 py-2.5 bg-surface-container-lowest border-2 border-primary font-label-caps text-primary hover:bg-acid-lime transition-colors rounded-full flex items-center gap-2 shadow-[2px_2px_0px_0px_#000000]">
                 <span className="material-symbols-outlined text-[18px]">bed</span>
                 Stay
@@ -119,94 +120,95 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="w-full py-20 px-margin-mobile md:px-margin-desktop bg-surface relative z-10">
+      <section className="w-full py-12 lg:py-20 px-margin-mobile md:px-margin-desktop bg-surface relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 border-b-2 border-primary pb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 lg:mb-16 gap-6 border-b-2 border-primary pb-8">
             <h2 className="font-h2 text-h2 text-primary uppercase leading-tight tracking-tight" style={{ maxWidth: '480px' }}>Everything students need, in one place.</h2>
             <p className="font-body-md text-on-surface-variant text-balance" style={{ maxWidth: '384px' }}>No more dealing with multiple brokers or sketchy listings. Rent your entire lifestyle securely.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Cards — 2-col grid on mobile, 4-col on lg. No staggered mt on mobile. */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {/* Card 1 */}
             <Link to="/find-a-stay" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer">
-              <div className="h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
+              <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
                 <img
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=85"
                   alt="A bright, minimalist student PG room interior"
                 />
-                <div className="absolute top-3 left-3 w-10 h-10 bg-acid-lime border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
-                  <span className="material-symbols-outlined text-primary">real_estate_agent</span>
+                <div className="absolute top-3 left-3 w-8 h-8 sm:w-10 sm:h-10 bg-acid-lime border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                  <span className="material-symbols-outlined text-primary text-[16px] sm:text-[20px]">real_estate_agent</span>
                 </div>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-h3 text-[20px] text-primary mb-2 uppercase">Find a Home</h3>
-                <p className="font-body-md text-on-surface-variant text-sm mb-4">PGs, Hostels, &amp; Co-living spaces verified for students.</p>
-                <div className="mt-auto flex items-center gap-1 font-label-caps text-primary group-hover:text-electric-purple transition-colors">
-                  Explore Spaces <span className="material-symbols-outlined text-sm">arrow_outward</span>
+              <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                <h3 className="font-h3 text-[16px] sm:text-[20px] text-primary mb-1 sm:mb-2 uppercase">Find a Home</h3>
+                <p className="font-body-md text-on-surface-variant text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">PGs, Hostels, &amp; Co-living spaces verified for students.</p>
+                <div className="mt-auto flex items-center gap-1 font-label-caps text-[10px] sm:text-label-caps text-primary group-hover:text-electric-purple transition-colors">
+                  Explore <span className="material-symbols-outlined text-xs sm:text-sm">arrow_outward</span>
                 </div>
               </div>
             </Link>
 
             {/* Card 2 */}
-            <Link to="/rentals" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer mt-0 lg:mt-8">
-              <div className="h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
+            <Link to="/rentals" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer lg:mt-8">
+              <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
                 <img
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85"
                   alt="A sleek electric scooter parked against a brutalist concrete wall"
                 />
-                <div className="absolute top-3 left-3 w-10 h-10 bg-[#FF3366] border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
-                  <span className="material-symbols-outlined text-white">two_wheeler</span>
+                <div className="absolute top-3 left-3 w-8 h-8 sm:w-10 sm:h-10 bg-[#FF3366] border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                  <span className="material-symbols-outlined text-white text-[16px] sm:text-[20px]">two_wheeler</span>
                 </div>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-h3 text-[20px] text-primary mb-2 uppercase">Rent Mobility</h3>
-                <p className="font-body-md text-on-surface-variant text-sm mb-4">Electric scooters &amp; bikes for easy campus commutes.</p>
-                <div className="mt-auto flex items-center gap-1 font-label-caps text-primary group-hover:text-[#FF3366] transition-colors">
-                  View Rides <span className="material-symbols-outlined text-sm">arrow_outward</span>
+              <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                <h3 className="font-h3 text-[16px] sm:text-[20px] text-primary mb-1 sm:mb-2 uppercase">Rent Mobility</h3>
+                <p className="font-body-md text-on-surface-variant text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">Electric scooters &amp; bikes for easy campus commutes.</p>
+                <div className="mt-auto flex items-center gap-1 font-label-caps text-[10px] sm:text-label-caps text-primary group-hover:text-[#FF3366] transition-colors">
+                  View Rides <span className="material-symbols-outlined text-xs sm:text-sm">arrow_outward</span>
                 </div>
               </div>
             </Link>
 
             {/* Card 3 */}
             <Link to="/rentals" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer">
-              <div className="h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
+              <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
                 <img
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=85"
                   alt="Close up of a premium laptop and tablet on a clean white desk setup"
                 />
-                <div className="absolute top-3 left-3 w-10 h-10 bg-[#00E5FF] border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
-                  <span className="material-symbols-outlined text-primary">laptop_mac</span>
+                <div className="absolute top-3 left-3 w-8 h-8 sm:w-10 sm:h-10 bg-[#00E5FF] border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                  <span className="material-symbols-outlined text-primary text-[16px] sm:text-[20px]">laptop_mac</span>
                 </div>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-h3 text-[20px] text-primary mb-2 uppercase">Rent Essentials</h3>
-                <p className="font-body-md text-on-surface-variant text-sm mb-4">Laptops, monitors, and study gear without the heavy price tag.</p>
-                <div className="mt-auto flex items-center gap-1 font-label-caps text-primary group-hover:text-[#00E5FF] transition-colors">
-                  Browse Tech <span className="material-symbols-outlined text-sm">arrow_outward</span>
+              <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                <h3 className="font-h3 text-[16px] sm:text-[20px] text-primary mb-1 sm:mb-2 uppercase">Rent Essentials</h3>
+                <p className="font-body-md text-on-surface-variant text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">Laptops, monitors, and study gear without the heavy price tag.</p>
+                <div className="mt-auto flex items-center gap-1 font-label-caps text-[10px] sm:text-label-caps text-primary group-hover:text-[#00E5FF] transition-colors">
+                  Browse Tech <span className="material-symbols-outlined text-xs sm:text-sm">arrow_outward</span>
                 </div>
               </div>
             </Link>
 
             {/* Card 4 */}
-            <Link to="/keylo-vault" className="group bg-[#7C3AED] border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer mt-0 lg:mt-8">
-              <div className="h-48 w-full border-b-2 border-primary relative overflow-hidden bg-primary">
+            <Link to="/keylo-vault" className="group bg-[#7C3AED] border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer lg:mt-8">
+              <div className="h-32 sm:h-48 w-full border-b-2 border-primary relative overflow-hidden bg-primary">
                 <div className="absolute inset-0 bg-[linear-gradient(transparent_0%,rgba(199,240,0,0.2)_50%,transparent_100%)] animate-[scan_3s_ease-in-out_infinite]"></div>
                 <img
                   className="w-full h-full object-cover opacity-60"
                   src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=85"
                   alt="Abstract rendering of digital security"
                 />
-                <div className="absolute top-3 left-3 w-10 h-10 bg-white border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
-                  <span className="material-symbols-outlined text-[#7C3AED]">shield_locked</span>
+                <div className="absolute top-3 left-3 w-8 h-8 sm:w-10 sm:h-10 bg-white border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">
+                  <span className="material-symbols-outlined text-[#7C3AED] text-[16px] sm:text-[20px]">shield_locked</span>
                 </div>
               </div>
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-h3 text-[20px] text-white mb-2 uppercase">Stay Protected</h3>
-                <p className="font-body-md text-white/80 text-sm mb-4">AI-inspected properties and secure deposit management.</p>
-                <div className="mt-auto flex items-center gap-1 font-label-caps text-[#C7F000]">
-                  Learn More <span className="material-symbols-outlined text-sm">arrow_outward</span>
+              <div className="p-4 sm:p-6 flex flex-col flex-grow">
+                <h3 className="font-h3 text-[16px] sm:text-[20px] text-white mb-1 sm:mb-2 uppercase">Stay Protected</h3>
+                <p className="font-body-md text-white/80 text-xs sm:text-sm mb-3 sm:mb-4 hidden sm:block">AI-inspected properties and secure deposit management.</p>
+                <div className="mt-auto flex items-center gap-1 font-label-caps text-[10px] sm:text-label-caps text-[#C7F000]">
+                  Learn More <span className="material-symbols-outlined text-xs sm:text-sm">arrow_outward</span>
                 </div>
               </div>
             </Link>

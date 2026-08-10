@@ -63,7 +63,7 @@ export default function RentEssentialsPage() {
   return (
     <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface">
       {/* Hero Section */}
-      <section className="w-full bg-surface py-xl px-margin-mobile lg:px-margin-desktop min-h-[400px] lg:min-h-[614px] flex flex-col justify-center relative overflow-hidden">
+      <section className="w-full bg-surface py-xl px-margin-mobile lg:px-margin-desktop min-h-[280px] lg:min-h-[614px] flex flex-col justify-center relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-20">
           <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
             <path className="text-primary" d="M0,100 L100,0 L100,100 Z" fill="currentColor" />
@@ -91,12 +91,12 @@ export default function RentEssentialsPage() {
       <section className="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-xl border-t-2 border-primary">
         {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md mb-lg text-error">{saveError}</div>}
         {/* Category Filters */}
-        <div className="flex flex-nowrap items-center gap-md mb-xl overflow-x-auto pb-sm hide-scrollbar">
+        <div className="flex flex-nowrap items-center gap-sm mb-lg lg:mb-xl overflow-x-auto pb-sm hide-scrollbar">
           {rentalCategories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-lg py-md font-label-caps text-label-caps rounded-full border-2 border-primary transition-all whitespace-nowrap shrink-0 ${
+              className={`px-md py-sm lg:px-lg lg:py-md font-label-caps text-[10px] sm:text-label-caps rounded-full border-2 border-primary transition-all whitespace-nowrap shrink-0 ${
                 activeCategory === cat.id
                   ? 'bg-primary text-on-primary shadow-[4px_4px_0px_0px_#000000]'
                   : 'bg-surface text-primary hover:bg-[#C7F000]'
@@ -132,13 +132,13 @@ export default function RentEssentialsPage() {
 
 
         {/* Rental Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
           {visibleItems.map((item) => (
             <div
               key={item.id}
               className="group bg-surface flex flex-col border-2 border-primary shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300"
             >
-              <div className="relative w-full aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
+              <div className="relative w-full aspect-[4/3] sm:aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
                 <div className="absolute top-md left-md z-10 flex gap-sm flex-wrap">
                   {item.badges.map((badge) => (
                     <span
@@ -158,23 +158,23 @@ export default function RentEssentialsPage() {
                   <span className="material-symbols-outlined" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
                 </button>
               </div>
-              <div className="p-lg flex flex-col flex-grow">
-                <div className="flex justify-between items-start mb-md">
-                  <div>
-                    <h3 className="font-h3 text-h3 text-primary mb-xs">{item.name}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant">{item.categoryLabel}</p>
+              <div className="p-sm sm:p-lg flex flex-col flex-grow">
+                <div className="flex justify-between items-start mb-sm sm:mb-md">
+                  <div className="min-w-0 flex-1 pr-xs">
+                    <h3 className="font-h3 text-[14px] sm:text-h3 text-primary mb-xs leading-tight line-clamp-2">{item.name}</h3>
+                    <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-body-md hidden sm:block">{item.categoryLabel}</p>
                   </div>
-                  <div className="text-right">
-                    <span className="font-price-display text-price-display text-primary block">{item.price}</span>
-                    <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">{item.period}</span>
+                  <div className="text-right flex-shrink-0">
+                    <span className="font-price-display text-[16px] sm:text-price-display text-primary block">{item.price}</span>
+                    <span className="font-label-caps text-[9px] sm:text-label-caps text-on-surface-variant uppercase">{item.period}</span>
                   </div>
                 </div>
-                <div className="mt-auto pt-lg">
+                <div className="mt-auto pt-sm sm:pt-lg">
                   <Link
                     to={`/rentals/rent/${item.id}`}
-                    className="w-full py-md bg-primary text-on-primary font-label-caps text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-sm"
+                    className="w-full py-sm sm:py-md bg-primary text-on-primary font-label-caps text-[10px] sm:text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-xs sm:gap-sm"
                   >
-                    RENT NOW <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                    RENT <span className="material-symbols-outlined text-xs sm:text-sm">arrow_forward</span>
                   </Link>
                 </div>
               </div>
