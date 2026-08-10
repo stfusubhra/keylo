@@ -27,6 +27,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [authUser, setAuthUser] = useState(null); // { name, email } when signed in
   const [unreadCount, setUnreadCount] = useState(0);
   const [signingOut, setSigningOut] = useState(false);
@@ -38,10 +39,12 @@ export default function Header() {
       const { data } = await supabase.auth.getUser();
       if (!active) return;
       if (data?.user) {
-        setAuthUser({
-          name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'KeyLo user',
-          email: data.user.email || '',
-        });
+         const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).maybeSingle();
+         setAuthUser({
+           name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'KeyLo user',
+           email: data.user.email || '',
+           role: profile?.role || 'student',
+         });
       } else {
         setAuthUser(null);
       }
@@ -70,6 +73,7 @@ export default function Header() {
     }
     setAuthUser(null);
     setMobileMenuOpen(false);
+    setAccountMenuOpen(false);
     navigate('/');
   };
 
@@ -121,26 +125,27 @@ export default function Header() {
         </nav>
 
         {/* Right Side Actions */}
-        <div className="flex items-center gap-2 sm:gap-md">
+         <div className="flex items-center gap-2 sm:gap-md min-w-0">
           {authUser && notificationsLink}
           <div className="w-px h-6 bg-outline-variant mx-xs hidden sm:block" aria-hidden="true"></div>
 
-          {authUser ? (
-            <>
-              <div className="hidden sm:flex items-center gap-md px-md py-sm border-2 border-primary bg-surface-container-lowest">
-                <span className="w-7 h-7 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                  <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                </span>
-                <span className="font-label-caps text-label-caps text-primary max-w-[140px] truncate">{authUser.name}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                disabled={signingOut}
-                className="px-lg py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-surface-container-lowest hover:text-primary transition-all hidden sm:inline-flex disabled:opacity-50"
-              >
-                {signingOut ? 'Signing out...' : 'Logout'}
-              </button>
-            </>
+           {authUser ? (
+             <>
+               <div className="relative">
+                 <button type="button" onClick={() => setAccountMenuOpen((open) => !open)} aria-label="Open account menu" aria-expanded={accountMenuOpen} className="flex items-center gap-sm px-sm sm:px-md py-sm border-2 border-primary bg-surface-container-lowest text-primary max-w-[min(48vw,220px)] hover:bg-acid-lime transition-colors">
+                   <span className="w-7 h-7 rounded-full bg-primary flex items-center justify-center flex-shrink-0"><span className="material-symbols-outlined text-on-primary text-[18px]">person</span></span>
+                   <span className="hidden sm:block font-label-caps text-label-caps truncate">{authUser.name}</span>
+                   <span className="material-symbols-outlined text-[18px]">{accountMenuOpen ? 'expand_less' : 'expand_more'}</span>
+                 </button>
+                 {accountMenuOpen && <div className="absolute right-0 top-full mt-2 z-[60] w-72 max-w-[calc(100vw-2rem)] bg-surface border-2 border-primary shadow-[6px_6px_0px_0px_#000000] p-md">
+                   <p className="font-label-caps text-label-caps text-primary truncate">{authUser.name}</p>
+                   <p className="font-body-sm text-on-surface-variant truncate mt-xs">{authUser.email}</p>
+                   <p className="font-label-caps text-[10px] text-electric-purple uppercase mt-xs">{authUser.role}</p>
+                   <Link to={authUser.role === 'landlord' ? '/owner' : authUser.role === 'admin' ? '/admin' : '/dashboard'} onClick={() => setAccountMenuOpen(false)} className="block mt-md px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary text-center">OPEN DASHBOARD</Link>
+                   <button type="button" onClick={handleLogout} disabled={signingOut} className="w-full mt-sm px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps disabled:opacity-50">{signingOut ? 'SIGNING OUT...' : 'LOG OUT'}</button>
+                 </div>}
+               </div>
+             </>
           ) : (
             <>
               <Link to="/login" className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-hard transition-all hidden sm:inline-flex">

@@ -84,7 +84,7 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
-      options: { data: { full_name: formData.fullName } },
+       options: { data: { full_name: formData.fullName, role: formData.userType === 'landlord' ? 'landlord' : 'student' } },
     });
     if (error) {
       setIsLoading(false);
@@ -93,7 +93,7 @@ export default function SignupPage() {
     }
 
     if (data.user) {
-      await supabase.from('profiles').update({ full_name: formData.fullName, phone: formData.phone, role: formData.userType === 'landlord' ? 'landlord' : 'student' }).eq('id', data.user.id);
+      await supabase.from('profiles').update({ full_name: formData.fullName, phone: formData.phone }).eq('id', data.user.id);
     }
     setIsLoading(false);
     if (!data.session) {
