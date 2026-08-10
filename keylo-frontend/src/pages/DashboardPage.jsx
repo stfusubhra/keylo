@@ -184,7 +184,7 @@ export default function DashboardPage() {
   return (
     <div className="bg-surface font-body-md text-on-surface">
       {/* Hero Section */}
-      <div className="relative w-full h-[320px] -mt-20 pt-20 flex flex-col justify-end pb-lg px-lg bg-surface-container overflow-hidden group">
+      <div className="relative w-full h-[320px] -mt-24 pt-24 flex flex-col justify-end pb-lg px-lg bg-surface-container overflow-hidden group">
         <div
           className="absolute inset-0 w-full h-full bg-cover bg-center"
           style={{

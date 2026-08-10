@@ -53,11 +53,17 @@ export default function Sidebar({ variant = 'student' }) {
     return () => { active = false; };
   }, []);
 
-  const fallbackLabel = variant === 'owner' ? 'Owner' : variant === 'admin' ? 'Admin' : 'Student';
+  const activeVariant = location.pathname.startsWith('/owner')
+    ? 'owner'
+    : location.pathname.startsWith('/admin')
+      ? 'admin'
+      : (variant || 'student');
+
+  const fallbackLabel = activeVariant === 'owner' ? 'Landlord' : activeVariant === 'admin' ? 'Admin' : 'Student';
   const displayName = authUser?.fullName || authUser?.email?.split('@')[0] || (isSupabaseConfigured ? 'Guest' : fallbackLabel);
   const displayEmail = authUser?.email || (isSupabaseConfigured ? 'Not signed in' : 'Demo mode');
 
-  const items = variant === 'owner' ? ownerSidebarItems : variant === 'admin' ? adminSidebarItems : sidebarItems;
+  const items = activeVariant === 'owner' ? ownerSidebarItems : activeVariant === 'admin' ? adminSidebarItems : sidebarItems;
 
   const isActive = (path) => {
     if (path === '/dashboard' || path === '/owner' || path === '/admin') {
@@ -70,10 +76,10 @@ export default function Sidebar({ variant = 'student' }) {
     <>
       <div className="px-lg py-md border-b-2 border-primary bg-surface-container-low">
         <p className="font-label-caps text-label-caps text-primary uppercase font-bold tracking-wider">
-          {variant === 'owner' ? 'Owner Workspace' : variant === 'admin' ? 'Admin Portal' : 'Student Hub'}
+          {activeVariant === 'owner' ? 'Landlord Workspace' : activeVariant === 'admin' ? 'Admin Portal' : 'Student Hub'}
         </p>
       </div>
-      <nav className="flex-1 p-md flex flex-col gap-xs overflow-y-auto" aria-label={`${variant} dashboard navigation`}>
+      <nav className="flex-1 p-md flex flex-col gap-xs overflow-y-auto" aria-label={`${activeVariant} dashboard navigation`}>
         {items.map((item) => (
           <Link
             key={item.path}
