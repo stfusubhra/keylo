@@ -78,6 +78,7 @@ create or replace function public.protect_lister_item_counters()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is not null and auth.uid() = old.lister_id
+     and current_setting('keylo.lister_request_workflow', true) <> 'true'
      and (new.times_rented <> old.times_rented or new.status <> old.status) then
     raise exception 'Rental counters are updated only by the request workflow';
   end if;
@@ -150,6 +151,7 @@ begin
   select * into v_request from public.lister_requests where id = p_request_id and lister_id = auth.uid() for update;
   if v_request.id is null then raise exception 'Request not found'; end if;
   if v_request.status <> 'pending' then raise exception 'This request was already handled'; end if;
+  perform set_config('keylo.lister_request_workflow', 'true', true);
   update public.lister_requests set status = p_decision, responded_at = now() where id = p_request_id returning * into v_request;
   if p_decision = 'accepted' then
     update public.lister_items set times_rented = times_rented + 1, status = 'rented', availability = 'unavailable', updated_at = now() where id = v_request.item_id returning * into v_item;
