@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { isSupabaseConfigured } from '../lib/supabase';
-import { getPropertyById } from '../lib/supabaseData';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { getPropertyById, getPropertyReviews, submitReview } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
 import { colleges } from '../lib/demoCatalog';
 import PropertyLocationMap from '../components/ui/PropertyLocationMap';
@@ -24,6 +24,13 @@ export default function PropertyDetailsPage() {
   const [row, setRow] = useState(null); // Supabase row when configured, else null
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [loadError, setLoadError] = useState('');
+  const [reviews, setReviews] = useState([]);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewError, setReviewError] = useState('');
+  const [reviewSaved, setReviewSaved] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -38,6 +45,36 @@ export default function PropertyDetailsPage() {
       .finally(() => { if (active) setIsLoading(false); });
     return () => { active = false; };
   }, [id]);
+
+  const loadReviews = useCallback(() => {
+    if (!isSupabaseConfigured) return undefined;
+    let active = true;
+    Promise.all([
+      getPropertyReviews(id),
+      supabase.auth.getUser(),
+    ]).then(([items, authResult]) => {
+      if (!active) return;
+      setReviews(items);
+      setCurrentUser(authResult.data?.user || null);
+    }).catch(() => { if (active) setReviews([]); });
+    return () => { active = false; };
+  }, [id]);
+
+  useEffect(() => loadReviews(), [loadReviews]);
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+    setReviewError('');
+    setReviewSaved(false);
+    try {
+      await submitReview({ propertyId: id, rating: reviewRating, comment: reviewComment });
+      setReviewComment('');
+      setReviewSaved(true);
+      loadReviews();
+    } catch (error) {
+      setReviewError(error.message || 'Unable to submit your review.');
+    }
+  };
 
   const demo = demoProperties.find((p) => p.id === id) || demoProperties.find((p) => p.name === row?.name) || demoProperties.find((p) => p.id === 'jadavpur-pg');
 
@@ -67,6 +104,7 @@ export default function PropertyDetailsPage() {
   const coverImage = row?.cover_image_url || demo?.image || FALLBACK_IMAGES[0];
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
   const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
+  const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
   const propertyImages = [coverImage, ...FALLBACK_IMAGES.slice(1)];
 
   if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;
@@ -130,8 +168,8 @@ export default function PropertyDetailsPage() {
             <div className="flex flex-wrap items-center gap-md font-body-md text-body-md text-on-surface-variant">
               <div className="flex items-center gap-xs text-primary font-bold">
                 <span className="material-symbols-outlined text-[#F59E0B]">star</span>
-                <span>{rating}</span>
-                <span className="text-on-surface-variant font-normal">(124 reviews)</span>
+                <span>{reviews.length ? reviewAverage : rating}</span>
+                <span className="text-on-surface-variant font-normal">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
               </div>
               <div className="w-1 h-1 rounded-full bg-primary"></div>
               <div className="flex items-center gap-xs">
@@ -279,6 +317,36 @@ export default function PropertyDetailsPage() {
                 distance={distance}
                 campus={colleges.find((c) => c.name === universityName)}
               />
+            </div>
+          </section>
+
+          <section className="border-t-2 border-primary pt-lg" aria-labelledby="reviews-heading">
+            <div className="flex items-start justify-between gap-md mb-md">
+              <div><p className="font-label-caps text-label-caps text-electric-purple uppercase">Real tenant feedback</p><h2 id="reviews-heading" className="font-h3 text-h3 text-primary">Student reviews</h2></div>
+              <div className="font-label-caps text-label-caps text-primary">{reviews.length} total</div>
+            </div>
+            <div className="flex flex-col gap-md">
+              {reviews.length ? reviews.map((review) => (
+                <article key={review.id} className="border-2 border-primary bg-surface-container-lowest p-md">
+                  <div className="flex items-center justify-between gap-md"><strong className="font-label-caps text-label-caps text-primary">{review.profiles?.full_name || 'KeyLo tenant'}</strong><span className="text-[#F59E0B]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span></div>
+                  <p className="font-body-md text-body-md text-on-surface-variant mt-sm">{review.comment}</p>
+                  <p className="font-label-caps text-[10px] text-on-surface-variant mt-sm">{new Date(review.created_at).toLocaleDateString('en-IN')}</p>
+                </article>
+              )) : <p className="font-body-md text-body-md text-on-surface-variant">No reviews yet. Be the first tenant to share feedback.</p>}
+            </div>
+            <div className="mt-lg border-2 border-primary p-md bg-surface">
+              {!currentUser ? <button type="button" onClick={() => navigate('/login', { state: { from: `/property/${id}` } })} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">SIGN IN TO REVIEW</button> : (
+                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-sm">
+                  <label className="font-label-caps text-label-caps text-primary uppercase" htmlFor="review-comment">Share your stay feedback</label>
+                  <div className="flex gap-xs" aria-label="Rating">
+                    {[1, 2, 3, 4, 5].map((value) => <button key={value} type="button" aria-label={`${value} stars`} onClick={() => setReviewRating(value)} className={`text-2xl ${value <= reviewRating ? 'text-[#F59E0B]' : 'text-on-surface-variant'}`}>★</button>)}
+                  </div>
+                  <textarea id="review-comment" required minLength={5} maxLength={2000} value={reviewComment} onChange={(event) => setReviewComment(event.target.value)} placeholder="What was your stay like?" className="border-2 border-primary bg-surface-container-lowest p-md font-body-md text-body-md text-primary" rows={4} />
+                  {reviewError && <div role="alert" className="border-2 border-error bg-error/10 p-sm text-error font-body-md">{reviewError}</div>}
+                  {reviewSaved && <p role="status" className="font-label-caps text-label-caps text-electric-purple">Review saved.</p>}
+                  <button type="submit" className="self-start px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps">PUBLISH REVIEW</button>
+                </form>
+              )}
             </div>
           </section>
 

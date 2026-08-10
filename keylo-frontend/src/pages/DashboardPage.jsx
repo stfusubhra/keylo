@@ -36,8 +36,9 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
       const fromMe = message.sender_id === liveData.user.id;
       return [fromMe ? 'You' : 'Your landlord', message.body, fromMe ? 'SENT' : message.read_at ? 'READ' : 'NEW', formatDateTime(message.created_at), fromMe ? 'send' : 'inbox'];
     });
-  const cards = isBookings && liveData?.bookings?.length
-    ? liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${formatDate(booking.move_in_date)}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id])
+  const rentalCards = isBookings ? (liveData?.rentals || []).map((rental) => [rental.item_name, `${rental.period === 'day' ? 'Daily' : 'Monthly'} rental · Start ${formatDate(rental.start_date)}`, rental.status.toUpperCase(), `₹${Number(rental.total).toLocaleString('en-IN')} total`, 'inventory_2']) : [];
+  const cards = isBookings && (liveData?.bookings?.length || rentalCards.length)
+    ? [...liveData.bookings.map((booking) => [booking.properties?.name || 'KeyLo booking', `${booking.properties?.area || 'Kolkata'} · Move-in ${formatDate(booking.move_in_date)}`, booking.status.toUpperCase(), `₹${Number(booking.rent_amount).toLocaleString('en-IN')} / month`, 'calendar_today', booking.property_id, booking.id]), ...rentalCards]
     : isBookings
     ? [
         ['College Street Co-Living', 'University of Calcutta · Room 304', 'ACTIVE', '₹7,800 / month', 'directions_walk'],

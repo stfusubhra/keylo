@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { listProperties, toggleSavedProperty, getSavedPropertyIds } from '../lib/supabaseData';
+import { listProperties, toggleSavedProperty, getSavedPropertyIds, getReviewStats } from '../lib/supabaseData';
 import { demoProperties, universities, colleges } from '../lib/demoCatalog';
 import KolkataUniversityMap from '../components/ui/KolkataUniversityMap';
 
@@ -62,8 +62,8 @@ export default function FindStayPage() {
     getSavedPropertyIds()
       .then((saved) => { if (active) setSavedIds(saved); })
       .catch(() => {});
-    listProperties()
-      .then((rows) => {
+    Promise.all([listProperties(), getReviewStats()])
+      .then(([rows, stats]) => {
         if (!active) return;
         if (!rows.length) {
           setCatalog([]);
@@ -78,7 +78,7 @@ export default function FindStayPage() {
           name: row.name,
           type: row.property_type === 'pg' ? 'PG' : 'Flat',
           distance: `${row.distance_to_university_km} km`,
-          rating: row.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demoProperties.find((d) => d.name === row.name)?.rating || '4.8'),
+           rating: stats[row.id]?.count ? (stats[row.id].total / stats[row.id].count).toFixed(1) : (row.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demoProperties.find((d) => d.name === row.name)?.rating || '4.8')),
           price: `₹${Number(row.monthly_rent).toLocaleString('en-IN')}`,
           deposit: `₹${Number(row.security_deposit).toLocaleString('en-IN')}`,
           badge: row.is_ai_inspected ? 'AI Inspected' : '✓ Verified',

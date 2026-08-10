@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { createBooking, createTestPayment, getPropertyById } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { demoProperties } from '../lib/demoCatalog';
+import { supabase } from '../lib/supabase';
 
 export default function SecureYourStayPage() {
   const { id = 'jadavpur-pg' } = useParams();
+  const navigate = useNavigate();
   const [addons, setAddons] = useState({
     'Damage Protection': false,
     'Bi-weekly Deep Cleaning': false,
@@ -101,6 +102,11 @@ export default function SecureYourStayPage() {
       setCompletedBooking({ id: `demo-${Date.now()}-${Math.floor(Math.random() * 1000)}` });
       setShowSuccess(true);
       document.body.style.overflow = 'hidden';
+      return;
+    }
+    const { data: sessionData, error: sessionError } = await supabase.auth.getUser();
+    if (sessionError || !sessionData.user) {
+      navigate('/login', { state: { from: `/secure-your-stay/${id}` } });
       return;
     }
     setIsBooking(true);

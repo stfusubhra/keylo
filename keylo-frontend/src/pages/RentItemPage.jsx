@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { rentalItems, categoryImages } from '../lib/rentalCatalog';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
+import { createRentalBooking } from '../lib/supabaseData';
 
 const DAILY_CATEGORIES = ['scooters', 'bikes'];
 
@@ -15,6 +17,7 @@ export default function RentItemPage() {
   const [delivery, setDelivery] = useState('pickup');
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({});
+  const [isBooking, setIsBooking] = useState(false);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -58,17 +61,34 @@ export default function RentItemPage() {
     return errs;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (isSupabaseConfigured) {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) {
+        navigate('/login', { state: { from: `/rentals/rent/${id}` } });
+        return;
+      }
+    }
     setErrors({});
     setStep(2);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleConfirm = () => {
-    setStep(3);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handleConfirm = async () => {
+    if (!isSupabaseConfigured) { setStep(3); return; }
+    setIsBooking(true);
+    setErrors({});
+    try {
+      await createRentalBooking({ itemId: item.id, duration: effectiveDuration, startDate, fulfilment: delivery, address });
+      setStep(3);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      setErrors({ submit: error.message || 'Unable to create rental booking.' });
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const itemImage = item.useImage ? item.image : (categoryImages[item.category] || item.image);
@@ -303,6 +323,7 @@ export default function RentItemPage() {
         {/* ══════════════════════════════ STEP 2: Review ══════════════════════════════ */}
         {step === 2 && (
           <div className="max-w-2xl mx-auto flex flex-col gap-lg">
+            {errors.submit && <div role="alert" className="border-2 border-error bg-error/10 p-md text-error font-body-md">{errors.submit}</div>}
             <div>
               <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Review your booking</p>
               <h1 className="font-h2 text-h2 text-primary">{item.name}</h1>
@@ -377,9 +398,10 @@ export default function RentItemPage() {
               </button>
               <button
                 onClick={handleConfirm}
+                disabled={isBooking}
                 className="flex-1 py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-acid-lime hover:text-primary transition-colors flex items-center justify-center gap-sm"
               >
-                CONFIRM & BOOK <span className="material-symbols-outlined text-sm">check</span>
+                {isBooking ? 'BOOKING...' : 'CONFIRM & BOOK'} <span className="material-symbols-outlined text-sm">check</span>
               </button>
             </div>
           </div>

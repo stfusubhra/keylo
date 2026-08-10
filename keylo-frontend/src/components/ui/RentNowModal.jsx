@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { isSupabaseConfigured, supabase } from '../../lib/supabase';
+import { createRentalBooking } from '../../lib/supabaseData';
 
 /**
  * RentNowModal
@@ -8,6 +11,7 @@ import { useEffect, useRef, useState } from 'react';
  *   Step 3 – Success state
  */
 export default function RentNowModal({ item, onClose }) {
+  const navigate = useNavigate();
   const DAILY_CATEGORIES = ['scooters', 'bikes'];
   const isDaily = DAILY_CATEGORIES.includes(item.category);
 
@@ -17,6 +21,7 @@ export default function RentNowModal({ item, onClose }) {
   const [delivery, setDelivery] = useState('pickup');
   const [address, setAddress] = useState('');
   const [errors, setErrors] = useState({});
+  const [isBooking, setIsBooking] = useState(false);
   const overlayRef = useRef(null);
   const dialogRef = useRef(null);
 
@@ -48,11 +53,33 @@ export default function RentNowModal({ item, onClose }) {
     return errs;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (isSupabaseConfigured) {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) {
+        onClose();
+        navigate('/login', { state: { from: '/rentals' } });
+        return;
+      }
+    }
     setErrors({});
     setStep(2);
+  };
+
+  const handleConfirm = async () => {
+    if (!isSupabaseConfigured) { setStep(3); return; }
+    setIsBooking(true);
+    setErrors({});
+    try {
+      await createRentalBooking({ itemId: item.id, duration, startDate, fulfilment: delivery, address });
+      setStep(3);
+    } catch (error) {
+      setErrors({ submit: error.message || 'Unable to create rental booking.' });
+    } finally {
+      setIsBooking(false);
+    }
   };
 
   const endDate = (() => {
@@ -269,6 +296,7 @@ export default function RentNowModal({ item, onClose }) {
           {/* ── STEP 2: Review ── */}
           {step === 2 && (
             <div className="p-lg flex flex-col gap-lg">
+              {errors.submit && <div role="alert" className="border-2 border-error bg-error/10 p-md text-error font-body-md">{errors.submit}</div>}
               <div className="flex items-center gap-md border-2 border-primary bg-surface-container-lowest p-md">
                 <img src={item.image} alt={item.name} className="w-16 h-16 object-cover border-2 border-primary flex-shrink-0" />
                 <div>
@@ -380,11 +408,12 @@ export default function RentNowModal({ item, onClose }) {
             >
               BACK
             </button>
-            <button
-              onClick={() => setStep(3)}
+             <button
+               onClick={handleConfirm}
+               disabled={isBooking}
               className="flex-1 py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-acid-lime hover:text-primary transition-colors flex items-center justify-center gap-sm"
             >
-              CONFIRM & BOOK <span className="material-symbols-outlined text-sm">check</span>
+               {isBooking ? 'BOOKING...' : 'CONFIRM & BOOK'} <span className="material-symbols-outlined text-sm">check</span>
             </button>
           </div>
         )}

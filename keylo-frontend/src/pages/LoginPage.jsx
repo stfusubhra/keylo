@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
 function KeyLoLogo() {
@@ -16,6 +16,8 @@ function KeyLoLogo() {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = location.state?.from || '/dashboard';
   const [formData, setFormData] = useState({ email: '', password: '', rememberMe: false });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +70,7 @@ export default function LoginPage() {
     if (!isSupabaseConfigured) {
       await new Promise((resolve) => setTimeout(resolve, 1200));
       setIsLoading(false);
-      navigate('/dashboard');
+      navigate(returnTo, { replace: true });
       return;
     }
 
@@ -78,7 +80,7 @@ export default function LoginPage() {
       setErrors({ submit: error.message });
       return;
     }
-    navigate('/dashboard');
+    navigate(returnTo, { replace: true });
   };
 
   return (

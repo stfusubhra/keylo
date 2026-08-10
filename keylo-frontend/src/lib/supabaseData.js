@@ -191,15 +191,16 @@ export async function getDashboardData() {
   if (userError) throw userError;
   if (!userData.user) throw new Error('You must be signed in to view dashboard data.');
 
-  const [bookings, saved, messages] = await Promise.all([
+  const [bookings, saved, messages, rentals] = await Promise.all([
     client.from('bookings').select('*, properties(name, area, city, owner_id), deposits(*)').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
     client.from('saved_properties').select('property_id, properties(*, profiles!properties_owner_id_fkey(owner_rating))').eq('student_id', userData.user.id),
     // Conversations include both messages we sent and messages we received.
     client.from('messages').select('*').or(`sender_id.eq.${userData.user.id},recipient_id.eq.${userData.user.id}`).order('created_at', { ascending: false }),
+    client.from('rentals').select('*').eq('student_id', userData.user.id).order('created_at', { ascending: false }),
   ]);
-  const failed = [bookings, saved, messages].find((result) => result.error);
+  const failed = [bookings, saved, messages, rentals].find((result) => result.error);
   if (failed) throw failed.error;
-  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [] };
+  return { user: userData.user, bookings: bookings.data || [], saved: saved.data || [], messages: messages.data || [], rentals: rentals.data || [] };
 }
 
 // Send a real message row. The recipient is the landlord of one of the
@@ -423,4 +424,66 @@ export async function getAdminAnalytics() {
     deposits: deposits.data || [],
     payments: payments.data || [],
   };
+}
+
+export async function getPropertyReviews(propertyId) {
+  const client = requireSupabase();
+  const property = await getPropertyById(propertyId);
+  if (!property) return [];
+  const { data, error } = await client
+    .from('reviews')
+    .select('id, property_id, student_id, rating, comment, created_at, updated_at, profiles!reviews_student_id_fkey(full_name)')
+    .eq('property_id', property.id)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function getReviewStats() {
+  const client = requireSupabase();
+  const { data, error } = await client.from('reviews').select('property_id, rating');
+  if (error) throw error;
+  return (data || []).reduce((stats, review) => {
+    const current = stats[review.property_id] || { count: 0, total: 0 };
+    current.count += 1;
+    current.total += Number(review.rating);
+    stats[review.property_id] = current;
+    return stats;
+  }, {});
+}
+
+export async function submitReview({ propertyId, rating, comment }) {
+  const client = requireSupabase();
+  const property = await getPropertyById(propertyId);
+  if (!property) throw new Error('Property not found');
+  const { data, error } = await client.rpc('submit_review', {
+    p_property_id: property.id,
+    p_rating: Number(rating),
+    p_comment: comment,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function createRentalBooking({ itemId, duration, startDate, fulfilment, address }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('create_rental_booking', {
+    p_item_id: Number(itemId),
+    p_duration: Number(duration),
+    p_start_date: startDate,
+    p_fulfilment: fulfilment,
+    p_address: address || null,
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function getMyRentals() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to view rentals.');
+  const { data, error } = await client.from('rentals').select('*').eq('student_id', userData.user.id).order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
 }
