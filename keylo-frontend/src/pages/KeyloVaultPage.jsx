@@ -46,7 +46,7 @@ export default function KeyloVaultPage() {
   const [disputes, setDisputes] = useState([]);
   const [isLoading, setIsLoading] = useState(!isSupabaseConfigured);
   const [error, setError] = useState('');
-  const [releaseTarget, setReleaseTarget] = useState(null);
+  const [_releaseTarget, setReleaseTarget] = useState(null);
   const [disputeTarget, setDisputeTarget] = useState(null);
   const [disputeReason, setDisputeReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

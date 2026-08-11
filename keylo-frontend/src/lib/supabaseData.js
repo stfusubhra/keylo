@@ -743,3 +743,67 @@ export async function createDepositDispute({ bookingId, reason, evidenceUrls = [
   if (error) throw error;
   return data;
 }
+
+// ── Admin Vault Management ───────────────────────────────────────────────────
+
+export async function getAdminVaultData() {
+  const client = requireSupabase();
+  if (!client) throw new Error('Supabase not configured');
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in.');
+
+  // Check admin role
+  const { data: profile } = await client.from('profiles').select('role').eq('id', userData.user.id).maybeSingle();
+  if (!profile || profile.role !== 'admin') throw new Error('Admin access required');
+
+  // Fetch all bookings with tenant and property info
+  const bookingsResult = await client
+    .from('bookings')
+    .select('*, properties(id, name, area, city), tenant:profiles!student_id(full_name)')
+    .order('created_at', { ascending: false });
+
+  // Fetch all deposits with tenant and property info
+  const depositsResult = await client
+    .from('deposits')
+    .select('*, booking_id, booking:bookings(id, student_id, property_id, status, move_in_date), tenant:profiles!bookings(student_id)(full_name), property:properties(name, area)')
+    .order('created_at', { ascending: false });
+
+  // Fetch open disputes
+  const disputesResult = await client
+    .from('disputes')
+    .select('*, property:properties(name), tenant:profiles!disputes_student_id_fkey(full_name), landlord:profiles!disputes_landlord_id_fkey(full_name)')
+    .order('created_at', { ascending: false });
+
+  const bookings = bookingsResult.error?.code === '42P01' ? [] : (bookingsResult.data || []);
+  const deposits = depositsResult.error?.code === '42P01' ? [] : (depositsResult.data || []);
+  const disputes = disputesResult.error?.code === '42P01' ? [] : (disputesResult.data || []);
+
+  return { bookings, deposits, disputes };
+}
+
+// Admin releases a held deposit directly
+export async function releaseDeposit(bookingId) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in.');
+
+  // Check admin role
+  const { data: profile } = await client.from('profiles').select('role').eq('id', userData.user.id).maybeSingle();
+  if (!profile || profile.role !== 'admin') throw new Error('Admin access required');
+
+  const { data, error } = await client
+    .from('deposits')
+    .update({
+      status: 'released',
+      released_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('booking_id', bookingId)
+    .select('id, status')
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error('Deposit not found for this booking.');
+  return data;
+}

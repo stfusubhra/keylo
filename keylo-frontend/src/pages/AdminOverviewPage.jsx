@@ -45,6 +45,7 @@ export default function AdminOverviewPage() {
   const activeBookings = bookings.filter((booking) => ['pending', 'confirmed', 'active', 'disputed'].includes(booking.status));
   const visibleBookings = filter === 'active' ? activeBookings : filter === 'completed' ? bookings.filter((booking) => booking.status === 'completed') : bookings;
   const depositsHeld = (data?.deposits || []).filter((deposit) => ['held', 'release_pending', 'disputed'].includes(deposit.status)).reduce((sum, deposit) => sum + Number(deposit.amount || 0), 0);
+  const _pendingReleases = (data?.deposits || []).filter((deposit) => deposit.status === 'release_pending').length;
   const paidTotal = (data?.payments || []).filter((payment) => payment.status === 'paid').reduce((sum, payment) => sum + Number(payment.amount || 0), 0);
   const disputed = (data?.disputes || []).filter((item) => !['resolved', 'denied'].includes(item.status));
   const latestUsers = users.slice(0, 8);
@@ -52,7 +53,7 @@ export default function AdminOverviewPage() {
   return <div className="w-full">
     <header className="border-b-2 border-primary pb-lg mb-xl flex flex-col md:flex-row md:items-end justify-between gap-lg">
       <div><p className="font-label-caps text-label-caps text-hot-pink uppercase mb-sm">Admin operations</p><h1 className="font-heading text-h1-mobile md:text-h1 text-primary uppercase font-bold">Platform overview</h1><p className="font-body-lg text-body-lg text-on-surface-variant mt-sm">Tenants, landlords, stays, Rent Essentials, money movement, and trust controls in one view.</p></div>
-      <div className="flex gap-sm"><Link to="/admin/users" className="px-md py-sm bg-surface-container-lowest border-2 border-primary font-label-caps text-label-caps text-primary">USER DIRECTORY</Link><Link to="/admin/analytics" className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">ANALYTICS</Link></div>
+      <div className="flex flex-wrap gap-sm"><Link to="/admin/users" className="px-md py-sm bg-surface-container-lowest border-2 border-primary font-label-caps text-label-caps text-primary">USER DIRECTORY</Link><Link to="/admin/vault" className="px-md py-sm bg-hot-pink border-2 border-primary font-label-caps text-label-caps text-white">VAULT & DEPOSITS</Link><Link to="/admin/analytics" className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">ANALYTICS</Link></div>
     </header>
     {error && <div role="alert" className="bg-error/10 border-2 border-error p-md mb-lg text-error">{error}</div>}
     {!isSupabaseConfigured && <div className="border-2 border-primary border-dashed p-lg mb-lg text-on-surface-variant">Connect Supabase and sign in as an admin to see live operational data.</div>}
@@ -65,6 +66,7 @@ export default function AdminOverviewPage() {
         ['Rental bookings', (data?.rentals || []).length, 'inventory_2', 'bg-sky-cyan'],
         ['Deposits held', money(depositsHeld), 'shield', 'bg-acid-lime'],
         ['Paid volume', money(paidTotal), 'payments', 'bg-electric-purple'],
+        ['Pending releases', _pendingReleases, 'hourglass_top', 'bg-electric-purple'],
       ].map(([label, value, icon, color]) => <article key={label} className={`${color} border-2 border-primary p-md shadow-[4px_4px_0px_0px_#000000] min-w-0`}><span className="material-symbols-outlined text-primary">{icon}</span><p className="font-price-display text-[26px] text-primary mt-sm break-words">{value}</p><p className="font-label-caps text-[10px] text-primary uppercase mt-xs">{label}</p></article>)}
     </section>
 

@@ -40,6 +40,7 @@ const TermsPage = lazy(() => import('./pages/TermsPage'));
 const SupportPage = lazy(() => import('./pages/SupportPage'));
 const AccessibilityStatementPage = lazy(() => import('./pages/AccessibilityStatementPage'));
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminVaultPage = lazy(() => import('./pages/AdminVaultPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 const ListerDashboardPage = lazy(() => import('./pages/ListerDashboardPage'));
 const ListerSignupPage = lazy(() => import('./pages/ListerSignupPage'));
@@ -167,6 +168,7 @@ const router = createBrowserRouter([
       { path: 'users', element: <AdminUsersPage /> },
       { path: 'properties', element: <AdminDisputeCenterPage /> },
       { path: 'analytics', element: <AdminAnalyticsPage /> },
+      { path: 'vault', element: <AdminVaultPage /> },
     ],
   },
   {
