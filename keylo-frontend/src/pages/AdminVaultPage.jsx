@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAdminVaultData, releaseDeposit, resolveDepositDispute } from '../lib/supabaseData';
+import { getAdminVaultData, releaseDeposit, cancelDepositRelease, resolveDepositDispute } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import LoadingScreen from '../components/ui/LoadingScreen';
 import toast from 'react-hot-toast';
@@ -289,7 +289,7 @@ export default function AdminVaultPage() {
                     </button>
                     <button onClick={async () => {
                       try {
-                        await releaseDeposit(deposit.booking_id);
+                        await cancelDepositRelease(deposit.booking_id);
                         setDeposits((prev) => prev.map((d) => d.id === deposit.id ? { ...d, status: 'held' } : d));
                         toast.success('Release request cancelled');
                       } catch (err) {

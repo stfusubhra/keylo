@@ -141,6 +141,8 @@ begin
       select jsonb_agg(to_jsonb(x) order by x.created_at desc)
       from (
         select d.id, d.booking_id, d.status, d.reason, d.claimed_amount,
+               d.ai_recommendation, d.ai_confidence,
+               d.landlord_response, d.landlord_recommended_refund,
                d.recommended_refund, d.final_refund, d.created_at,
                d.resolved_at, d.property_id, prop.name as property_name,
                s.full_name as tenant_name, su.email as tenant_email,
