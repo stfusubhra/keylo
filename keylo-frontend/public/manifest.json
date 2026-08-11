@@ -1,0 +1,20 @@
+{
+  "name": "KeyLo — Kolkata Student Rentals",
+  "short_name": "KeyLo",
+  "description": "Find verified PGs, flats, and rent essentials near your campus in Kolkata. Secure deposits, AI-inspected listings, and transparent dispute resolution.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f8",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "lifestyle", "shopping"],
+  "lang": "en-IN"
+}

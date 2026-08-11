@@ -20,7 +20,8 @@ export default function RentalImageCarousel({ images = [], alt = '', className =
   // Reset to the first slide whenever the image set changes (e.g. another item).
   useEffect(() => {
     setIndex(0);
-  }, [slides.join('|')]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slides]);
 
   const goTo = (i) => {
     setIndex(((i % count) + count) % count);
