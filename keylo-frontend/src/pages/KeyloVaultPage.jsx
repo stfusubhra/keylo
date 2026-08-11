@@ -186,13 +186,18 @@ export default function KeyloVaultPage() {
             <h1 className="font-heading text-h1-mobile md:text-h1 text-primary font-bold leading-tight">
               Your deposit. <span className="text-acid-lime">Protected.</span>
             </h1>
-            <p className="font-body-md text-on-surface-variant mt-sm max-w-md">
-              {hasActiveBooking
-                ? 'Your security deposit sits in escrow with KeyLo — never handed straight to the landlord. Request a refund at checkout, or open a dispute if anything feels off.'
-                : hasCompletedBooking
-                ? 'Your stay is wrapped up. Request your refund below, or check your vault history — your money stays protected until it reaches you.'
-                : 'Book a stay and your security deposit is locked in the KeyLo Vault — protected end to end, refundable at move-out.'}
-            </p>
+            <div className="mt-md max-w-lg border-2 border-primary bg-surface-container-lowest p-md shadow-[4px_4px_0px_0px_#000000]">
+              <div className="flex items-start gap-sm">
+                <span className="material-symbols-outlined text-2xl bg-acid-lime text-primary border-2 border-primary p-xs" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
+                <p className="font-body-md text-primary font-medium leading-relaxed">
+                  {hasActiveBooking
+                    ? <>Your security deposit sits in escrow with KeyLo — <mark className="bg-acid-lime text-primary px-xs py-[1px] font-bold">never handed straight to the landlord</mark>. Request a refund at checkout, or open a dispute if anything feels off.</>
+                    : hasCompletedBooking
+                    ? 'Your stay is wrapped up. Request your refund below, or check your vault history — your money stays protected until it reaches you.'
+                    : 'Book a stay and your security deposit is locked in the KeyLo Vault — protected end to end, refundable at move-out.'}
+                </p>
+              </div>
+            </div>
             <div className="flex flex-wrap gap-x-lg gap-y-xs mt-md">
               <span className="flex items-center gap-xs font-label-caps text-label-caps text-primary text-[10px] uppercase">
                 <span className="material-symbols-outlined text-sm text-acid-lime" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
