@@ -671,3 +671,75 @@ export async function getMyRentals() {
   if (error) throw error;
   return data || [];
 }
+
+// ── Vault / Deposit data ─────────────────────────────────────────────────────
+// Fetches the student's active bookings with their held deposits, plus any
+// open disputes, so the KeyLo Vault page can show real balances and actions.
+
+export async function getVaultData() {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in to view the vault.');
+
+  // Active bookings (confirmed, active, or completed) with their deposit and property
+  const bookings = await client
+    .from('bookings')
+    .select('*, properties(id, name, area, city, cover_image_url, trust_score), deposits(*)')
+    .eq('student_id', userData.user.id)
+    .in('status', ['confirmed', 'active', 'completed'])
+    .order('created_at', { ascending: false });
+
+  // Open disputes for this student
+  const disputes = await client
+    .from('disputes')
+    .select('*, bookings(id, property_id), deposits(status, amount)')
+    .eq('student_id', userData.user.id)
+    .in('status', ['open', 'responding'])
+    .order('created_at', { ascending: false });
+
+  const bookingsData = bookings.error?.code === '42P01' ? { data: [], error: null } : bookings;
+  const disputesData = disputes.error?.code === '42P01' ? { data: [], error: null } : disputes;
+
+  const failed = [bookingsData, disputesData].find((r) => r.error);
+  if (failed) throw failed.error;
+
+  return {
+    bookings: bookingsData.data || [],
+    disputes: disputesData.data || [],
+  };
+}
+
+// Request release of a held deposit (moves it to release_pending status).
+export async function requestDepositRelease(bookingId) {
+  const client = requireSupabase();
+  const { data: userData, error: userError } = await client.auth.getUser();
+  if (userError) throw userError;
+  if (!userData.user) throw new Error('You must be signed in.');
+
+  const { data, error } = await client
+    .from('deposits')
+    .update({
+      status: 'release_pending',
+      release_requested_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('booking_id', bookingId)
+    .select('id, status')
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) throw new Error('No deposit found for this booking.');
+  return data;
+}
+
+// Open a deposit dispute for a booking.
+export async function createDepositDispute({ bookingId, reason, evidenceUrls = [] }) {
+  const client = requireSupabase();
+  const { data, error } = await client.rpc('open_deposit_dispute', {
+    p_booking_id: bookingId,
+    p_reason: reason,
+    p_evidence_urls: evidenceUrls,
+  });
+  if (error) throw error;
+  return data;
+}
