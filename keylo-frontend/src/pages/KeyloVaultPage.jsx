@@ -12,11 +12,18 @@ const formatDate = (dateStr) => {
   return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
+// PostgREST embeds a one-to-one relation (deposits.booking_id is unique) as an
+// object, not an array. Normalize so callers can rely on an object or undefined.
+const firstDeposit = (booking) => {
+  if (Array.isArray(booking.deposits)) return booking.deposits[0] || null;
+  return booking.deposits || null;
+};
+
 // Build a timeline based on a booking's actual data
 function buildTimeline(booking, deposit) {
   const steps = [
     { id: 1, label: 'Booking Confirmed', date: booking.created_at, status: 'completed' },
-    { id: 2, label: 'Deposit Held', date: deposit?.held_at, status: deposit?.status !== 'released' ? 'completed' : 'pending' },
+    { id: 2, label: 'Deposit Held', date: deposit?.held_at, status: deposit ? 'completed' : 'pending' },
     { id: 3, label: 'Move-In', date: booking.move_in_date, status: booking.status === 'active' || booking.status === 'completed' ? 'completed' : booking.status === 'confirmed' ? 'current' : 'pending' },
     { id: 4, label: 'Stay Active', date: null, status: booking.status === 'active' ? 'current' : booking.status === 'completed' ? 'completed' : 'pending' },
     { id: 5, label: 'Checkout', date: booking.move_out_date, status: booking.status === 'completed' ? 'completed' : 'pending' },
@@ -91,7 +98,10 @@ export default function KeyloVaultPage() {
   }, []);
 
   const totalHeld = bookings.reduce(
-    (sum, b) => sum + (b.deposits?.[0]?.status !== 'released' ? Number(b.deposits?.[0]?.amount || 0) : 0),
+    (sum, b) => {
+      const d = firstDeposit(b);
+      return sum + (d && d.status !== 'released' ? Number(d.amount || 0) : 0);
+    },
     0,
   );
 
@@ -100,11 +110,11 @@ export default function KeyloVaultPage() {
     try {
       await requestDepositRelease(booking.id);
       setBookings((prev) =>
-        prev.map((b) =>
-          b.id === booking.id
-            ? { ...b, deposits: b.deposits?.map((d) => ({ ...d, status: 'release_pending', release_requested_at: new Date().toISOString() })) }
-            : b,
-        ),
+        prev.map((b) => {
+          if (b.id !== booking.id) return b;
+          const depArr = Array.isArray(b.deposits) ? b.deposits : b.deposits ? [b.deposits] : [];
+          return { ...b, deposits: depArr.map((d) => ({ ...d, status: 'release_pending', release_requested_at: new Date().toISOString() })) };
+        }),
       );
       toast.success('Deposit release requested. Funds will be refunded within 3–5 business days.');
       setReleaseTarget(null);
@@ -185,7 +195,13 @@ export default function KeyloVaultPage() {
             <span className="font-label-caps text-label-caps text-on-surface-variant block mb-xs">Total Held</span>
             <div className="font-price-display text-price-display text-acid-lime">{formatMoney(totalHeld)}</div>
             <div className="font-body-sm text-on-surface-variant mt-xs">
-              {bookings.filter((b) => b.deposits?.[0]?.status !== 'released').length} active deposit{bookings.filter((b) => b.deposits?.[0]?.status !== 'released').length !== 1 ? 's' : ''}
+              {(() => {
+                const activeDeposits = bookings.filter((b) => {
+                  const d = firstDeposit(b);
+                  return d && d.status !== 'released';
+                }).length;
+                return `${activeDeposits} active deposit${activeDeposits !== 1 ? 's' : ''}`;
+              })()}
             </div>
           </div>
         </div>
@@ -206,7 +222,7 @@ export default function KeyloVaultPage() {
         ) : (
           <div className="flex flex-col gap-lg">
             {bookings.map((booking) => {
-              const deposit = booking.deposits?.[0];
+              const deposit = firstDeposit(booking);
               const prop = booking.properties;
               const timeline = buildTimeline(booking, deposit);
               const canRelease = booking.status === 'completed' && deposit?.status === 'held';
