@@ -90,6 +90,12 @@ export default function ListerLayout() {
 
   return (
     <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-acid-lime focus:text-primary focus:border-2 focus:border-primary focus:font-label-caps focus:text-label-caps"
+      >
+        Skip to main content
+      </a>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-20 h-[calc(100vh-5rem)] w-72 bg-surface-container-low border-r-2 border-primary z-40 flex-col">
         {sidebarContent}
@@ -121,7 +127,7 @@ export default function ListerLayout() {
 
       <div className="lg:ml-72 flex flex-col min-h-screen">
         <Header />
-        <main className="flex-1 p-margin-mobile lg:p-margin-desktop pt-32 pb-12">
+        <main id="main-content" className="flex-1 p-margin-mobile lg:p-margin-desktop pt-32 pb-12">
           <Outlet />
         </main>
       </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
+import { CardGridSkeleton, RentalCardSkeleton } from '../components/ui/Skeleton';
 
 const rentalCategories = [
   { id: 'all', label: 'All Rentals' },
@@ -145,8 +146,11 @@ export default function RentEssentialsPage() {
 
 
         {/* Rental Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
-          {visibleItems.map((item) => (
+        {loading ? (
+          <CardGridSkeleton columns={3} count={6} card={RentalCardSkeleton} />
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
+            {visibleItems.map((item) => (
             <div
               key={item.id}
               role="link"
@@ -212,7 +216,8 @@ export default function RentEssentialsPage() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Empty State */}
         {!loading && filteredItems.length === 0 && (

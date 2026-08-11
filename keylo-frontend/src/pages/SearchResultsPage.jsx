@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
 import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
+import { CardGridSkeleton, RentalCardSkeleton } from '../components/ui/Skeleton';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Search results page. Reads `q` (query) and `category` (stay | mobility |
@@ -337,7 +338,9 @@ export default function SearchResultsPage() {
             <span className="font-label-caps text-label-caps text-on-surface-variant">Stays & rentals near your college</span>
           </div>
 
-          {!loading && results.length > 0 && (
+          {loading ? (
+            <CardGridSkeleton columns={3} count={6} card={RentalCardSkeleton} />
+          ) : results.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
               {results.map((result) =>
                 result.kind === 'stay'
@@ -345,9 +348,7 @@ export default function SearchResultsPage() {
                   : <RentalCard key={`rental-${result.id}`} item={result} navigate={navigate} />
               )}
             </div>
-          )}
-
-          {!loading && results.length === 0 && (
+          ) : (
             <div className="max-w-2xl mx-auto py-xl">
               <div className="bg-surface-container-lowest border-2 border-primary shadow-[8px_8px_0px_0px_#000000] p-lg lg:p-xl flex flex-col items-center text-center gap-md">
                 {/* Icon */}

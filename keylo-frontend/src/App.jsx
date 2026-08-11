@@ -5,6 +5,7 @@ import OwnerLayout from './components/layout/OwnerLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import ListerLayout from './components/layout/ListerLayout';
 import PublicLayout from './components/layout/PublicLayout';
+import { ToastProvider } from './components/ui/ToastProvider';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 // Lazy-loaded pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -223,9 +224,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <RouterProvider router={router} />
-    </Suspense>
+    <ToastProvider>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </ToastProvider>
   );
 }
 

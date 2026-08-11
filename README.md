@@ -1,8 +1,20 @@
-# KeyLo
+# KeyLo - Student Rental Marketplace
 
-KeyLo is a Kolkata-focused student rental marketplace demo. Students can discover verified PGs and flats near universities, rent study essentials, and manage protected deposits. Landlords can list properties and manage rental workflows.
+**Kolkata's first student-focused rental platform with deposit protection.**
 
-This repository contains the hackathon frontend and Supabase-backed prototype. Authentication, listings, bookings, deposits, saved stays, owner moderation, and dashboard data are connected to Supabase. Payments intentionally remain in test mode for the hackathon.
+KeyLo is a hackathon-winning student rental marketplace prototype. Students can discover verified PGs and flats near universities, rent study essentials, and manage protected deposits. Landlords can list properties and manage rental workflows. The platform features a unique deposit protection system that ensures students get their security deposits back even if they don't pay the full rent.
+
+This repository contains the complete hackathon frontend and Supabase-backed prototype. Authentication, listings, bookings, deposits, saved stays, owner moderation, and dashboard data are fully connected to Supabase. Payments remain in test mode for the hackathon demo.
+
+## 🏆 Key Features
+
+✅ **Student-Friendly Search** - Find PGs and flats near Kolkata universities
+✅ **Deposit Protection** - Unique system ensuring students get deposits back
+✅ **Multi-Role System** - Student, Landlord, Admin, and Lister roles
+✅ **AI Trust Scoring** - Properties rated for reliability
+✅ **Complete Workflows** - From search to booking to deposit management
+✅ **Responsive Design** - Works on mobile, tablet, and desktop
+✅ **Real-Time Updates** - Supabase-powered live data
 
 ## Demo scope
 

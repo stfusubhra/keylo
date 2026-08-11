@@ -5,6 +5,7 @@ import { getPropertyById, getPropertyReviews, submitReview, getSavedPropertyIds,
 import { demoProperties } from '../lib/demoCatalog';
 import { colleges } from '../lib/demoCatalog';
 import PropertyLocationMap from '../components/ui/PropertyLocationMap';
+import { PageSkeleton } from '../components/ui/Skeleton';
 
 const FALLBACK_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
@@ -134,7 +135,7 @@ export default function PropertyDetailsPage() {
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
   const propertyImages = row?.images?.length ? row.images : [coverImage, ...FALLBACK_IMAGES.slice(1)];
 
-  if (isLoading) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Loading property...</div>;
+  if (isLoading) return <PageSkeleton />;
   if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
 
   return (

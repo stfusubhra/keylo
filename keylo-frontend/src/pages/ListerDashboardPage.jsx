@@ -19,6 +19,7 @@ import {
   listerMoney,
 } from '../lib/listerData';
 import ListerRequestsSection from '../components/lister/ListerRequestsSection';
+import { Skeleton } from '../components/ui/Skeleton';
 
 const inr = listerMoney;
 
@@ -703,16 +704,16 @@ export default function ListerDashboardPage() {
     return () => { active = false; };
   }, [refresh]);
 
-  if (!sessionChecked) return <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Checking your session...</div>;
-  if (!session) return <Navigate to="/lister/login" replace state={{ from: location.pathname }} />;
+if (!sessionChecked) return <Skeleton className="h-4 w-32" />;
+if (!session) return <Navigate to="/lister/login" replace state={{ from: location.pathname }} />;
 
   const section = location.pathname.replace(/^\/lister\/?/, '') || 'overview';
 
   return (
     <div className="flex flex-col gap-xl">
-      {loading ? (
-        <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Loading your dashboard...</div>
-      ) : section === 'overview' ? (
+{loading ? (
+  <Skeleton className="h-96 w-full animate-pulse" />
+) : section === 'overview' ? (
         <OverviewSection profile={profile} items={items} requests={requests} earnings={earnings} />
       ) : section === 'listings' ? (
         <ListingsSection items={items} profile={profile} onRefresh={() => setRefresh((n) => n + 1)} />
