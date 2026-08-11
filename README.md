@@ -127,4 +127,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the team workflow.
 - Replace `test_mode` with a server-side Stripe or Razorpay integration and webhook verification before accepting money.
 - Rotate demo administrator credentials, configure Supabase email confirmation and redirect URLs, and run Security Advisor before launch.
 - Never add a Supabase service-role key to frontend environment variables or repository files.
-// trigger redeploy
