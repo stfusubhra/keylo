@@ -693,7 +693,7 @@ export async function getVaultData() {
   // Open disputes for this student
   const disputes = await client
     .from('disputes')
-    .select('*, bookings(id, property_id), deposits(status, amount)')
+    .select('*, bookings(id, property_id, deposits(status, amount))')
     .eq('student_id', userData.user.id)
     .in('status', ['open', 'responding'])
     .order('created_at', { ascending: false });
