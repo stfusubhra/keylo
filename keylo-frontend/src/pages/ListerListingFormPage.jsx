@@ -230,7 +230,7 @@ export default function ListerListingFormPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-md">
               {photos.map((src, i) => (
                 <div key={`${src.slice(0, 24)}-${i}`} className="relative aspect-square border-2 border-primary overflow-hidden group">
-                  <img src={src} alt={`Listing photo ${i + 1}`} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={src} alt={`Listing photo ${i + 1}`} className="w-full h-full object-cover" />
                   <button type="button" onClick={() => removePhoto(i)} aria-label={`Remove photo ${i + 1}`} className="absolute top-1 right-1 w-7 h-7 bg-coral text-white border-2 border-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <span className="material-symbols-outlined text-[16px]">close</span>
                   </button>
@@ -349,7 +349,7 @@ export default function ListerListingFormPage() {
               <div className="bg-surface border-2 border-primary shadow-[8px_8px_0px_0px_#000000] mb-lg">
                 <div className="relative aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
                   <span className="absolute top-md left-md z-10 px-sm py-xs bg-[#C7F000] text-primary font-label-caps text-[10px] uppercase border-2 border-primary">By Owner</span>
-                  <img src={previewItem.photos[0]} alt={previewItem.name} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={previewItem.photos[0]} alt={previewItem.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-lg">
                   <div className="flex justify-between items-start mb-md">

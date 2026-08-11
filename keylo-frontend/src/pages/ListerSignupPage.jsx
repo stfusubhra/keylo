@@ -95,7 +95,7 @@ export default function ListerSignupPage() {
             <div className="flex items-center gap-lg">
               <div className="relative shrink-0">
                 {photo ? (
-                  <img src={photo} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-primary" />
+                  <img loading="lazy" src={photo} alt="Profile preview" className="w-16 h-16 rounded-full object-cover border-2 border-primary" />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-surface-container flex items-center justify-center border-2 border-primary">
                     <span className="material-symbols-outlined text-on-surface-variant text-[28px]">person</span>

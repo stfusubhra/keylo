@@ -73,7 +73,7 @@ export default function ListerLayout() {
       <div className="p-md border-t-2 border-primary">
         <div className="flex items-center gap-md">
           {profile?.photo ? (
-            <img src={profile.photo} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary flex-shrink-0" />
+            <img loading="lazy" src={profile.photo} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary flex-shrink-0" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0">
               <span className="material-symbols-outlined text-on-primary-container">person</span>

@@ -6,6 +6,8 @@ import { demoProperties } from '../lib/demoCatalog';
 import { colleges } from '../lib/demoCatalog';
 import PropertyLocationMap from '../components/ui/PropertyLocationMap';
 import { PageSkeleton } from '../components/ui/Skeleton';
+import { EmptyState } from '../components/ui/EmptyState';
+import toast from 'react-hot-toast';
 
 const FALLBACK_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
@@ -32,7 +34,6 @@ export default function PropertyDetailsPage() {
   const [reviewSaved, setReviewSaved] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
-  const [saveError, setSaveError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -59,20 +60,20 @@ export default function PropertyDetailsPage() {
     return () => { active = false; };
   }, [id]);
 
-  const handleToggleSave = async () => {
-    if (!isSupabaseConfigured) return;
-    try {
-      const result = await toggleSavedProperty(id);
-      setIsSaved(result.saved);
-      setSaveError('');
-    } catch (err) {
-      if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
-        navigate('/login', { state: { from: `/property/${id}` } });
-        return;
-      }
-      setSaveError(err.message || 'Unable to update wishlist.');
-    }
-  };
+   const handleToggleSave = async () => {
+     if (!isSupabaseConfigured) return;
+     try {
+       const result = await toggleSavedProperty(id);
+       setIsSaved(result.saved);
+       toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
+     } catch (err) {
+       if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
+         navigate('/login', { state: { from: `/property/${id}` } });
+         return;
+       }
+       toast.error(err.message || 'Unable to update wishlist.');
+     }
+   };
 
   const loadReviews = useCallback(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -143,14 +144,14 @@ export default function PropertyDetailsPage() {
       <section className="w-full px-margin-mobile md:px-margin-desktop mb-xl mt-md">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-md md:gap-gutter h-auto md:h-[500px]">
           <div className="col-span-1 md:col-span-2 h-[250px] md:h-full rounded-xl overflow-hidden shadow-md border-2 border-primary">
-            <img
+            <img loading="lazy"
               className="w-full h-full object-cover"
               src={propertyImages[0]}
               alt="Main property view"
             />
           </div>
           <div className="col-span-1 md:col-span-1 h-full rounded-xl overflow-hidden shadow-md border-2 border-primary hidden md:block">
-            <img
+            <img loading="lazy"
               className="w-full h-full object-cover"
               src={propertyImages[1]}
               alt="Study desk detail"
@@ -158,14 +159,14 @@ export default function PropertyDetailsPage() {
           </div>
           <div className="col-span-1 md:col-span-1 flex-col gap-md md:gap-gutter h-full hidden md:flex">
             <div className="h-1/2 rounded-xl overflow-hidden shadow-md border-2 border-primary">
-              <img
+              <img loading="lazy"
                 className="w-full h-full object-cover"
                 src={propertyImages[2]}
                 alt="Kitchen area"
               />
             </div>
             <div className="h-1/2 rounded-xl overflow-hidden shadow-md border-2 border-primary relative cursor-pointer group">
-              <img
+              <img loading="lazy"
                 className="w-full h-full object-cover"
                 src={propertyImages[3]}
                 alt="Lounge area"
@@ -182,10 +183,9 @@ export default function PropertyDetailsPage() {
       <div className="px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-xl relative">
         {/* Left Column: Details */}
         <div className="lg:col-span-8 flex flex-col gap-xl pb-xl">
-          {/* Header Info */}
-          <div className="flex flex-col gap-md border-b-2 border-primary pb-lg relative">
-            {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-sm font-body-md text-error">{saveError}</div>}
-            <div className="flex items-baseline gap-sm">
+           {/* Header Info */}
+           <div className="flex flex-col gap-md border-b-2 border-primary pb-lg relative">
+             <div className="flex items-baseline gap-sm">
               <span className="px-sm py-xs bg-hot-pink text-on-primary border-2 border-primary font-label-caps text-label-caps shadow-[2px_2px_0px_0px_#000000]">
                 FAST FILLING
               </span>
@@ -397,7 +397,7 @@ export default function PropertyDetailsPage() {
                   <p className="font-body-md text-body-md text-on-surface-variant mt-sm">{review.comment}</p>
                   <p className="font-label-caps text-[10px] text-on-surface-variant mt-sm">{new Date(review.created_at).toLocaleDateString('en-IN')}</p>
                 </article>
-              )) : <p className="font-body-md text-body-md text-on-surface-variant">No reviews yet. Be the first tenant to share feedback.</p>}
+              )) : <EmptyState icon="💬" title="No reviews yet" description="Be the first tenant to share feedback." />}
             </div>
             <div className="mt-lg border-2 border-primary p-md bg-surface">
               {!currentUser ? <button type="button" onClick={() => navigate('/login', { state: { from: `/property/${id}` } })} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">SIGN IN TO REVIEW</button> : (

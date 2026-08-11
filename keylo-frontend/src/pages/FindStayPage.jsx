@@ -4,6 +4,8 @@ import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties, toggleSavedProperty, getSavedPropertyIds, getReviewStats } from '../lib/supabaseData';
 import { demoProperties, universities, colleges } from '../lib/demoCatalog';
 import KolkataUniversityMap from '../components/ui/KolkataUniversityMap';
+import { EmptyState } from '../components/ui/EmptyState';
+import toast from 'react-hot-toast';
 
 function PropertyCard({ property, saved, onToggleSave }) {
   return (
@@ -13,7 +15,7 @@ function PropertyCard({ property, saved, onToggleSave }) {
         <div className="absolute top-2 left-2 z-10">
           <span className={`px-2 py-1 border-2 border-primary font-label-caps text-label-caps ${property.badgeClass}`}>{property.badge}</span>
         </div>
-        <img className="w-full h-full object-cover" src={property.image} alt={`${property.name} near ${property.university}`} />
+        <img loading="lazy" className="w-full h-full object-cover" src={property.image} alt={`${property.name} near ${property.university}`} />
         <button
           onClick={onToggleSave}
           aria-label={`Save ${property.name}`}
@@ -91,25 +93,24 @@ export default function FindStayPage() {
   const [catalog, setCatalog] = useState(demoProperties);
   const [savedIds, setSavedIds] = useState({});
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(isSupabaseConfigured);
-  const [saveError, setSaveError] = useState('');
   const [catalogError, setCatalogError] = useState('');
   const navigate = useNavigate();
 
   const handleToggleSave = async (propertyId) => {
     if (!isSupabaseConfigured) {
-      setSaveError('Sign in to save properties. Supabase is not configured for this deployment.');
+      toast.error('Sign in to save properties. Supabase is not configured for this deployment.');
       return;
     }
     try {
       const result = await toggleSavedProperty(propertyId);
       setSavedIds((current) => ({ ...current, [propertyId]: result.saved }));
-      setSaveError('');
+      toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
     } catch (err) {
       if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
         navigate('/login', { state: { from: '/find-a-stay' } });
         return;
       }
-      setSaveError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -167,11 +168,9 @@ export default function FindStayPage() {
 
   return (
     <div>
-      {/* ── Filter / Search header ── */}
-      <section className="w-full px-margin-mobile lg:px-margin-desktop py-lg lg:py-xl border-b-2 border-primary bg-surface flex flex-col gap-md lg:gap-lg">
-        {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md font-body-md text-error">{saveError}</div>}
-
-        <div>
+       {/* ── Filter / Search header ── */}
+       <section className="w-full px-margin-mobile lg:px-margin-desktop py-lg lg:py-xl border-b-2 border-primary bg-surface flex flex-col gap-md lg:gap-lg">
+         <div>
           <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-sm">KeyLo Kolkata rental guide</p>
           <h1 className="font-heading text-h1-mobile md:text-h1 text-primary tracking-tight uppercase font-bold">Find your next place.</h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mt-xs">Browse verified flats and PGs grouped by the university you are studying near in Kolkata.</p>
@@ -256,10 +255,7 @@ export default function FindStayPage() {
               />
             ))
           : (
-            <div className="py-xl text-center">
-              <h2 className="font-h3 text-h3 text-primary">No stays found</h2>
-              <p className="font-body-md text-on-surface-variant mt-sm">Try another Kolkata university, area, or rental type.</p>
-            </div>
+            <EmptyState icon="🗺️" title="No stays found" description="Try another Kolkata university, area, or rental type." />
           )}
       </section>
 

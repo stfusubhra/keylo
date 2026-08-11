@@ -55,7 +55,7 @@ export default function LandingPage() {
           {/* Visual Area — shorter on mobile so text is visible above the fold */}
           <div className="lg:col-span-6 relative h-[260px] sm:h-[380px] lg:h-[700px] order-1 lg:order-2">
             <div className="absolute inset-0 bg-surface-container-highest border-2 border-primary overflow-hidden shadow-[12px_12px_0px_0px_#000000] transform lg:rotate-2 group">
-              <img
+              <img loading="lazy"
                 className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
                 src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85"
                 alt="A modern, highly aesthetic student dormitory room bathed in natural morning light"
@@ -131,7 +131,7 @@ export default function LandingPage() {
             {/* Card 1 */}
             <Link to="/find-a-stay" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer">
               <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
-                <img
+                <img loading="lazy"
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=85"
                   alt="A bright, minimalist student PG room interior"
@@ -152,7 +152,7 @@ export default function LandingPage() {
             {/* Card 2 */}
             <Link to="/rentals" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer lg:mt-8">
               <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
-                <img
+                <img loading="lazy"
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85"
                   alt="A sleek electric scooter parked against a brutalist concrete wall"
@@ -173,7 +173,7 @@ export default function LandingPage() {
             {/* Card 3 */}
             <Link to="/rentals" className="group bg-surface-container-lowest border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer">
               <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
-                <img
+                <img loading="lazy"
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                   src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1200&q=85"
                   alt="Close up of a premium laptop and tablet on a clean white desk setup"
@@ -195,7 +195,7 @@ export default function LandingPage() {
             <Link to="/keylo-vault" className="group bg-[#7C3AED] border-2 border-primary h-full flex flex-col hover:-translate-y-2 hover:shadow-[8px_8px_0px_0px_#000000] transition-all cursor-pointer lg:mt-8">
               <div className="h-32 sm:h-48 w-full border-b-2 border-primary relative overflow-hidden bg-primary">
                 <div className="absolute inset-0 bg-[linear-gradient(transparent_0%,rgba(199,240,0,0.2)_50%,transparent_100%)] animate-[scan_3s_ease-in-out_infinite]"></div>
-                <img
+                <img loading="lazy"
                   className="w-full h-full object-cover opacity-60"
                   src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=1200&q=85"
                   alt="Abstract rendering of digital security"

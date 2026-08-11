@@ -4,6 +4,8 @@ import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMar
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 import { CardGridSkeleton, RentalCardSkeleton } from '../components/ui/Skeleton';
+import { EmptyState } from '../components/ui/EmptyState';
+import toast from 'react-hot-toast';
 
 const rentalCategories = [
   { id: 'all', label: 'All Rentals' },
@@ -27,12 +29,11 @@ const rentalCategories = [
 
 export default function RentEssentialsPage() {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('popular');
-  const [savedIds, setSavedIds] = useState({});
-  const [saveError, setSaveError] = useState('');
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+   const [sortBy, setSortBy] = useState('popular');
+   const [savedIds, setSavedIds] = useState({});
+   const [items, setItems] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
@@ -47,19 +48,19 @@ export default function RentEssentialsPage() {
     return () => { active = false; };
   }, []);
 
-  const handleToggleSave = async (itemId) => {
-    try {
-      const result = await toggleSavedRental(itemId);
-      setSavedIds((current) => ({ ...current, [itemId]: result.saved }));
-      setSaveError('');
-    } catch (error) {
-      if (error.message?.includes('signed in') || error.message?.toLowerCase().includes('auth session')) {
-        navigate('/login', { state: { from: '/rentals' } });
-        return;
-      }
-      setSaveError(error.message || 'Unable to update your wishlist.');
-    }
-  };
+   const handleToggleSave = async (itemId) => {
+     try {
+       const result = await toggleSavedRental(itemId);
+       setSavedIds((current) => ({ ...current, [itemId]: result.saved }));
+       toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
+     } catch (error) {
+       if (error.message?.includes('signed in') || error.message?.toLowerCase().includes('auth session')) {
+         navigate('/login', { state: { from: '/rentals' } });
+         return;
+       }
+       toast.error(error.message || 'Unable to update your wishlist.');
+     }
+   };
 
   const filteredItems =
     activeCategory === 'all'
@@ -101,10 +102,9 @@ export default function RentEssentialsPage() {
         </div>
       </section>
 
-      {/* Rental Categories & Grid */}
-      <section className="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-xl border-t-2 border-primary">
-        {saveError && <div role="alert" className="border-2 border-error bg-error/10 p-md mb-lg text-error">{saveError}</div>}
-        {/* Category Filters */}
+       {/* Rental Categories & Grid */}
+       <section className="w-full bg-surface-container-low px-margin-mobile lg:px-margin-desktop py-xl border-t-2 border-primary">
+         {/* Category Filters */}
         <div className="flex flex-nowrap items-center gap-sm mb-lg lg:mb-xl overflow-x-auto pb-sm hide-scrollbar">
           {rentalCategories.map((cat) => (
             <button
@@ -175,7 +175,7 @@ export default function RentEssentialsPage() {
                     </span>
                   ))}
                 </div>
-                <img
+                <img loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
                   src={item.useImage ? item.image : marketplaceCategoryImages[item.category] || item.image}
                   alt={item.name}
@@ -221,11 +221,7 @@ export default function RentEssentialsPage() {
 
         {/* Empty State */}
         {!loading && filteredItems.length === 0 && (
-          <div className="text-center py-xl">
-            <span className="material-symbols-outlined text-[64px] text-on-surface-variant mb-md">inventory_2</span>
-            <h3 className="font-h3 text-h3 text-primary mb-xs">No items found</h3>
-            <p className="font-body-md text-body-md text-on-surface-variant">Try selecting a different category.</p>
-          </div>
+          <EmptyState icon="🧺" title="No items found" description="Try selecting a different category." />
         )}
       </section>
     </div>

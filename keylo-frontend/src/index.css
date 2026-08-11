@@ -670,3 +670,17 @@
 .leaflet-popup-content {
   font-family: var(--font-inter);
 }
+
+/* Button micro-interactions */
+button:hover {
+  transform: translateY(-2px);
+}
+button:active {
+  transform: translateY(0);
+}
+
+/* Focus-visible outline */
+:focus-visible {
+  outline: 2px solid #C7F000;
+  outline-offset: 2px;
+}

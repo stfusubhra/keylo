@@ -49,7 +49,7 @@ const isAvailableProperty = (property) => {
 
 function StayCard({ property }) {
   return (
-    <article className="group flex flex-col border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:shadow-[8px_8px_0px_0px_#000000] transition-all">
+    <article className="group flex flex-col border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] hover:shadow-[8px_8px_0px_0px_#000000] transition-all">
       {/* Image */}
       <div className="relative w-full aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
         <div className="absolute top-md left-md z-10">
@@ -61,7 +61,7 @@ function StayCard({ property }) {
             {property.availability}
           </span>
         </div>
-        <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={property.image} alt={`${property.name} near ${property.university}`} />
+        <img loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={property.image} alt={`${property.name} near ${property.university}`} />
       </div>
 
       {/* Content */}
@@ -113,7 +113,7 @@ function RentalCard({ item, navigate }) {
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
-      className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
+      className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:scale-[1.02] active:scale-[0.98] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
     >
       {/* Image */}
       <div className="relative w-full aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
@@ -132,7 +132,7 @@ function RentalCard({ item, navigate }) {
             {item.availability}
           </span>
         </div>
-        <img
+        <img loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
           src={item.useImage ? item.image : marketplaceCategoryImages[item.category] || item.image}
           alt={item.name}

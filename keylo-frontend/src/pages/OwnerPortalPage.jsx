@@ -522,7 +522,7 @@ function PropertyForm({ universities, initialForm, onSubmit, onClose }) {
                       onClick={() => handleAddImage(url)}
                       className="border-2 border-primary rounded overflow-hidden h-20 relative group hover:opacity-90"
                     >
-                      <img src={url} alt={`Preset ${i}`} className="w-full h-full object-cover" />
+                      <img loading="lazy" src={url} alt={`Preset ${i}`} className="w-full h-full object-cover" />
                       <span className="absolute inset-0 bg-primary/40 text-on-primary font-label-caps text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         + Add
                       </span>
@@ -544,7 +544,7 @@ function PropertyForm({ universities, initialForm, onSubmit, onClose }) {
                       const isCover = form.coverImageUrl === url;
                       return (
                         <div key={`${url}-${idx}`} className={`border-2 border-primary p-xs relative flex flex-col bg-surface-container-lowest ${isCover ? 'ring-4 ring-acid-lime' : ''}`}>
-                          <img src={url} alt={`Property ${idx}`} className="w-full h-28 object-cover border border-primary mb-xs" />
+                          <img loading="lazy" src={url} alt={`Property ${idx}`} className="w-full h-28 object-cover border border-primary mb-xs" />
                           {isCover && (
                             <span className="absolute top-2 left-2 bg-acid-lime border border-primary px-xs font-label-caps text-[9px] uppercase">
                               Cover Photo
@@ -955,7 +955,7 @@ export default function OwnerPortalPage() {
             <div>
               {/* Cover Image & Badges */}
               <div className="h-44 bg-surface border-2 border-primary overflow-hidden relative mb-md">
-                <img
+                <img loading="lazy"
                   src={property.cover_image_url || (property.images && property.images[0]) || 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80'}
                   alt={property.name}
                   className="w-full h-full object-cover"

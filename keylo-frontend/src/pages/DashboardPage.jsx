@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { cancelBooking, getDashboardData, sendMessage } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { formatDate, formatDateTime } from '../lib/format';
+import { EmptyState } from '../components/ui/EmptyState';
 
 const dashboardSections = {
   '/dashboard/bookings': {
@@ -79,7 +80,7 @@ function DashboardSection({ section, pathname, liveData, onCancelBooking, cancel
           </div>
         </div>
         <div className="flex flex-col gap-md">
-          {isBookings && !cards.length && <div className="bg-surface-container-lowest border-2 border-primary p-lg font-body-md text-body-md text-on-surface-variant">No bookings yet. Browse a stay or rental to get started.</div>}
+          {isBookings && !cards.length && <EmptyState icon="🗓️" title="No bookings yet" description="Browse a stay or rental to get started." />}
           {cards.map(([title, detail, status, meta, icon, propertyId, bookingId]) => (
             <article key={`${title}-${meta}`} className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] flex flex-col md:flex-row md:items-center gap-lg">
               <div className="w-14 h-14 bg-acid-lime border-2 border-primary flex items-center justify-center shrink-0">
@@ -213,7 +214,7 @@ export default function DashboardPage() {
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
           <div className="w-full bg-surface-container-lowest border-2 border-primary relative group">
             <div className="h-48 w-full border-b-2 border-primary bg-cover bg-center">
-              <img
+              <img loading="lazy"
                 className="w-full h-full object-cover"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmqfhnjwc40Dh-QaEu0O0pXV41I6QhCqTeNFItdYsXdhIznPs0HZ7jVn4rvMMlaxR5r3LHRHqFIR5EpujTM3XRbPBEd45EK-dNkRxJvbTL9MnSqQG-0Ad-D6qjUptZ2njwyN7wjOeZR96A99OpMPaDXJezMePEimYnvOBgk-w72BytHplAv3AWAVytQhvLYo8_qXm_0hzv4uQyu1DEtFfvP0bvGbtOxsuRCYF6C89Y_qDzXp_QHcPy"
                 alt="Lake View Student PG room"
@@ -369,7 +370,7 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="flex flex-col relative">
-              {!activityLog.length && <p className="font-body-md text-body-md text-on-surface-variant">No activity yet. Your bookings and payments will appear here.</p>}
+              {!activityLog.length && <EmptyState icon="📋" title="No activity yet" description="Your bookings and payments will appear here." />}
               {activityLog.length > 0 && <div className="absolute left-4 top-2 bottom-2 w-[2px] bg-primary"></div>}
               {activityLog.map((item) => (
                 <div

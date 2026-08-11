@@ -4,6 +4,7 @@ import { getMarketplaceItemById, marketplaceCategoryImages } from '../lib/rental
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { createRentalBooking, getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 import { createRentalRequest } from '../lib/listerData';
+import toast from 'react-hot-toast';
 
 const DAILY_CATEGORIES = ['scooters', 'bikes'];
 
@@ -21,7 +22,6 @@ export default function RentItemPage() {
   const [errors, setErrors] = useState({});
   const [isBooking, setIsBooking] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     if (!isSupabaseConfigured || !item) return undefined;
@@ -37,13 +37,13 @@ export default function RentItemPage() {
     try {
       const result = await toggleSavedRental(item.id);
       setIsSaved(result.saved);
-      setSaveError('');
+      toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
     } catch (err) {
       if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
         navigate('/login', { state: { from: `/rentals/rent/${id}` } });
         return;
       }
-      setSaveError(err.message || 'Unable to update wishlist.');
+      toast.error(err.message || 'Unable to update wishlist.');
     }
   };
 
@@ -231,7 +231,6 @@ export default function RentItemPage() {
                     </button>
                   )}
                 </div>
-                {saveError && <p role="alert" className="mt-xs font-label-caps text-label-caps text-error">{saveError}</p>}
                 <div className="flex flex-wrap gap-xs mt-sm">
                   {item.badges.map((b) => (
                     <span key={b.label} className={`px-sm py-xs ${b.bg} ${b.textColor} font-label-caps text-[10px] uppercase border-2 border-primary`}>
@@ -242,7 +241,7 @@ export default function RentItemPage() {
               </div>
 
               <div className="border-2 border-primary overflow-hidden">
-                <img
+                <img loading="lazy"
                   src={itemImage}
                   alt={item.name}
                   className="w-full aspect-video object-cover"
@@ -428,7 +427,7 @@ export default function RentItemPage() {
 
             {/* Item card */}
             <div className="flex items-center gap-md border-2 border-primary bg-surface p-md">
-              <img src={itemImage} alt={item.name} className="w-20 h-20 object-cover border-2 border-primary flex-shrink-0" />
+              <img loading="lazy" src={itemImage} alt={item.name} className="w-20 h-20 object-cover border-2 border-primary flex-shrink-0" />
               <div>
                 <p className="font-label-caps text-label-caps text-electric-purple uppercase">{item.categoryLabel}</p>
                 <p className="font-h3 text-h3 text-primary">{item.name}</p>

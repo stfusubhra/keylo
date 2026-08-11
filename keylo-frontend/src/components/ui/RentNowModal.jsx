@@ -159,7 +159,7 @@ export default function RentNowModal({ item, onClose }) {
             <div className="p-lg flex flex-col gap-lg">
               {/* Item card */}
               <div className="flex items-center gap-md border-2 border-primary bg-surface-container-lowest p-md">
-                <img
+                <img loading="lazy"
                   src={item.image}
                   alt={item.name}
                   className="w-16 h-16 object-cover border-2 border-primary flex-shrink-0"
@@ -298,7 +298,7 @@ export default function RentNowModal({ item, onClose }) {
             <div className="p-lg flex flex-col gap-lg">
               {errors.submit && <div role="alert" className="border-2 border-error bg-error/10 p-md text-error font-body-md">{errors.submit}</div>}
               <div className="flex items-center gap-md border-2 border-primary bg-surface-container-lowest p-md">
-                <img src={item.image} alt={item.name} className="w-16 h-16 object-cover border-2 border-primary flex-shrink-0" />
+                <img loading="lazy" src={item.image} alt={item.name} className="w-16 h-16 object-cover border-2 border-primary flex-shrink-0" />
                 <div>
                   <p className="font-label-caps text-label-caps text-electric-purple uppercase">{item.categoryLabel}</p>
                   <p className="font-h3 text-h3 text-primary">{item.name}</p>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAdminUsers } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { formatDate } from '../lib/format';
+import { EmptyState } from '../components/ui/EmptyState';
 
 const roleLabels = { student: 'Student', landlord: 'Landlord', admin: 'Admin' };
 
@@ -71,9 +72,7 @@ export default function AdminUsersPage() {
             </div>
           </article>
         )) : (
-          <p className="border-2 border-primary border-dashed p-lg text-center font-body-md text-on-surface-variant">
-            {isSupabaseConfigured ? 'No user accounts found yet.' : 'Connect Supabase and sign in as an admin to see registered users.'}
-          </p>
+          <EmptyState icon="👥" title={isSupabaseConfigured ? 'No user accounts found yet' : 'No data to show'} description={isSupabaseConfigured ? 'New registrations will appear here as they join KeyLo.' : 'Connect Supabase and sign in as an admin to see registered users.'} />
         )}
       </section>
     </div>

@@ -9,7 +9,7 @@ export function ToastProvider({ children }) {
     <>
       {children}
       <Toaster
-        position="bottom-right"
+        position="top-center"
         toastOptions={{
           duration: 3500,
           style: {

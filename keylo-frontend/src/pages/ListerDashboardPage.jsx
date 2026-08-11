@@ -20,6 +20,7 @@ import {
 } from '../lib/listerData';
 import ListerRequestsSection from '../components/lister/ListerRequestsSection';
 import { Skeleton } from '../components/ui/Skeleton';
+import { EmptyState } from '../components/ui/EmptyState';
 
 const inr = listerMoney;
 
@@ -107,15 +108,12 @@ function OverviewSection({ profile, items, requests, earnings }) {
             <Link to="/lister/listings" className="font-label-caps text-label-caps text-primary hover:text-electric-purple transition-colors flex items-center gap-xs">VIEW ALL <span className="material-symbols-outlined text-[16px]">arrow_forward</span></Link>
           </div>
           {items.length === 0 ? (
-            <div className="p-lg text-center">
-              <p className="font-body-md text-body-md text-on-surface-variant mb-md">No listings yet. List your first item and start earning.</p>
-              <Link to="/lister/list-an-item" className="inline-block px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">+ LIST AN ITEM</Link>
-            </div>
+            <EmptyState icon="📦" title="No listings yet" description="List your first item and start earning." action={<Link to="/lister/list-an-item" className="inline-block px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:bg-primary hover:text-on-primary transition-all duration-200">+ LIST AN ITEM</Link>} />
           ) : (
             <div className="divide-y-2 divide-primary">
               {items.slice(0, 3).map((item) => (
                 <Link key={item.id} to="/lister/listings" className="flex items-center gap-md px-lg py-md hover:bg-surface-container-low transition-colors">
-                  <img src={item.photos?.[0] || listerCategoryImages[item.category]} alt="" className="w-14 h-14 object-cover border-2 border-primary flex-shrink-0" />
+                  <img loading="lazy" src={item.photos?.[0] || listerCategoryImages[item.category]} alt="" className="w-14 h-14 object-cover border-2 border-primary flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="font-body-lg text-body-lg text-primary font-bold truncate">{item.name}</p>
                     <p className="font-label-caps text-[10px] text-on-surface-variant uppercase">{listerCategoryLabel(item.category)} · {inr(item.pricePerDay)}/day</p>
@@ -135,9 +133,7 @@ function OverviewSection({ profile, items, requests, earnings }) {
             <Link to="/lister/requests" className="font-label-caps text-label-caps text-primary hover:text-electric-purple transition-colors flex items-center gap-xs">VIEW ALL <span className="material-symbols-outlined text-[16px]">arrow_forward</span></Link>
           </div>
           {requests.length === 0 ? (
-            <div className="p-lg text-center">
-              <p className="font-body-md text-body-md text-on-surface-variant">No rental requests yet. They show up here the moment a student books your item.</p>
-            </div>
+            <EmptyState icon="📥" title="No rental requests yet" description="They show up here the moment a student books your item." />
           ) : (
             <div className="divide-y-2 divide-primary">
               {requests.slice(0, 3).map((req) => (
@@ -239,7 +235,7 @@ function ListingsSection({ items, profile, onRefresh }) {
           {filtered.map((item) => (
             <article key={item.id} className="bg-surface border-2 border-primary shadow-[6px_6px_0px_0px_#000000] flex flex-col">
               <div className="relative aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
-                <img src={item.photos?.[0] || listerCategoryImages[item.category]} alt={item.name} className="w-full h-full object-cover" />
+                <img loading="lazy" src={item.photos?.[0] || listerCategoryImages[item.category]} alt={item.name} className="w-full h-full object-cover" />
                 <span className={`absolute top-md left-md px-sm py-xs border-2 border-primary font-label-caps text-[10px] uppercase ${item.availability === 'available' ? 'bg-acid-lime text-primary' : 'bg-surface-container text-on-surface-variant'}`}>
                   {item.availability === 'available' ? 'Live on rentals' : 'Hidden'}
                 </span>
@@ -313,9 +309,7 @@ function EarningsSection({ earnings }) {
           <span className="font-label-caps text-label-caps text-on-surface-variant">{ledger.length} {ledger.length === 1 ? 'entry' : 'entries'}</span>
         </div>
         {ledger.length === 0 ? (
-          <div className="p-lg text-center">
-            <p className="font-body-md text-body-md text-on-surface-variant">No payouts yet. Accept a rental request and it lands here instantly.</p>
-          </div>
+          <EmptyState icon="💰" title="No payouts yet" description="Accept a rental request and it lands here instantly." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -353,7 +347,7 @@ function EarningsSection({ earnings }) {
           <div className="divide-y-2 divide-primary">
             {byItem.map(({ item, earned, rentals }) => (
               <div key={item.id} className="flex items-center gap-md px-lg py-md">
-                <img src={item.photos?.[0] || listerCategoryImages[item.category]} alt="" className="w-12 h-12 object-cover border-2 border-primary flex-shrink-0" />
+                <img loading="lazy" src={item.photos?.[0] || listerCategoryImages[item.category]} alt="" className="w-12 h-12 object-cover border-2 border-primary flex-shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="font-body-md text-body-md text-primary font-bold truncate">{item.name}</p>
                   <p className="font-label-caps text-[10px] text-on-surface-variant uppercase">{rentals} {rentals === 1 ? 'rental' : 'rentals'}</p>
@@ -424,7 +418,7 @@ function ProfileSection({ profile, onRefresh }) {
       <form onSubmit={handleSubmit} className="max-w-2xl bg-surface border-2 border-primary p-xl shadow-[6px_6px_0px_0px_#000000] flex flex-col gap-lg">
         <div className="flex items-center gap-lg">
           {photo ? (
-            <img src={photo} alt="Profile preview" className="w-20 h-20 rounded-full object-cover border-2 border-primary" />
+            <img loading="lazy" src={photo} alt="Profile preview" className="w-20 h-20 rounded-full object-cover border-2 border-primary" />
           ) : (
             <div className="w-20 h-20 rounded-full bg-surface-container flex items-center justify-center border-2 border-primary">
               <span className="material-symbols-outlined text-[36px] text-on-surface-variant">person</span>
