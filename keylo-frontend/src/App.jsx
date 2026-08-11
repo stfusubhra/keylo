@@ -38,6 +38,7 @@ const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const SupportPage = lazy(() => import('./pages/SupportPage'));
+const AccessibilityStatementPage = lazy(() => import('./pages/AccessibilityStatementPage'));
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
 const AdminAnalyticsPage = lazy(() => import('./pages/AdminAnalyticsPage'));
 const ListerDashboardPage = lazy(() => import('./pages/ListerDashboardPage'));
@@ -127,6 +128,7 @@ const router = createBrowserRouter([
       { path: 'privacy', element: <PrivacyPage /> },
       { path: 'terms', element: <TermsPage /> },
       { path: 'support', element: <SupportPage /> },
+      { path: 'accessibility', element: <AccessibilityStatementPage /> },
     ],
   },
   {
