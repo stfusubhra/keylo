@@ -58,6 +58,17 @@ export async function updateListerItem(itemId, lister, data) { const { data: row
 export async function deleteListerItem(itemId, lister) { const { error } = await requireClient().from('lister_items').delete().eq('id', itemId).eq('lister_id', lister.id); if (error) throw error; }
 export async function getPublishedListerItems() { if (!supabase) return []; const { data, error } = await supabase.from('lister_items').select('*').eq('availability', 'available').order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapItem); }
 
+// Public contact details for the person who listed an item, exposed through a
+// guarded RPC (lister_profiles is RLS-private). Returns { name, phone } or
+// null when unavailable; phone is omitted unless the lister opted into a
+// public profile. Errors degrade to null so the page renders gracefully.
+export async function getPublicLister(itemId) {
+  if (!supabase) return null;
+  const { data, error } = await supabase.rpc('get_public_lister', { p_item_id: itemId });
+  if (error) return null;
+  return data || null;
+}
+
 export async function getListerRequests(listerId) { const { data, error } = await requireClient().from('lister_requests').select('*').eq('lister_id', listerId).order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapRequest); }
 export async function createRentalRequest({ itemId, startDate, endDate, message = '' }) { const { data, error } = await requireClient().rpc('create_lister_request', { p_item_id: itemId, p_start_date: startDate, p_end_date: endDate, p_message: message }); if (error) throw error; return mapRequest(data); }
 export async function respondToRentalRequest(requestId, decision) { const { data, error } = await requireClient().rpc('respond_to_lister_request', { p_request_id: requestId, p_decision: decision }); if (error) throw error; return mapRequest(data); }

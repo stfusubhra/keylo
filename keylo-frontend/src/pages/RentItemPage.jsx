@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getMarketplaceItemById, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { createRentalBooking, getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
-import { createRentalRequest } from '../lib/listerData';
+import { createRentalRequest, getPublicLister } from '../lib/listerData';
+import RentalImageCarousel from '../components/ui/RentalImageCarousel';
 import LoadingScreen from '../components/ui/LoadingScreen';
 import toast from 'react-hot-toast';
 
@@ -23,6 +24,7 @@ export default function RentItemPage() {
   const [errors, setErrors] = useState({});
   const [isBooking, setIsBooking] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [lister, setLister] = useState(null); // { name, phone } for lister items
 
   useEffect(() => {
     if (!isSupabaseConfigured || !item) return undefined;
@@ -79,6 +81,16 @@ export default function RentItemPage() {
     });
     return () => { active = false; };
   }, [id]);
+
+  // Fetch the person who listed this rental item (lister items only).
+  useEffect(() => {
+    if (!item?.listerItemId) { setLister(null); return undefined; }
+    let active = true;
+    getPublicLister(item.listerItemId)
+      .then((info) => { if (active) setLister(info || null); })
+      .catch(() => { if (active) setLister(null); });
+    return () => { active = false; };
+  }, [item?.listerItemId]);
 
   const today = new Date().toISOString().split('T')[0];
 
@@ -293,13 +305,10 @@ export default function RentItemPage() {
                 </div>
               </div>
 
-              <div className="border-2 border-primary overflow-hidden">
-                <img loading="lazy"
-                  src={itemImage}
-                  alt={item.name}
-                  className="w-full aspect-video object-cover"
-                />
-              </div>
+              <RentalImageCarousel
+                images={item.photos?.length ? item.photos : [itemImage]}
+                alt={item.name}
+              />
 
               <div className="border-2 border-primary bg-surface p-lg">
                 <h2 className="font-h3 text-h3 text-primary mb-md uppercase">About this item</h2>
@@ -324,6 +333,31 @@ export default function RentItemPage() {
                   ))}
                 </div>
               </div>
+
+              {item.listerItemId && (
+                <div className="border-2 border-primary bg-surface p-lg">
+                  <h2 className="font-h3 text-h3 text-primary mb-md uppercase">Listed By</h2>
+                  <div className="flex flex-col gap-md">
+                    <div className="flex items-start gap-sm">
+                      <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">person</span>
+                      <div className="min-w-0">
+                        <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Lister</p>
+                        <p className="font-body-md text-body-md text-primary break-words">{lister?.name || 'KeyLo verified lister'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-sm">
+                      <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">call</span>
+                      <div className="min-w-0">
+                        <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Phone</p>
+                        <p className="font-body-md text-body-md text-primary break-words">{lister?.phone || 'Not provided'}</p>
+                      </div>
+                    </div>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">
+                      Contact the lister for pickup or delivery coordination.
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right — booking form */}
