@@ -34,6 +34,7 @@ export default function PropertyDetailsPage() {
   const [reviewSaved, setReviewSaved] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,6 +75,28 @@ export default function PropertyDetailsPage() {
        toast.error(err.message || 'Unable to update wishlist.');
      }
    };
+
+  const handleShare = async (action) => {
+    setShareOpen(false);
+    const url = `${window.location.origin}/property/${id}`;
+    const title = name;
+    const text = `Check out "${title}" on KeyLo — ${description?.slice(0, 80)}...`;
+
+    if (action === 'copy') {
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success('Link copied to clipboard');
+      } catch {
+        toast.error('Failed to copy link');
+      }
+      return;
+    }
+
+    if (action === 'whatsapp') {
+      const waUrl = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
+      window.open(waUrl, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const loadReviews = useCallback(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -195,17 +218,51 @@ export default function PropertyDetailsPage() {
             </div>
             <div className="flex items-start justify-between gap-md">
               <h1 className="font-heading text-h1-mobile md:text-h1 text-primary font-bold">{name}</h1>
-              <button
-                type="button"
-                onClick={handleToggleSave}
-                aria-label={isSaved ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
-                aria-pressed={isSaved}
-                title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
-                className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
-              >
-                <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
-                <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
-              </button>
+              <div className="flex items-center gap-sm flex-shrink-0">
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShareOpen((v) => !v)}
+                    aria-label="Share this property"
+                    aria-expanded={shareOpen}
+                    className="flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps bg-surface-container-lowest text-primary hover:bg-acid-lime hover:text-primary transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">share</span>
+                    <span className="hidden sm:inline">SHARE</span>
+                  </button>
+                  {shareOpen && (
+                    <div className="absolute right-0 top-full mt-xs z-50 min-w-[180px] bg-surface border-2 border-primary shadow-[4px_4px_0px_0px_#000000]">
+                      <button
+                        type="button"
+                        onClick={() => handleShare('copy')}
+                        className="flex items-center gap-sm w-full px-md py-sm text-left font-label-caps text-label-caps text-primary hover:bg-acid-lime transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                        Copy Link
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShare('whatsapp')}
+                        className="flex items-center gap-sm w-full px-md py-sm text-left font-label-caps text-label-caps text-primary hover:bg-acid-lime transition-colors border-t-2 border-primary"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">share</span>
+                        WhatsApp
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleSave}
+                  aria-label={isSaved ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
+                  aria-pressed={isSaved}
+                  title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
+                  className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+                >
+                  <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                  <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
+                </button>
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-md font-body-md text-body-md text-on-surface-variant">
               <div className="flex items-center gap-xs text-primary font-bold">
