@@ -4,7 +4,7 @@ import { createBooking, createTestPayment, getPropertyById } from '../lib/supaba
 import { isSupabaseConfigured } from '../lib/supabase';
 import { demoProperties } from '../lib/demoCatalog';
 import { supabase } from '../lib/supabase';
-import { PageSkeleton } from '../components/ui/Skeleton';
+import LoadingScreen from '../components/ui/LoadingScreen';
 
 export default function SecureYourStayPage() {
   const { id = 'jadavpur-pg' } = useParams();
@@ -94,7 +94,7 @@ export default function SecureYourStayPage() {
 
   const newTotal = baseTotal + addonsTotal;
 
-  if (isLoadingProperty) return <PageSkeleton />;
+  if (isLoadingProperty) return <LoadingScreen label="Loading stay details..." className="min-h-screen" />;
   if (isSupabaseConfigured && (propertyError || !property)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{propertyError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
 
   const simulateCheckout = async () => {

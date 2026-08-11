@@ -19,7 +19,7 @@ import {
   listerMoney,
 } from '../lib/listerData';
 import ListerRequestsSection from '../components/lister/ListerRequestsSection';
-import { Skeleton } from '../components/ui/Skeleton';
+import LoadingScreen from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
 
 const inr = listerMoney;
@@ -698,7 +698,7 @@ export default function ListerDashboardPage() {
     return () => { active = false; };
   }, [refresh]);
 
-if (!sessionChecked) return <Skeleton className="h-4 w-32" />;
+if (!sessionChecked) return <LoadingScreen label="Checking your session..." className="min-h-[40vh]" />;
 if (!session) return <Navigate to="/lister/login" replace state={{ from: location.pathname }} />;
 
   const section = location.pathname.replace(/^\/lister\/?/, '') || 'overview';
@@ -706,7 +706,7 @@ if (!session) return <Navigate to="/lister/login" replace state={{ from: locatio
   return (
     <div className="flex flex-col gap-xl">
 {loading ? (
-  <Skeleton className="h-96 w-full animate-pulse" />
+  <LoadingScreen label="Loading your dashboard..." />
 ) : section === 'overview' ? (
         <OverviewSection profile={profile} items={items} requests={requests} earnings={earnings} />
       ) : section === 'listings' ? (

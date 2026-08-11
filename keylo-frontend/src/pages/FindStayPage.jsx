@@ -5,6 +5,7 @@ import { listProperties, toggleSavedProperty, getSavedPropertyIds, getReviewStat
 import { demoProperties, universities, colleges } from '../lib/demoCatalog';
 import KolkataUniversityMap from '../components/ui/KolkataUniversityMap';
 import { EmptyState } from '../components/ui/EmptyState';
+import LoadingKey from '../components/ui/LoadingKey';
 import toast from 'react-hot-toast';
 
 function PropertyCard({ property, saved, onToggleSave }) {
@@ -239,7 +240,7 @@ export default function FindStayPage() {
         <div className="flex flex-wrap items-center justify-between gap-md pb-sm border-b-2 border-primary">
           <span className="font-label-caps text-label-caps text-primary">
             {isLoadingCatalog
-              ? 'Loading live Kolkata stays...'
+              ? <span className="inline-flex items-center gap-sm"><LoadingKey className="w-4 h-4" /> Loading live Kolkata stays...</span>
               : `Showing ${filteredProperties.length} ${filteredProperties.length === 1 ? 'stay' : 'stays'} near ${selectedUniversity === 'All Kolkata' ? 'Kolkata universities' : selectedUniversity}`}
           </span>
           <span className="font-label-caps text-label-caps text-on-surface-variant">Sorted by university distance</span>

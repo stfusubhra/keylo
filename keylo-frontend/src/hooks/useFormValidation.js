@@ -5,7 +5,7 @@ const PASSWORD_REGEX = {
   hasUpperCase: /[A-Z]/,
   hasLowerCase: /[a-z]/,
   hasNumber: /\d/,
-  hasSpecialChar: /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/,
+  hasSpecialChar: /[!@#$%^&*()_+{}[\]:;<>,.?~/-]/,
 };
 
 const PHONE_REGEX = /\+91[6-9]\d{9}/;

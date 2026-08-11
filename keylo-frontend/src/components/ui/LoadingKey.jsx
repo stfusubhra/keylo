@@ -1,6 +1,6 @@
-export default function LoadingKey() {
+export default function LoadingKey({ className = '' }) {
   return (
-    <div className="animate-spin inline-block w-10 h-10">
+    <div className={`animate-spin inline-block w-10 h-10 ${className}`}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"

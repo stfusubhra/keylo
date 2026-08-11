@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
-import { CardGridSkeleton, RentalCardSkeleton } from '../components/ui/Skeleton';
+import LoadingScreen from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
 import toast from 'react-hot-toast';
 
@@ -147,7 +147,7 @@ export default function RentEssentialsPage() {
 
         {/* Rental Grid */}
         {loading ? (
-          <CardGridSkeleton columns={3} count={6} card={RentalCardSkeleton} />
+          <LoadingScreen label="Loading rentals..." />
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
             {visibleItems.map((item) => (

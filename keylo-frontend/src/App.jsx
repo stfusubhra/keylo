@@ -6,6 +6,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import ListerLayout from './components/layout/ListerLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import { ToastProvider } from './components/ui/ToastProvider';
+import LoadingScreen from './components/ui/LoadingScreen';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 // Lazy-loaded pages
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -80,7 +81,7 @@ function useAuthRole() {
 }
 
 function LoadingSession() {
-  return <div className="min-h-screen flex items-center justify-center bg-surface-container-low font-label-caps text-label-caps text-primary">Checking your session...</div>;
+  return <LoadingScreen label="Checking your session..." className="min-h-screen bg-surface-container-low" />;
 }
 
 function RouteGuard({ role, children }) {
@@ -225,7 +226,7 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ToastProvider>
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <Suspense fallback={<LoadingScreen label="Loading..." className="min-h-screen bg-surface-container-low" />}>
         <RouterProvider router={router} />
       </Suspense>
     </ToastProvider>

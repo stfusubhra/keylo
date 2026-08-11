@@ -4,6 +4,7 @@ import { getMarketplaceItemById, marketplaceCategoryImages } from '../lib/rental
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { createRentalBooking, getSavedRentalIds, toggleSavedRental } from '../lib/supabaseData';
 import { createRentalRequest } from '../lib/listerData';
+import LoadingScreen from '../components/ui/LoadingScreen';
 import toast from 'react-hot-toast';
 
 const DAILY_CATEGORIES = ['scooters', 'bikes'];
@@ -60,11 +61,7 @@ export default function RentItemPage() {
   const today = new Date().toISOString().split('T')[0];
 
   if (!itemLoaded) {
-    return (
-      <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface flex items-center justify-center font-label-caps text-label-caps text-primary">
-        Loading item...
-      </div>
-    );
+    return <LoadingScreen label="Loading item..." className="min-h-screen bg-surface-container-low" />;
   }
 
   if (!item) {

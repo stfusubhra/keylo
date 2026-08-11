@@ -13,6 +13,7 @@ import {
   fileToDataUrl,
   listerMoney,
 } from '../lib/listerData';
+import LoadingScreen from '../components/ui/LoadingScreen';
 
 const inr = listerMoney;
 const MAX_PHOTOS = 5;
@@ -77,13 +78,13 @@ export default function ListerListingFormPage() {
     return () => { active = false; };
   }, [isEdit, itemId, navigate]);
 
-  if (authLoading) return <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Checking your session...</div>;
+  if (authLoading) return <LoadingScreen label="Checking your session..." />;
   if (!session || !profile) {
     return <Navigate to="/lister/login" replace state={{ from: `/lister/list-an-item${itemId ? `/${itemId}` : ''}` }} />;
   }
 
   if (!loaded) {
-    return <div className="py-xl text-center font-label-caps text-label-caps text-on-surface-variant">Loading listing...</div>;
+    return <LoadingScreen label="Loading listing..." />;
   }
 
   const setField = (key, value) => {

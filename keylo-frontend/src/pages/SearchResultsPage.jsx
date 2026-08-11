@@ -4,7 +4,7 @@ import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties } from '../lib/supabaseData';
 import { demoProperties } from '../lib/demoCatalog';
 import { getMarketplaceItems, marketplaceCategoryImages } from '../lib/rentalMarketplace';
-import { CardGridSkeleton, RentalCardSkeleton } from '../components/ui/Skeleton';
+import LoadingScreen from '../components/ui/LoadingScreen';
 
 // ────────────────────────────────────────────────────────────────────────────
 // Search results page. Reads `q` (query) and `category` (stay | mobility |
@@ -339,7 +339,7 @@ export default function SearchResultsPage() {
           </div>
 
           {loading ? (
-            <CardGridSkeleton columns={3} count={6} card={RentalCardSkeleton} />
+            <LoadingScreen label="Searching Kolkata..." />
           ) : results.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
               {results.map((result) =>
