@@ -135,8 +135,9 @@ export default function KeyloVaultPage() {
       setDisputeTarget(null);
       setDisputeReason('');
       // Refresh
-      const { bookings: data } = await getVaultData();
+      const { bookings: data, disputes: disp } = await getVaultData();
       setBookings(data);
+      setDisputes(disp);
     } catch (err) {
       toast.error(err.message || 'Failed to open dispute');
     } finally {
@@ -162,6 +163,10 @@ export default function KeyloVaultPage() {
 
   const hasActiveBooking = bookings.some((b) => ['confirmed', 'active'].includes(b.status));
   const hasCompletedBooking = bookings.some((b) => b.status === 'completed');
+  const activeDepositCount = bookings.filter((b) => {
+    const d = firstDeposit(b);
+    return d && d.status !== 'released';
+  }).length;
 
   return (
     <div className="bg-surface font-body-md text-on-surface min-h-screen">
@@ -172,36 +177,51 @@ export default function KeyloVaultPage() {
       <div className="relative z-10 max-w-6xl mx-auto px-margin-mobile lg:px-margin-desktop py-xl flex flex-col gap-xl">
 
         {/* ── Header ── */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-md">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-lg">
           <div>
             <div className="flex items-center gap-xs px-sm py-xs bg-acid-lime/10 border-2 border-acid-lime w-max mb-md">
               <span className="material-symbols-outlined text-acid-lime text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
               <span className="font-label-caps text-label-caps text-acid-lime">SECURED IN KEYLO VAULT</span>
             </div>
             <h1 className="font-heading text-h1-mobile md:text-h1 text-primary font-bold leading-tight">
-              Your deposit.<br />Protected.
+              Your deposit. <span className="text-acid-lime">Protected.</span>
             </h1>
             <p className="font-body-md text-on-surface-variant mt-sm max-w-md">
               {hasActiveBooking
-                ? 'Your security deposit is held safely in escrow until move-out. No hidden fees, no surprises.'
+                ? 'Your security deposit sits in escrow with KeyLo — never handed straight to the landlord. Request a refund at checkout, or open a dispute if anything feels off.'
                 : hasCompletedBooking
-                ? 'Your booking is complete. Request a refund or check your vault history below.'
-                : 'Book a stay to see your protected deposit here.'}
+                ? 'Your stay is wrapped up. Request your refund below, or check your vault history — your money stays protected until it reaches you.'
+                : 'Book a stay and your security deposit is locked in the KeyLo Vault — protected end to end, refundable at move-out.'}
             </p>
+            <div className="flex flex-wrap gap-x-lg gap-y-xs mt-md">
+              <span className="flex items-center gap-xs font-label-caps text-label-caps text-primary text-[10px] uppercase">
+                <span className="material-symbols-outlined text-sm text-acid-lime" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+                Escrow-held, never landlord-held
+              </span>
+              <span className="flex items-center gap-xs font-label-caps text-label-caps text-primary text-[10px] uppercase">
+                <span className="material-symbols-outlined text-sm text-acid-lime" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+                100% refund guarantee
+              </span>
+              <span className="flex items-center gap-xs font-label-caps text-label-caps text-primary text-[10px] uppercase">
+                <span className="material-symbols-outlined text-sm text-acid-lime" style={{ fontVariationSettings: "'FILL' 1" }}>gavel</span>
+                AI-assisted disputes
+              </span>
+            </div>
           </div>
 
           {/* Balance Card */}
-          <div className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#000000] min-w-[200px]">
-            <span className="font-label-caps text-label-caps text-on-surface-variant block mb-xs">Total Held</span>
+          <div className="bg-surface-container-lowest border-2 border-primary p-lg shadow-[8px_8px_0px_0px_#000000] min-w-[220px]">
+            <div className="flex items-center justify-between gap-sm mb-xs">
+              <span className="font-label-caps text-label-caps text-on-surface-variant">Total Held</span>
+              <span className="material-symbols-outlined text-on-surface-variant text-sm">account_balance</span>
+            </div>
             <div className="font-price-display text-price-display text-acid-lime">{formatMoney(totalHeld)}</div>
             <div className="font-body-sm text-on-surface-variant mt-xs">
-              {(() => {
-                const activeDeposits = bookings.filter((b) => {
-                  const d = firstDeposit(b);
-                  return d && d.status !== 'released';
-                }).length;
-                return `${activeDeposits} active deposit${activeDeposits !== 1 ? 's' : ''}`;
-              })()}
+              {activeDepositCount} active deposit{activeDepositCount !== 1 ? 's' : ''}
+            </div>
+            <div className="mt-md pt-md border-t-2 border-primary/10 flex items-center gap-xs">
+              <span className="material-symbols-outlined text-sm text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>lock</span>
+              <span className="font-body-sm text-on-surface-variant">In escrow until move-out</span>
             </div>
           </div>
         </div>
