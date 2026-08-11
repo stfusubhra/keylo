@@ -15,8 +15,8 @@ export default function LoadingKey({ className = '' }) {
         strokeLinejoin="round"
         className="w-full h-full text-primary"
       >
-        {/* Key bow (ring) */}
-        <circle cx="7.5" cy="15.5" r="5.5" />
+        {/* Key bow (ring) — filled with brand acid-lime for pop */}
+        <circle cx="7.5" cy="15.5" r="5.5" className="fill-acid-lime" />
         {/* Shaft */}
         <path d="m21 2-9.6 9.6" />
         {/* Teeth */}
