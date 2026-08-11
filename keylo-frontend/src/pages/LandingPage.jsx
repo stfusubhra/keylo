@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { demoProperties } from '../lib/demoCatalog';
 
 export default function LandingPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,27 +70,79 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Visual Area — shorter on mobile so text is visible above the fold */}
-          <div className="lg:col-span-6 relative h-[260px] sm:h-[380px] lg:h-[700px] order-1 lg:order-2">
-            <div className="absolute inset-0 bg-surface-container-highest border-2 border-primary overflow-hidden shadow-[12px_12px_0px_0px_#000000] transform lg:rotate-2 group">
-              <img loading="lazy"
-                className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700"
-                src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1600&q=85"
-                alt="A modern, highly aesthetic student dormitory room bathed in natural morning light"
-              />
-              {/* UI Overlay 1 — hidden on very small screens to avoid clutter */}
-              <div className="hidden sm:flex absolute top-8 left-[-20px] bg-surface-container-lowest border-2 border-primary p-4 shadow-[4px_4px_0px_0px_#000000] items-center gap-3 animate-pulse" style={{ animationDuration: '3s' }}>
-                <span className="material-symbols-outlined text-[#7C3AED] text-3xl">verified</span>
-                <div>
-                  <p className="font-label-caps text-[10px] text-on-surface-variant">Status</p>
-                  <p className="font-h3 text-[16px] text-primary">Verified Property</p>
-                </div>
+          {/* Visual Area — horizontal scrolling property carousel */}
+          <div className="lg:col-span-6 relative h-[260px] sm:h-[380px] lg:h-[700px] order-1 lg:order-2 overflow-hidden" aria-label="Featured properties carousel">
+            <div className="absolute inset-0 bg-surface-container-highest border-2 border-primary shadow-[12px_12px_0px_0px_#000000] transform lg:rotate-1 overflow-hidden">
+              {/* Gradient fade on edges */}
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-surface-container-highest to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-surface-container-highest to-transparent z-10 pointer-events-none" />
+
+              {/* Scrolling track — duplicated for seamless loop */}
+              <div className="animate-scroll flex gap-3 h-full items-center py-4" style={{ width: 'max-content' }}>
+                {/* Two copies of the same cards for infinite loop */}
+                {[...demoProperties, ...demoProperties].map((property, idx) => {
+                  const isFeatured = property.featured;
+                  return (
+                    <Link
+                      key={`${property.id}-${idx}`}
+                      to={`/property/${property.id}`}
+                      className="flex-shrink-0 group cursor-pointer"
+                      aria-label={`View ${property.name} — ${property.price}/month near ${property.university}`}
+                    >
+                      <div className={`w-[220px] sm:w-[260px] border-2 border-primary bg-surface-container-lowest shadow-[6px_6px_0px_0px_#000000] overflow-hidden transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-[8px_8px_0px_0px_#000000] ${isFeatured ? 'ring-2 ring-acid-lime ring-offset-2 ring-offset-surface-container-highest' : ''}`}>
+                        {/* Image */}
+                        <div className="relative h-[160px] sm:h-[200px] overflow-hidden border-b-2 border-primary">
+                          <img
+                            loading="lazy"
+                            src={property.image}
+                            alt={property.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          {/* Badge */}
+                          <div className={`absolute top-2 left-2 px-2 py-1 border-2 border-primary font-label-caps text-[9px] sm:text-[10px] uppercase shadow-[2px_2px_0px_0px_#000000] ${property.badgeClass}`}>
+                            {property.badge}
+                          </div>
+                          {/* Featured tag */}
+                          {isFeatured && (
+                            <div className="absolute top-2 right-2 bg-hot-pink border-2 border-primary px-2 py-1 font-label-caps text-[9px] text-white shadow-[2px_2px_0px_0px_#000000]">
+                              FEATURED
+                            </div>
+                          )}
+                        </div>
+                        {/* Info */}
+                        <div className="p-3">
+                          <h3 className="font-h3 text-h3 text-primary text-[13px] sm:text-[15px] font-bold leading-tight mb-1 line-clamp-1">
+                            {property.name}
+                          </h3>
+                          <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-[12px] mb-2">
+                            Near {property.university.replace('Near ', '')} · {property.area}
+                          </p>
+                          <div className="flex items-end justify-between">
+                            <div>
+                              <p className="font-price-display text-price-display text-primary text-[18px] sm:text-[22px] leading-none">{property.price}</p>
+                              <p className="font-body-md text-[10px] text-on-surface-variant">/ month</p>
+                            </div>
+                            <span className="material-symbols-outlined text-primary text-[20px] opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-4px] group-hover:translate-x-0">arrow_forward</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
-              {/* UI Overlay 2 */}
-              <div className="absolute bottom-8 right-[-10px] bg-[#FF3366] border-2 border-primary px-4 py-2 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-2 transform -rotate-3">
-                <span className="material-symbols-outlined text-white text-xl">bolt</span>
-                <p className="font-label-caps text-white text-[10px] sm:text-label-caps">Instant Booking</p>
+            </div>
+
+            {/* Floating trust badges — desktop only */}
+            <div className="hidden lg:flex absolute top-6 left-[-10px] bg-surface-container-lowest border-2 border-primary p-3 shadow-[4px_4px_0px_0px_#000000] items-center gap-2 z-20">
+              <span className="material-symbols-outlined text-[#7C3AED] text-2xl">verified</span>
+              <div>
+                <p className="font-label-caps text-[9px] text-on-surface-variant uppercase">Trust Score</p>
+                <p className="font-h3 text-[13px] text-primary leading-none">85+/100</p>
               </div>
+            </div>
+            <div className="hidden lg:flex absolute bottom-6 right-[-10px] bg-acid-lime border-2 border-primary px-3 py-2 shadow-[4px_4px_0px_0px_#000000] items-center gap-2 z-20">
+              <span className="material-symbols-outlined text-primary text-xl">shield</span>
+              <p className="font-label-caps text-[10px] text-primary uppercase font-bold">Deposit Protected</p>
             </div>
           </div>
         </div>

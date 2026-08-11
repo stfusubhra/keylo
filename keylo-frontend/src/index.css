@@ -686,6 +686,30 @@ button:active {
 }
 
 /* ═══════════════════════════════════════════
+   INFINITE HORIZONTAL SCROLL (MARQUEE)
+   ═══════════════════════════════════════════ */
+@keyframes keylo-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: keylo-scroll 40s linear infinite;
+}
+
+/* Pause on hover so users can click cards */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-scroll {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
    MOBILE OPTIMIZATIONS
    ═══════════════════════════════════════════ */
 
