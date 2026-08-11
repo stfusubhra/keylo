@@ -185,11 +185,18 @@ export default function Header({ variant = 'default' }) {
              </>
            ) : isAdmin ? null : (
             <>
-              <Link to="/login" className="px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-hard transition-all hidden sm:inline-flex">
-                Log In
+              <Link to="/login" className="hidden sm:inline-flex px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-hard transition-all items-center gap-xs">
+                <span className="material-symbols-outlined text-[20px]">login</span> Log In
               </Link>
-              <Link to="/signup" className="px-lg py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-surface-container-lowest hover:text-primary transition-all hidden sm:inline-flex">
-                Sign Up
+              <Link to="/signup" className="hidden sm:inline-flex px-lg py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-surface-container-lowest hover:text-primary transition-all items-center gap-xs">
+                <span className="material-symbols-outlined text-[20px]">person_add</span> Sign Up
+              </Link>
+              {/* Mobile-only login/signup */}
+              <Link to="/login" className="sm:hidden flex items-center justify-center gap-xs px-md py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">
+                <span className="material-symbols-outlined text-[20px]">login</span>
+              </Link>
+              <Link to="/signup" className="sm:hidden flex items-center justify-center px-md py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps">
+                <span className="material-symbols-outlined text-[20px]">person_add</span>
               </Link>
             </>
           )}
@@ -197,7 +204,7 @@ export default function Header({ variant = 'default' }) {
           {/* Mobile Menu Button */}
           {!isAdmin && (
             <button
-              className="lg:hidden p-xs text-on-surface-variant hover:text-primary transition-colors"
+              className="lg:hidden p-md text-on-surface-variant hover:text-primary transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}

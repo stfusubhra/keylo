@@ -102,7 +102,7 @@ export default function KolkataUniversityMap({ properties = [], colleges = [], s
       const marker = L.marker([college.lat, college.lng], { icon: collegeIcon(selected) });
       const nearby = staysNear(college.name);
       const popup = document.createElement('div');
-      popup.className = 'w-[220px] font-body-md text-on-surface';
+      popup.className = 'font-body-md text-on-surface max-w-[280px] sm:max-w-none';
       popup.innerHTML = `
         <p class="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Campus</p>
         <p class="font-h3 text-h3 text-primary leading-tight">${college.name}</p>
@@ -122,7 +122,7 @@ export default function KolkataUniversityMap({ properties = [], colleges = [], s
       if (property.lat == null || property.lng == null) return;
       const marker = L.marker([property.lat, property.lng], { icon: propertyIcon });
       const popup = document.createElement('div');
-      popup.className = 'w-[220px] font-body-md text-on-surface';
+      popup.className = 'font-body-md text-on-surface max-w-[280px] sm:max-w-none';
       popup.innerHTML = `
         <p class="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Near ${property.university || 'Kolkata campus'}</p>
         <p class="font-h3 text-h3 text-primary leading-tight">${property.name}</p>

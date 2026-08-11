@@ -40,7 +40,7 @@ export default function PropertyLocationMap({ lat, lng, name = '', area = '', di
       popupAnchor: [0, -17],
     });
     const popup = document.createElement('div');
-    popup.className = 'w-[220px] font-body-md text-on-surface';
+    popup.className = 'font-body-md text-on-surface max-w-[280px] sm:max-w-none';
     popup.innerHTML = `
       <p class="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">${area || 'Kolkata'}</p>
       <p class="font-h3 text-h3 text-primary leading-tight">${name}</p>
@@ -60,7 +60,7 @@ export default function PropertyLocationMap({ lat, lng, name = '', area = '', di
       });
       L.marker([campus.lat, campus.lng], { icon: collegeIcon })
         .bindPopup(
-          `<div class="w-[200px] font-body-md text-on-surface"><p class="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Campus</p><p class="font-h3 text-h3 text-primary leading-tight">${campus.name}</p></div>`
+          `<div class="font-body-md text-on-surface max-w-[280px] sm:max-w-none"><p class="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Campus</p><p class="font-h3 text-h3 text-primary leading-tight">${campus.name}</p></div>`
         )
         .addTo(map);
       L.polyline(

@@ -684,3 +684,88 @@ button:active {
   outline: 2px solid #C7F000;
   outline-offset: 2px;
 }
+
+/* ═══════════════════════════════════════════
+   MOBILE OPTIMIZATIONS
+   ═══════════════════════════════════════════ */
+
+/* Remove 300ms tap delay on mobile browsers */
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent horizontal overflow on all pages */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Ensure all images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Minimum 44px touch targets on interactive elements */
+button,
+a,
+input,
+select,
+textarea,
+[class*="cursor-pointer"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Fix buttons that might be too small */
+button[class*="px-"],
+button[class*="py-"] {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+/* Prevent text from causing overflow */
+h1, h2, h3, h4, h5, h6, p, span, a, button {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improve form inputs on mobile */
+input,
+textarea,
+select {
+  font-size: 16px; /* Prevents iOS zoom on focus */
+}
+
+/* Fix Leaflet map popups on mobile */
+.leaflet-popup {
+  max-width: 90vw;
+}
+.leaflet-popup-content-wrapper {
+  max-width: 280px;
+  overflow-wrap: break-word;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly dropdown menus */
+@media (hover: none) and (pointer: coarse) {
+  /* On touch devices, expand menus on tap instead of hover */
+  .group:hover .group-hover\\:block {
+    display: block;
+  }
+}

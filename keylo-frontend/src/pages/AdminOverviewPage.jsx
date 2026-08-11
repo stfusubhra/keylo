@@ -14,7 +14,16 @@ function Status({ value }) {
 }
 
 function Table({ headers, children, empty = 'No records found.' }) {
-  return <div className="overflow-x-auto border-2 border-primary"><table className="w-full min-w-[760px] text-left"><thead className="bg-primary text-on-primary"><tr>{headers.map((header) => <th key={header} className="px-md py-sm font-label-caps text-[10px] uppercase">{header}</th>)}</tr></thead><tbody>{children || <tr><td colSpan={headers.length} className="px-md py-lg text-on-surface-variant">{empty}</td></tr>}</tbody></table></div>;
+  return (
+    <div className="overflow-x-auto border-2 border-primary -mx-4 px-4 sm:mx-0 sm:px-0">
+      <table className="w-full text-left min-w-[500px] sm:min-w-0">
+        <thead className="bg-primary text-on-primary">
+          <tr>{headers.map((header) => <th key={header} className="px-md py-sm font-label-caps text-[10px] uppercase whitespace-nowrap">{header}</th>)}</tr>
+        </thead>
+        <tbody>{children || <tr><td colSpan={headers.length} className="px-md py-lg text-on-surface-variant">{empty}</td></tr>}</tbody>
+      </table>
+    </div>
+  );
 }
 
 export default function AdminOverviewPage() {
