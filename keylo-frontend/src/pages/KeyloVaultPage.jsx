@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getVaultData, requestDepositRelease, createDepositDispute } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { demoProperties } from '../lib/demoCatalog';
+
 import LoadingScreen from '../components/ui/LoadingScreen';
 import toast from 'react-hot-toast';
 
