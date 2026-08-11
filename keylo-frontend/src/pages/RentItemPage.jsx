@@ -24,6 +24,7 @@ export default function RentItemPage() {
   const [errors, setErrors] = useState({});
   const [isBooking, setIsBooking] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [lister, setLister] = useState(null); // { name, phone } for lister items
 
   useEffect(() => {
