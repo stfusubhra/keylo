@@ -66,13 +66,24 @@ Open the URL printed by Vite, normally `http://localhost:5173`. Without Supabase
 
 ## Supabase setup
 
-The backend is defined in the ordered files under `supabase/migrations/`.
+The backend is defined in the ordered files under `supabase/migrations/` and managed with the Supabase CLI — no manual SQL-editor pasting.
 
-1. Create a Supabase project.
-2. Open the Supabase SQL Editor and run the migration files in order.
-3. Copy `keylo-frontend/.env.example` to `keylo-frontend/.env.local`.
-4. Add the project URL and anon key from **Project Settings > API**.
-5. Restart Vite after changing environment variables.
+1. Install the CLI: `brew install supabase/tap/supabase`
+2. Authenticate: `supabase login`
+3. Link to the project: `supabase link --project-ref dmdkrhzcdpvutpptmfva` (enter the database password when prompted)
+4. Copy `keylo-frontend/.env.example` to `keylo-frontend/.env.local`.
+5. Add the project URL and anon key from **Project Settings > API**.
+6. Restart Vite after changing environment variables.
+
+**Applying migrations**
+
+```bash
+supabase migration new add_fancy_feature   # creates supabase/migrations/<timestamp>_add_fancy_feature.sql
+# edit the generated file, then:
+supabase db push                           # applies pending migrations to the remote database
+```
+
+`supabase migration list` compares local vs. remote history. `supabase db push` prompts for the database password on each run — set `SUPABASE_DB_PASSWORD` in your shell profile to skip the prompt. The CLI stores its local state in the gitignored `supabase/.temp/` directory; never commit it or a service-role key.
 
 The migrations create profiles, Kolkata universities, properties, rooms, bookings, payments, deposits, inspections, handovers, maintenance, messages, saved properties, enums, indexes, booking guards, atomic test-payment completion, a new-user profile trigger, and row-level security policies.
 
@@ -83,7 +94,7 @@ Demo identities (passwords live in the team vault, never in this repository):
 - `student.demo@keylo.in` — student
 - `landlord.demo@keylo.in` — landlord
 
-Create them once in Supabase **Authentication > Users**, then run the last migration (`20260809007000_keylo_dispute_fixture.sql`) in the SQL editor. It seeds a published, fully verified demo property (Jadavpur, ₹9,000 rent / ₹12,000 deposit), a confirmed booking, three test-mode payments, and a held deposit — and is safe to re-run.
+Create them once in Supabase **Authentication > Users**, then apply the fixture migration (`20260809007000_keylo_dispute_fixture.sql`) via `supabase db push`. It seeds a published, fully verified demo property (Jadavpur, ₹9,000 rent / ₹12,000 deposit), a confirmed booking, three test-mode payments, and a held deposit — and is safe to re-run.
 
 Walk the full deposit-dispute chain to demo the trust loop:
 
