@@ -94,7 +94,7 @@ export default function Header({ variant = 'default' }) {
     navigate('/');
   };
 
-  const isActive = (path) => {
+const isActive = (path) => {
     if (path === '/' || path === '/owner') return location.pathname === path;
     return location.pathname.startsWith(path);
   };
@@ -109,20 +109,23 @@ export default function Header({ variant = 'default' }) {
       aria-label={`Messages${unreadCount ? ` (${unreadCount} unread)` : ''}`}
       title={isSupabaseConfigured ? 'Messages' : 'Messages'}
     >
-      <span className="material-symbols-outlined">chat_bubble</span>
+      <span className="material-symbols-outlined" aria-hidden="true">chat_bubble</span>
       {unreadCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center">
+        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center" aria-label={`${unreadCount} unread messages`}>
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}
     </Link>
   );
 
+  // Focus ring utility for keyboard navigation
+  const focusRing = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2';
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
       <div className="relative h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
         {/* Logo */}
-        <Link to={isAdmin ? '/admin' : isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isAdmin ? 'KeyLo Admin Portal' : isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'}>
+        <Link to={isAdmin ? '/admin' : isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isAdmin ? 'KeyLo Admin Portal' : isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'>
           <KeyLoLogo />
         </Link>
 
@@ -139,6 +142,7 @@ export default function Header({ variant = 'default' }) {
                     : 'font-label-caps text-label-caps text-on-surface-variant hover:text-primary'
                 }`}
                 aria-current={isActive(item.path) ? 'page' : undefined}
+                tabIndex={isActive(item.path) ? 0 : -1}
               >
                 {item.label}
               </Link>
@@ -150,14 +154,14 @@ export default function Header({ variant = 'default' }) {
          <div className="flex items-center gap-2 sm:gap-md min-w-0">
            {!isAdmin && authUser && notificationsLink}
            {!isAdmin && authUser && (
-             <Link
-               to="/dashboard/saved"
-               className="relative p-xs text-on-surface-variant hover:text-primary transition-colors"
-               aria-label={`Wishlist${wishlistCount ? ` (${wishlistCount})` : ''}`}
-               title="Wishlist"
-             >
-               <span className="material-symbols-outlined">favorite</span>
-               {wishlistCount > 0 && (
+<Link
+                to="/dashboard/saved"
+                className="relative p-xs text-on-surface-variant hover:text-primary transition-colors"
+                aria-label={`Wishlist${wishlistCount ? ` (${wishlistCount})` : ''}`}
+                title="Wishlist"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">favorite</span>
+                {wishlistCount > 0 && (
                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center">
                    {wishlistCount > 9 ? '9+' : wishlistCount}
                  </span>
@@ -185,26 +189,26 @@ export default function Header({ variant = 'default' }) {
              </>
            ) : isAdmin ? null : (
             <>
-              <Link to="/login" className="hidden sm:inline-flex px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-1 hover:shadow-hard transition-all items-center gap-xs">
-                <span className="material-symbols-outlined text-[20px]">login</span> Log In
-              </Link>
-              <Link to="/signup" className="hidden sm:inline-flex px-lg py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-surface-container-lowest hover:text-primary transition-all items-center gap-xs">
-                <span className="material-symbols-outlined text-[20px]">person_add</span> Sign Up
-              </Link>
-              {/* Mobile-only login/signup */}
-              <Link to="/login" className="sm:hidden flex items-center justify-center gap-xs px-md py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">
-                <span className="material-symbols-outlined text-[20px]">login</span>
-              </Link>
-              <Link to="/signup" className="sm:hidden flex items-center justify-center px-md py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps">
-                <span className="material-symbols-outlined text-[20px]">person_add</span>
-              </Link>
+<Link to="/login" className="hidden sm:inline-flex px-lg py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:-translate-y-1 hover:shadow-hard transition-all items-center gap-xs">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">login</span> Log In
+                </Link>
+                <Link to="/signup" className="hidden sm:inline-flex px-lg py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 hover:bg-surface-container-lowest hover:text-primary transition-all items-center gap-xs">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">person_add</span> Sign Up
+                </Link>
+                {/* Mobile-only login/signup */}
+                <Link to="/login" className="sm:hidden flex items-center justify-center gap-xs px-md py-md bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" aria-label="Log in">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">login</span>
+                </Link>
+                <Link to="/signup" className="sm:hidden flex items-center justify-center px-md py-md bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2" aria-label="Sign up">
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true">person_add</span>
+                </Link>
             </>
           )}
 
           {/* Mobile Menu Button */}
           {!isAdmin && (
             <button
-              className="lg:hidden p-md text-on-surface-variant hover:text-primary transition-colors"
+              className="lg:hidden p-md text-on-surface-variant hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileMenuOpen}
@@ -219,18 +223,18 @@ export default function Header({ variant = 'default' }) {
       {!isAdmin && mobileMenuOpen && (
         <div className="lg:hidden bg-surface border-t-2 border-primary px-margin-mobile py-md">
           <nav className="flex flex-col gap-sm" aria-label="Mobile navigation">
-            {headerNav.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
-                  isActive(item.path)
-                    ? 'bg-primary text-on-primary'
-                    : 'text-on-surface'
-                }`}
-                onClick={() => setMobileMenuOpen(false)}
-                aria-current={isActive(item.path) ? 'page' : undefined}
-              >
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
+                    isActive(item.path)
+                      ? 'bg-primary text-on-primary'
+                      : 'text-on-surface'
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-current={isActive(item.path) ? 'page' : undefined}
+                  tabIndex={isActive(item.path) ? 0 : -1}
+                >
                 <span className="material-symbols-outlined">{item.icon}</span>
                 {item.label}
               </Link>
