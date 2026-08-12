@@ -106,6 +106,18 @@ function PublicRouteGuard({ children }) {
   return children;
 }
 
+// Student-only pages (KeyLo Vault): require a signed-in user like RouteGuard,
+// and keep owners/listers out of the student workspace like PublicRouteGuard.
+function StudentRouteGuard({ children }) {
+  const state = useAuthRole();
+  if (!isSupabaseConfigured) return children;
+  if (state.loading) return <LoadingSession />;
+  if (!state.user) return <Navigate to="/login" replace />;
+  if (state.role === 'landlord') return <Navigate to="/owner" replace />;
+  if (state.role === 'lister') return <Navigate to="/lister" replace />;
+  return children;
+}
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -119,7 +131,7 @@ const router = createBrowserRouter([
       { path: 'rentals', element: <PublicRouteGuard><RentEssentialsPage /></PublicRouteGuard> },
       { path: 'rentals/rent/:id', element: <PublicRouteGuard><RentItemPage /></PublicRouteGuard> },
       { path: 'search', element: <PublicRouteGuard><SearchResultsPage /></PublicRouteGuard> },
-      { path: 'keylo-vault', element: <PublicRouteGuard><KeyloVaultPage /></PublicRouteGuard> },
+      { path: 'keylo-vault', element: <StudentRouteGuard><KeyloVaultPage /></StudentRouteGuard> },
       { path: 'ai-room-inspection', element: <PublicRouteGuard><AIRoomInspectionPage /></PublicRouteGuard> },
       { path: 'digital-handover', element: <PublicRouteGuard><DigitalHandoverPage /></PublicRouteGuard> },
       { path: 'maintenance', element: <PublicRouteGuard><MaintenancePage /></PublicRouteGuard> },
