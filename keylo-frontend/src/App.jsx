@@ -16,6 +16,7 @@ const SecureYourStayPage = lazy(() => import('./pages/SecureYourStayPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const WishlistPage = lazy(() => import('./pages/WishlistPage'));
 const KeyloVaultPage = lazy(() => import('./pages/KeyloVaultPage'));
+const VaultLoginRequiredPage = lazy(() => import('./pages/VaultLoginRequiredPage'));
 const AIRoomInspectionPage = lazy(() => import('./pages/AIRoomInspectionPage'));
 const DigitalHandoverPage = lazy(() => import('./pages/DigitalHandoverPage'));
 const OwnerPortalPage = lazy(() => import('./pages/OwnerPortalPage'));
@@ -108,11 +109,13 @@ function PublicRouteGuard({ children }) {
 
 // Student-only pages (KeyLo Vault): require a signed-in user like RouteGuard,
 // and keep owners/listers out of the student workspace like PublicRouteGuard.
+// Signed-out visitors see a vault explainer with a login prompt (VaultLoginRequiredPage)
+// instead of being silently redirected to /login.
 function StudentRouteGuard({ children }) {
   const state = useAuthRole();
   if (!isSupabaseConfigured) return children;
   if (state.loading) return <LoadingSession />;
-  if (!state.user) return <Navigate to="/login" replace />;
+  if (!state.user) return <VaultLoginRequiredPage />;
   if (state.role === 'landlord') return <Navigate to="/owner" replace />;
   if (state.role === 'lister') return <Navigate to="/lister" replace />;
   return children;
