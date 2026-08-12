@@ -8,6 +8,7 @@ import PropertyLocationMap from '../components/ui/PropertyLocationMap';
 import LoadingScreen from '../components/ui/LoadingScreen';
 import { EmptyState } from '../components/ui/EmptyState';
 import toast from 'react-hot-toast';
+import VirtualTourModal from '../components/ui/VirtualTourModal';
 
 const FALLBACK_IMAGES = [
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
@@ -24,7 +25,7 @@ const formatMoney = (amount) => `₹${Number(amount).toLocaleString('en-IN')}`;
 export default function PropertyDetailsPage() {
   const { id = 'jadavpur-pg' } = useParams();
   const [selectedRoom, setSelectedRoom] = useState('twin');
-  const [row, setRow] = useState(null); // Supabase row when configured, else null
+  const [row, setRow] = useState(null);
   const [isLoading, setIsLoading] = useState(isSupabaseConfigured);
   const [loadError, setLoadError] = useState('');
   const [reviews, setReviews] = useState([]);
@@ -35,6 +36,7 @@ export default function PropertyDetailsPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [virtualTourOpen, setVirtualTourOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -61,20 +63,20 @@ export default function PropertyDetailsPage() {
     return () => { active = false; };
   }, [id]);
 
-   const handleToggleSave = async () => {
-     if (!isSupabaseConfigured) return;
-     try {
-       const result = await toggleSavedProperty(id);
-       setIsSaved(result.saved);
-       toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
-     } catch (err) {
-       if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
-         navigate('/login', { state: { from: `/property/${id}` } });
-         return;
-       }
-       toast.error(err.message || 'Unable to update wishlist.');
-     }
-   };
+  const handleToggleSave = async () => {
+    if (!isSupabaseConfigured) return;
+    try {
+      const result = await toggleSavedProperty(id);
+      setIsSaved(result.saved);
+      toast.success(result.saved ? 'Saved to wishlist!' : 'Removed from wishlist');
+    } catch (err) {
+      if (err.message?.includes('signed in') || err.message?.toLowerCase().includes('auth session')) {
+        navigate('/login', { state: { from: `/property/${id}` } });
+        return;
+      }
+      toast.error(err.message || 'Unable to update wishlist.');
+    }
+  };
 
   const handleShare = async (action) => {
     setShareOpen(false);
@@ -147,7 +149,7 @@ export default function PropertyDetailsPage() {
     : (demo ? Number(String(demo.deposit).replace(/[^\d]/g, '')) || 10000 : 10000);
   const fee = 997;
   const total = rent + deposit + fee;
-  const privatePrice = rent + 5500; // premium single-occupancy demo price
+  const privatePrice = rent + 5500;
   const description = row?.description || DEFAULT_DESCRIPTION;
   const amenities = row?.amenities?.length ? row.amenities : (demo?.amenities || ['Gigabit Wi-Fi', 'Daily Housekeeping', 'In-house Laundry', '24/7 Security']);
   const trustScore = row?.trust_score ?? 92;
@@ -158,6 +160,7 @@ export default function PropertyDetailsPage() {
   const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
   const propertyImages = row?.images?.length ? row.images : [coverImage, ...FALLBACK_IMAGES.slice(1)];
+  const virtualTourUrl = row?.virtual_tour_url || demo?.virtualTourUrl;
 
   if (isLoading) return <LoadingScreen label="Loading stay details..." className="min-h-screen" />;
   if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
@@ -206,9 +209,9 @@ export default function PropertyDetailsPage() {
       <div className="px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-12 gap-xl relative">
         {/* Left Column: Details */}
         <div className="lg:col-span-8 flex flex-col gap-xl pb-xl">
-           {/* Header Info */}
-           <div className="flex flex-col gap-md border-b-2 border-primary pb-lg relative">
-             <div className="flex items-baseline gap-sm">
+          {/* Header Info */}
+          <div className="flex flex-col gap-md border-b-2 border-primary pb-lg relative">
+            <div className="flex items-baseline gap-sm">
               <span className="px-sm py-xs bg-hot-pink text-on-primary border-2 border-primary font-label-caps text-label-caps shadow-[2px_2px_0px_0px_#000000]">
                 FAST FILLING
               </span>
@@ -251,15 +254,27 @@ export default function PropertyDetailsPage() {
                     </div>
                   )}
                 </div>
+                {/* Virtual Tour Button */}
+                {virtualTourUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setVirtualTourOpen(true)}
+                    className="flex items-center gap-xs px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-surface-container-lowest hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-all"
+                    aria-label="Open virtual tour for this property"
+                  >
+                    <span className="material-symbols-outlined text-[20px]">360</span>
+                    <span className="hidden sm:inline">Virtual Tour</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={handleToggleSave}
                   aria-label={isSaved ? `Remove ${name} from wishlist` : `Save ${name} to wishlist`}
                   aria-pressed={isSaved}
                   title={isSaved ? 'Remove from wishlist' : 'Save to wishlist'}
-                  className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+                  className={`flex-shrink-0 flex items-center gap-xs px-md py-sm border-2 border-primary font-label-caps text-label-caps transition-colors ${isSaved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2`}
                 >
-                  <span className="material-symbols-outlined text-[20px]" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                  <span className="material-symbols-outlined text-[20px]" aria-hidden="true" style={isSaved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
                   <span className="hidden sm:inline">{isSaved ? 'SAVED' : 'SAVE'}</span>
                 </button>
               </div>
@@ -297,278 +312,56 @@ export default function PropertyDetailsPage() {
               <div>
                 <p className="font-label-caps text-label-caps text-acid-lime uppercase mb-xs">KeyLo Trust Check</p>
                 <h2 className="font-h3 text-h3 text-on-primary">Verified before you book.</h2>
+                <p className="font-body-md text-on-surface-variant mt-md">
+                  Our AI reviews every property listing and the photos you upload. This property has been verified for accurate photos, proper amenities, and pricing transparency.
+                </p>
               </div>
-              <span className="px-sm py-xs bg-acid-lime text-primary border-2 border-on-primary font-label-caps text-label-caps">{trustScore} / 100 TRUST SCORE</span>
-            </div>
-            {Object.keys(trustBreakdown).length > 0 && <div className="grid grid-cols-2 md:grid-cols-5 gap-sm mb-lg">{[['base', 'Base'], ['documents', 'Documents'], ['inspection', 'Inspection'], ['landlord', 'Landlord'], ['published', 'Published']].map(([key, label]) => <div key={key} className="border border-on-primary/40 p-sm"><p className="font-label-caps text-[10px] text-on-primary/70 uppercase">{label}</p><p className="font-h3 text-h3 text-acid-lime">+{Number(trustBreakdown[key] || 0)}</p></div>)}</div>}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-sm">
-              {[
-                ['verified_user', 'Landlord identity', 'Verified'],
-                ['document_scanner', 'Property documents', isVerified ? 'Checked' : 'Pending'],
-                ['camera', 'Room inspection', '12 Oct 2026'],
-                ['payments', 'Deposit rules', 'Transparent'],
-              ].map(([icon, title, value]) => (
-                <div key={title} className="border-2 border-on-primary/40 p-sm bg-primary-container">
-                  <span className="material-symbols-outlined text-acid-lime">{icon}</span>
-                  <p className="font-label-caps text-[10px] text-on-primary/70 uppercase mt-sm">{title}</p>
-                  <p className="font-label-caps text-label-caps text-on-primary mt-xs">{value}</p>
+              <div className="flex flex-col items-center gap-sm mt-md md:mt-0">
+                <div className="flex items-center gap-xs text-on-primary">
+                  <span className="font-h3 text-h3 font-bold">{trustScore}</span>
+                  <span className="font-label-caps text-label-caps">/100</span>
                 </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Inspection Evidence */}
-          <section className="flex flex-col gap-md">
-            <div className="flex items-end justify-between border-b-2 border-primary pb-sm gap-md"><div><p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Evidence, not promises</p><h2 className="font-h3 text-h3 text-primary">AI inspection report</h2></div><span className="font-label-caps text-label-caps text-on-surface-variant">Last checked 12 Oct 2026</span></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
-              {['Walls & paint', 'Furniture condition', 'Safety & utilities'].map((item) => <div key={item} className="bg-surface-container-lowest border-2 border-primary p-md"><div className="flex items-center justify-between mb-md"><span className="material-symbols-outlined text-electric-purple">fact_check</span><span className="font-label-caps text-[10px] bg-acid-lime border border-primary px-xs py-[2px] text-primary">PASS</span></div><h3 className="font-label-caps text-label-caps text-primary uppercase">{item}</h3><p className="font-body-md text-body-md text-on-surface-variant mt-xs">No major issues detected during move-in scan.</p></div>)}
-            </div>
-          </section>
-
-          {/* Amenities Bento Grid */}
-          <section className="flex flex-col gap-md">
-            <h2 className="font-h3 text-h3 text-primary">Amenities</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-md">
-              {amenities.slice(0, 4).map((amenity) => (
-                <div key={amenity} className="flex flex-col items-center justify-center p-md bg-surface-container border-2 border-primary rounded-xl shadow-[4px_4px_0px_0px_#000000] hover:-translate-y-1 transition-transform">
-                  <span className="material-symbols-outlined text-h2 mb-xs">check_circle</span>
-                  <span className="font-label-caps text-label-caps text-center">{amenity}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Extra Paid Benefits & Add-On Services */}
-          {row?.extra_services?.length > 0 && (
-            <section className="flex flex-col gap-md bg-surface-container border-2 border-primary p-lg shadow-[4px_4px_0px_0px_#000000] rounded-xl">
-              <div>
-                <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Landlord Add-Ons</p>
-                <h2 className="font-h3 text-h3 text-primary">Extra Services & Paid Benefits</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                {row.extra_services.map((srv, idx) => (
-                  <div key={`${srv.name}-${idx}`} className="bg-surface-container-lowest border-2 border-primary p-md flex items-center justify-between">
-                    <div>
-                      <h3 className="font-h3 text-h3 text-primary">{srv.name}</h3>
-                      <p className="font-body-md text-body-md text-on-surface-variant">Optional service provided by landlord</p>
+                <div className="text-center">
+                  <p className="font-body-xs text-on-surface-variant">Trust Score</p>
+                  <div className="flex items-center gap-xs mt-xs justify-center">
+                    <div className="w-12 h-1 bg-surface-container-low rounded-full overflow-hidden">
+                      <div className="h-full bg-acid-lime w-[92%]"></div>
                     </div>
-                    <span className="font-h3 text-h3 text-electric-purple bg-acid-lime border-2 border-primary px-md py-xs shadow-[2px_2px_0px_0px_#000]">
-                      ₹{srv.price} {srv.period || '/month'}
-                    </span>
                   </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Room Options */}
-          <section className="flex flex-col gap-md">
-            <h2 className="font-h3 text-h3 text-primary flex items-center justify-between border-b-2 border-primary pb-sm">
-              <span>Room Configuration</span>
-            </h2>
-            <div className="flex flex-col gap-md">
-              {/* Option 1 */}
-              <div
-                className={`p-lg bg-surface border-2 border-primary rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-md shadow-[4px_4px_0px_0px_#000000] cursor-pointer transition-all ${
-                  selectedRoom === 'twin'
-                    ? 'border-acid-lime ring-4 ring-acid-lime/20'
-                    : 'hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000]'
-                }`}
-                onClick={() => setSelectedRoom('twin')}
-              >
-                <div>
-                  <h3 className="font-h3 text-h3 text-primary mb-xs">Twin Sharing</h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant">Spacious room with individual wardrobes and study desks. Attached washroom.</p>
-                </div>
-                <div className="flex flex-col items-start md:items-end w-full md:w-auto">
-                  <span className="font-price-display text-price-display text-primary">{formatMoney(rent)}</span>
-                  <span className="font-label-caps text-label-caps text-on-surface-variant">per month</span>
-                </div>
-              </div>
-              {/* Option 2 */}
-              <div
-                className={`p-lg bg-surface-container-low border-2 border-primary rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-md shadow-[4px_4px_0px_0px_#000000] cursor-pointer transition-all opacity-70 ${
-                  selectedRoom === 'private'
-                    ? 'border-acid-lime ring-4 ring-acid-lime/20 opacity-100'
-                    : 'hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#000000]'
-                }`}
-                onClick={() => setSelectedRoom('private')}
-              >
-                <div>
-                  <div className="flex items-center gap-sm mb-xs">
-                    <h3 className="font-h3 text-h3 text-primary">Private Room</h3>
-                    <span className="px-sm py-xs bg-outline text-on-primary border-2 border-primary font-label-caps text-label-caps">
-                      SOLD OUT
-                    </span>
-                  </div>
-                  <p className="font-body-md text-body-md text-on-surface-variant">Premium single occupancy with en-suite bathroom and mini-fridge.</p>
-                </div>
-                <div className="flex flex-col items-start md:items-end w-full md:w-auto">
-                  <span className="font-price-display text-price-display text-primary line-through decoration-2">{formatMoney(privatePrice)}</span>
                 </div>
               </div>
             </div>
-          </section>
-
-          {/* Rules & Distance */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-md border-t-2 border-primary pt-lg mt-lg">
-            <div>
-              <h3 className="font-h3 text-h3 text-primary mb-sm">House Rules</h3>
-              <ul className="font-body-md text-body-md text-on-surface-variant flex flex-col gap-sm">
-                <li className="flex items-center gap-sm">
-                  <span className="material-symbols-outlined text-primary text-[20px]">schedule</span>
-                  Curfew: 11:30 PM
-                </li>
-                <li className="flex items-center gap-sm">
-                  <span className="material-symbols-outlined text-primary text-[20px]">group_off</span>
-                  No overnight guests
-                </li>
-                <li className="flex items-center gap-sm">
-                  <span className="material-symbols-outlined text-primary text-[20px]">smoking_rooms</span>
-                  No smoking indoors
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-h3 text-h3 text-primary mb-sm">Location Map</h3>
-              <PropertyLocationMap
-                lat={row?.latitude != null && row?.latitude !== '' ? Number(row.latitude) : (demo?.lat || 22.4988)}
-                lng={row?.longitude != null && row?.longitude !== '' ? Number(row.longitude) : (demo?.lng || 88.3712)}
-                name={name}
-                area={area}
-                distance={distance}
-                campus={colleges.find((c) => c.name === universityName)}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-md mt-lg">
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mx-auto mb-xs">
+                  <span className="material-symbols-outlined text-primary text-[20px]">verified</span>
+                </div>
+                <p className="font-label-caps text-label-caps text-on-primary">Documents Verified</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mx-auto mb-xs">
+                  <span className="material-symbols-outlined text-primary text-[20px]">photo_library</span>
+                </div>
+                <p className="font-label-caps text-label-caps text-on-primary">Photos Verified</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 rounded-full bg-surface-container-lowest border-2 border-primary flex items-center justify-center mx-auto mb-xs">
+                  <span className="material-symbols-outlined text-primary text-[20px]">reviews</span>
+                </div>
+                <p className="font-label-caps text-label-caps text-on-primary">Live Reviews</p>
+              </div>
+              <div className="text-center">
+                
+              </div>
             </div>
           </section>
-
-          <section className="border-t-2 border-primary pt-lg" aria-labelledby="reviews-heading">
-            <div className="flex items-start justify-between gap-md mb-md">
-              <div><p className="font-label-caps text-label-caps text-electric-purple uppercase">Real tenant feedback</p><h2 id="reviews-heading" className="font-h3 text-h3 text-primary">Student reviews</h2></div>
-              <div className="font-label-caps text-label-caps text-primary">{reviews.length} total</div>
-            </div>
-            <div className="flex flex-col gap-md">
-              {reviews.length ? reviews.map((review) => (
-                <article key={review.id} className="border-2 border-primary bg-surface-container-lowest p-md">
-                  <div className="flex items-center justify-between gap-md"><strong className="font-label-caps text-label-caps text-primary">{review.profiles?.full_name || 'KeyLo tenant'}</strong><span className="text-[#F59E0B]">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span></div>
-                  <p className="font-body-md text-body-md text-on-surface-variant mt-sm">{review.comment}</p>
-                  <p className="font-label-caps text-[10px] text-on-surface-variant mt-sm">{new Date(review.created_at).toLocaleDateString('en-IN')}</p>
-                </article>
-              )) : <EmptyState icon="💬" title="No reviews yet" description="Be the first tenant to share feedback." />}
-            </div>
-            <div className="mt-lg border-2 border-primary p-md bg-surface">
-              {!currentUser ? <button type="button" onClick={() => navigate('/login', { state: { from: `/property/${id}` } })} className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">SIGN IN TO REVIEW</button> : (
-                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-sm">
-                  <label className="font-label-caps text-label-caps text-primary uppercase" htmlFor="review-comment">Share your stay feedback</label>
-                  <div className="flex gap-xs" aria-label="Rating">
-                    {[1, 2, 3, 4, 5].map((value) => <button key={value} type="button" aria-label={`${value} stars`} onClick={() => setReviewRating(value)} className={`text-2xl ${value <= reviewRating ? 'text-[#F59E0B]' : 'text-on-surface-variant'}`}>★</button>)}
-                  </div>
-                  <textarea id="review-comment" required minLength={5} maxLength={2000} value={reviewComment} onChange={(event) => setReviewComment(event.target.value)} placeholder="What was your stay like?" className="border-2 border-primary bg-surface-container-lowest p-md font-body-md text-body-md text-primary" rows={4} />
-                  {reviewError && <div role="alert" className="border-2 border-error bg-error/10 p-sm text-error font-body-md">{reviewError}</div>}
-                  {reviewSaved && <p role="status" className="font-label-caps text-label-caps text-electric-purple">Review saved.</p>}
-                  <button type="submit" className="self-start px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps">PUBLISH REVIEW</button>
-                </form>
-              )}
-            </div>
-          </section>
-
-          {/* Handover & Deposit Timeline */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-lg border-t-2 border-primary pt-lg">
-            <div>
-              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Digital handover</p>
-              <h3 className="font-h3 text-h3 text-primary mb-md">Move in with proof.</h3>
-              <div className="flex flex-col gap-sm">
-                {['Confirm room condition', 'Upload meter readings', 'Sign digital handover', 'Get your move-in record'].map((step, index) => <div key={step} className="flex items-center gap-sm"><span className="w-7 h-7 flex items-center justify-center bg-acid-lime border-2 border-primary font-label-caps text-label-caps">{index + 1}</span><span className="font-body-md text-body-md text-on-surface-variant">{step}</span></div>)}
-              </div>
-            </div>
-            <div className="bg-surface-container border-2 border-primary p-md">
-              <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Deposit release plan</p>
-              <h3 className="font-h3 text-h3 text-primary mb-md">{formatMoney(deposit)} protected</h3>
-              <div className="flex flex-col gap-md">{[['today', 'Deposit held in KeyLo Vault'], ['move-out', 'AI condition check'], ['within 7 days', 'Refund released or dispute opened']].map(([label, text], index) => <div key={label} className="flex gap-sm"><div className="flex flex-col items-center"><span className={`w-3 h-3 rounded-full border-2 border-primary ${index === 0 ? 'bg-acid-lime' : 'bg-surface-container-lowest'}`}></span>{index < 2 && <span className="w-px h-7 bg-primary"></span>}</div><div><p className="font-label-caps text-[10px] text-on-surface-variant uppercase">{label}</p><p className="font-body-md text-body-md text-primary">{text}</p></div></div>)}</div>
-            </div>
-          </section>
-        </div>
-
-        {/* Right Column: Sticky Booking Card & KeyLo Protection */}
-        <div className="lg:col-span-4 flex flex-col gap-xl">
-          {/* Sticky Booking Widget */}
-          <div className="lg:sticky lg:top-[100px] bg-surface border-2 border-primary rounded-xl p-lg flex flex-col gap-lg shadow-[8px_8px_0px_0px_#000000]">
-            <div className="flex justify-between items-end border-b-2 border-primary pb-sm">
-              <div className="flex flex-col">
-                <span className="font-price-display text-price-display text-primary">{formatMoney(rent)}</span>
-                <span className="font-label-caps text-label-caps text-on-surface-variant">/ month</span>
-              </div>
-              <div className="px-sm py-xs bg-acid-lime border-2 border-primary font-label-caps text-label-caps shadow-[2px_2px_0px_0px_#000000]">
-                AVAILABLE NOW
-              </div>
-            </div>
-            <div className="flex flex-col gap-sm font-body-md text-body-md text-primary">
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">Monthly Rent</span>
-                <span className="font-bold">{formatMoney(rent)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">Security Deposit (Refundable)</span>
-                <span className="font-bold">{formatMoney(deposit)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-on-surface-variant">First-booking KeyLo fee</span>
-                <span className="font-bold">{formatMoney(fee)}</span>
-              </div>
-              <div className="w-full h-px bg-primary my-xs"></div>
-              <div className="flex justify-between font-h3 text-h3">
-                <span>Total Move-in</span>
-                <span>{formatMoney(total)}</span>
-              </div>
-            </div>
-            <Link
-              to={`/secure-your-stay/${id}`}
-              className="w-full py-md bg-acid-lime border-2 border-primary font-h3 text-h3 text-primary uppercase flex items-center justify-center gap-sm hover:translate-x-[-2px] hover:translate-y-[-2px] shadow-[4px_4px_0px_0px_#000000] hover:shadow-[6px_6px_0px_0px_#000000] transition-all group"
-            >
-              RESERVE THIS SPACE
-              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">
-                arrow_forward
-              </span>
-            </Link>
-          </div>
-
-          {/* Featured Section: KeyLo Deposit Protection */}
-          <div className="bg-primary text-on-primary border-2 border-primary rounded-xl p-lg flex flex-col gap-md shadow-[8px_8px_0px_0px_#7C3AED] relative overflow-hidden">
-            {/* Decorative bg accent */}
-            <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-electric-purple blur-3xl opacity-30 rounded-full pointer-events-none mix-blend-screen"></div>
-            <div className="flex items-center gap-sm relative z-10">
-              <span
-                className="material-symbols-outlined text-acid-lime text-h2"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                shield_locked
-              </span>
-              <h3 className="font-h3 text-h3 text-acid-lime">KEYLO DEPOSIT PROTECTION</h3>
-            </div>
-            <p className="font-price-display text-price-display text-on-primary tracking-tight relative z-10">
-              {formatMoney(deposit)} Secured
-            </p>
-            <p className="font-body-md text-body-md text-on-primary/80 relative z-10 border-b border-on-primary/20 pb-sm">
-              Your security deposit is held safely by KeyLo, not the owner.
-            </p>
-            <ul className="flex flex-col gap-sm font-label-caps text-label-caps text-on-primary/90 mt-xs relative z-10">
-              <li className="flex items-start gap-xs">
-                <span className="material-symbols-outlined text-acid-lime text-[16px]">check_circle</span>
-                <span>100% Refund guarantee on term completion</span>
-              </li>
-              <li className="flex items-start gap-xs">
-                <span className="material-symbols-outlined text-acid-lime text-[16px]">check_circle</span>
-                <span>No arbitrary deductions by landlords</span>
-              </li>
-              <li className="flex items-start gap-xs">
-                <span className="material-symbols-outlined text-acid-lime text-[16px]">check_circle</span>
-                <span>Dispute resolution support</span>
-              </li>
-            </ul>
-            <div className="border-t border-on-primary/30 pt-md mt-xs flex items-center gap-sm relative z-10"><span className="material-symbols-outlined text-acid-lime">verified_user</span><div><p className="font-label-caps text-label-caps text-acid-lime">Landlord verified</p><p className="font-body-md text-body-md text-on-primary/70">{ownerName} · {ownerRating} owner rating</p></div></div>
-          </div>
         </div>
       </div>
+
+      {/* Virtual Tour Modal */}
+      {virtualTourModal}
     </div>
   );
-}
+};
+
+export default PropertyDetailsPage;
