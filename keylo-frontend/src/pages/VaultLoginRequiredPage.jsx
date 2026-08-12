@@ -66,7 +66,7 @@ export default function VaultLoginRequiredPage() {
             <span className="material-symbols-outlined text-acid-lime text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>refund</span>
             <h2 className="font-h3 text-h3 text-primary mt-md mb-xs">Refund at move-out</h2>
             <p className="font-body-md text-on-surface-variant">
-              Request your refund at checkout — or open a dispute and our team reviews it within 24 hours.
+              Request your refund at checkout — or open a dispute and our AI-assisted review recommends a fair refund within 24 hours.
             </p>
           </div>
         </div>
@@ -78,7 +78,8 @@ export default function VaultLoginRequiredPage() {
             <div>
               <h2 className="font-h3 text-h3 text-primary mb-xs">Log in to see your vault</h2>
               <p className="font-body-md text-on-surface-variant max-w-lg">
-                Your deposits, refund requests, and dispute history live here. Sign in to view your protected balance and track every release.
+                Your deposits, refund requests, and dispute history live here — every dispute comes with an AI
+                recommendation. Sign in to view your protected balance and track every release.
               </p>
             </div>
           </div>
