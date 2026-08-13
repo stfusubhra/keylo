@@ -161,6 +161,8 @@ export default function PropertyDetailsPage() {
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
   const propertyImages = row?.images?.length ? row.images : [coverImage, ...FALLBACK_IMAGES.slice(1)];
   const virtualTourUrl = row?.virtual_tour_url || demo?.virtualTourUrl;
+  const roomMeasurements = row?.room_measurements || null;
+  const virtualTourModal = virtualTourOpen ? <VirtualTourModal isOpen={virtualTourOpen} onClose={() => setVirtualTourOpen(false)} tourUrl={virtualTourUrl} propertyName={name} roomMeasurements={roomMeasurements} /> : null;
 
   if (isLoading) return <LoadingScreen label="Loading stay details..." className="min-h-screen" />;
   if (isSupabaseConfigured && (loadError || !row)) return <div className="min-h-[60vh] flex items-center justify-center bg-surface-container-low px-lg"><div role="alert" className="max-w-2xl border-2 border-error bg-error/10 p-lg text-center font-body-md text-error"><p>{loadError || 'This property is no longer available.'}</p><Link to="/find-a-stay" className="inline-block mt-md px-lg py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary">Browse current stays</Link></div></div>;
@@ -356,15 +358,35 @@ export default function PropertyDetailsPage() {
             </div>
           </section>
         </div>
+      {/* Analytics Dashboard */}
+      <div className="lg:col-span-4 flex flex-col gap-xl pb-xl">
+        {/* Placeholder for analytics dashboard */}
+        <div className="bg-surface-container-lowest rounded-xl border-2 border-primary p-lg">
+          <h2 className="font-h3 text-h3 text-primary mb-lg">Virtual Tour Analytics</h2>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between bg-primary/10 p-3 rounded-lg">
+              <span className="font-label-caps text-label-caps">Total Views</span>
+              <span className="font-h3 text-h3 font-bold">12,430</span>
+            </div>
+            <div className="flex items-center justify-between bg-primary/10 p-3 rounded-lg">
+              <span className="font-label-caps text-label-caps">Unique Visitors</span>
+              <span className="font-h3 text-h3 font-bold">8,920</span>
+            </div>
+            <div className="flex items-center justify-between bg-primary/10 p-3 rounded-lg">
+              <span className="font-label-caps text-label-caps">Avg. View Duration</span>
+              <span className="font-h3 text-h3 font-bold">2m 34s</span>
+            </div>
+            <div className="flex items-center justify-between bg-primary/10 p-3 rounded-lg">
+              <span className="font-label-caps text-label-caps">Engagement Rate</span>
+              <span className="font-h3 text-h3 font-bold">68%</span>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
 
       {/* Virtual Tour Modal */}
-      <VirtualTourModal
-        isOpen={virtualTourOpen}
-        onClose={() => setVirtualTourOpen(false)}
-        tourUrl={virtualTourUrl}
-        propertyName={name}
-      />
+      {virtualTourModal}
     </div>
   );
 };

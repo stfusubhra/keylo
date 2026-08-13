@@ -1,18 +1,18 @@
 import { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
 
 const VirtualTourModal = ({ isOpen, onClose, tourUrl, propertyName }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
+      if (e.key === 'Escape') onClose();
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    }
+    return undefined;
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -30,7 +30,7 @@ const VirtualTourModal = ({ isOpen, onClose, tourUrl, propertyName }) => {
           className="absolute top-4 right-4 z-10 p-2 bg-surface text-on-surface-variant hover:text-primary rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label="Close virtual tour"
         >
-          <X className="w-5 h-5" />
+          <span className="material-symbols-outlined" aria-hidden="true">close</span>
         </button>
         <div className="absolute inset-0 flex items-center justify-center">
           {tourUrl ? (
@@ -42,17 +42,17 @@ const VirtualTourModal = ({ isOpen, onClose, tourUrl, propertyName }) => {
               allowFullScreen
               loading="lazy"
             />
-            ) : (
-              <div className="text-center p-8 text-on-surface-variant">
-                <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-outlined text-2xl text-primary">360</span>
-                </div>
-                <h3 className="font-h3 text-primary mb-2">Virtual Tour Coming Soon</h3>
-                <p className="font-body-md text-on-surface-variant">
-                  This property doesn't have a virtual tour yet. Book a visit to explore in person!
-                </p>
+          ) : (
+            <div className="text-center p-8 text-on-surface-variant">
+              <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-2xl text-primary" aria-hidden="true">360</span>
               </div>
-            )}
+              <h3 className="font-h3 text-primary mb-2">Virtual Tour Coming Soon</h3>
+              <p className="font-body-md text-on-surface-variant">
+                This property doesn't have a virtual tour yet. Book a visit to explore in person!
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

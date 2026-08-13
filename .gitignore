@@ -40,3 +40,4 @@ stitch_keylo_student_rental_ecosystem/
 supabase/.temp/
 supabase/.branches/
 supabase/.env
+keylo-frontend/dev.pid
