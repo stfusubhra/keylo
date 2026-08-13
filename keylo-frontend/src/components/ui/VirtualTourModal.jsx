@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 
 const VirtualTourModal = ({ isOpen, onClose, tourUrl, propertyName }) => {

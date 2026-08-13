@@ -125,7 +125,7 @@ const isActive = (path) => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-sm border-b-2 border-primary">
       <div className="relative h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
         {/* Logo */}
-        <Link to={isAdmin ? '/admin' : isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isAdmin ? 'KeyLo Admin Portal' : isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'>
+        <Link to={isAdmin ? '/admin' : isLandlord ? '/owner' : '/'} className="flex items-center" aria-label={isAdmin ? 'KeyLo Admin Portal' : isLandlord ? 'KeyLo Owner Workspace' : 'KeyLo Home'}>
           <KeyLoLogo />
         </Link>
 
@@ -223,6 +223,7 @@ const isActive = (path) => {
       {!isAdmin && mobileMenuOpen && (
         <div className="lg:hidden bg-surface border-t-2 border-primary px-margin-mobile py-md">
           <nav className="flex flex-col gap-sm" aria-label="Mobile navigation">
+            {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}

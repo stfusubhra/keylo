@@ -359,9 +359,12 @@ export default function PropertyDetailsPage() {
       </div>
 
       {/* Virtual Tour Modal */}
-      {virtualTourModal}
+      <VirtualTourModal
+        isOpen={virtualTourOpen}
+        onClose={() => setVirtualTourOpen(false)}
+        tourUrl={virtualTourUrl}
+        propertyName={name}
+      />
     </div>
   );
 };
-
-export default PropertyDetailsPage;
