@@ -14,6 +14,7 @@ import {
 } from '../lib/supabaseData';
 import { formatDate, formatDateTime } from '../lib/format';
 import PropertyLocationMap from '../components/ui/PropertyLocationMap';
+import ResponsiveTable from '../components/ui/ResponsiveTable';
 
 const PRESET_PHOTOS = [
   'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80',
@@ -999,11 +1000,11 @@ export default function OwnerPortalPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-xs mt-md pt-md border-t-2 border-primary/20">
+            <div className="grid grid-cols-2 md:flex md:flex-wrap gap-xs mt-md pt-md border-t-2 border-primary/20">
               <button
                 type="button"
                 onClick={() => handleOpenEditForm(property)}
-                className="flex-1 px-md py-xs bg-surface border-2 border-primary font-label-caps text-xs text-primary hover:bg-surface-container flex items-center justify-center gap-xs"
+                className="md:flex-1 px-md py-xs bg-surface border-2 border-primary font-label-caps text-xs text-primary hover:bg-surface-container flex items-center justify-center gap-xs"
               >
                 <span className="material-symbols-outlined text-[16px]">edit</span>
                 Edit
@@ -1012,7 +1013,7 @@ export default function OwnerPortalPage() {
               <button
                 type="button"
                 onClick={() => handleToggleStatus(property)}
-                className={`flex-1 px-md py-xs border-2 border-primary font-label-caps text-xs text-primary flex items-center justify-center gap-xs ${
+                className={`md:flex-1 px-md py-xs border-2 border-primary font-label-caps text-xs text-primary flex items-center justify-center gap-xs ${
                   property.status === 'published' ? 'bg-[#F59E0B]/20 hover:bg-[#F59E0B]/40' : 'bg-acid-lime hover:bg-acid-lime/80'
                 }`}
               >
@@ -1050,93 +1051,63 @@ export default function OwnerPortalPage() {
   const tenants = (
     <section className="bg-surface-container-lowest border-2 border-primary p-lg overflow-x-auto">
       <h2 className="font-h3 text-h3 text-primary mb-md">Tenant directory</h2>
-      <table className="w-full min-w-[700px] text-left">
-        <thead className="bg-primary text-on-primary">
-          <tr>
-            {['Tenant', 'Email', 'Bookings', 'Active', 'Last booking'].map((item) => (
-              <th key={item} className="px-md py-sm font-label-caps text-[10px] uppercase">{item}</th>
-            ))}
+      <ResponsiveTable headers={['Tenant', 'Email', 'Bookings', 'Active', 'Last booking']} empty="No tenants have booked your properties.">
+        {data.tenants.map((tenant) => (
+          <tr key={tenant.id} className="border-t-2 border-primary/20">
+            <td className="px-md py-md text-primary font-bold">{tenant.full_name}</td>
+            <td className="px-md py-md text-on-surface-variant">{tenant.email}</td>
+            <td className="px-md py-md text-primary">{tenant.booking_count}</td>
+            <td className="px-md py-md text-primary">{tenant.active_bookings}</td>
+            <td className="px-md py-md text-on-surface-variant">{formatDateTime(tenant.last_booking_at)}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.tenants.map((tenant) => (
-            <tr key={tenant.id} className="border-t-2 border-primary/20">
-              <td className="px-md py-md text-primary font-bold">{tenant.full_name}</td>
-              <td className="px-md py-md text-on-surface-variant">{tenant.email}</td>
-              <td className="px-md py-md text-primary">{tenant.booking_count}</td>
-              <td className="px-md py-md text-primary">{tenant.active_bookings}</td>
-              <td className="px-md py-md text-on-surface-variant">{formatDateTime(tenant.last_booking_at)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {!data.tenants.length && <p className="text-on-surface-variant mt-md">No tenants have booked your properties.</p>}
+        ))}
+      </ResponsiveTable>
     </section>
   );
 
   const rentals = (
     <section className="bg-surface-container-lowest border-2 border-primary p-lg overflow-x-auto">
       <h2 className="font-h3 text-h3 text-primary mb-md">Stay bookings and rent</h2>
-      <table className="w-full min-w-[850px] text-left">
-        <thead className="bg-primary text-on-primary">
-          <tr>
-            {['Tenant', 'Property', 'Status', 'Booked', 'Move-in', 'Rent', 'KeyLo fee'].map((item) => (
-              <th key={item} className="px-md py-sm font-label-caps text-[10px] uppercase">{item}</th>
-            ))}
+      <ResponsiveTable headers={['Tenant', 'Property', 'Status', 'Booked', 'Move-in', 'Rent', 'KeyLo fee']} empty="No bookings for your properties.">
+        {data.bookings.map((booking) => (
+          <tr key={booking.id} className="border-t-2 border-primary/20">
+            <td className="px-md py-md text-primary font-bold">
+              {booking.tenant_name}<br />
+              <span className="text-[11px] text-on-surface-variant font-normal">{booking.tenant_email}</span>
+            </td>
+            <td className="px-md py-md text-primary font-bold">
+              {booking.property_name}<br />
+              <span className="text-[11px] text-on-surface-variant font-normal">{booking.property_area}</span>
+            </td>
+            <td className="px-md py-md"><Status value={booking.status} /></td>
+            <td className="px-md py-md text-on-surface-variant">{formatDateTime(booking.created_at)}</td>
+            <td className="px-md py-md text-on-surface-variant">{formatDate(booking.move_in_date)}</td>
+            <td className="px-md py-md text-primary font-bold">{money(booking.rent_amount)}</td>
+            <td className="px-md py-md text-electric-purple font-bold">{money(Number(booking.rent_amount) * 0.05)}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.bookings.map((booking) => (
-            <tr key={booking.id} className="border-t-2 border-primary/20">
-              <td className="px-md py-md text-primary font-bold">
-                {booking.tenant_name}<br />
-                <span className="text-[11px] text-on-surface-variant font-normal">{booking.tenant_email}</span>
-              </td>
-              <td className="px-md py-md text-primary font-bold">
-                {booking.property_name}<br />
-                <span className="text-[11px] text-on-surface-variant font-normal">{booking.property_area}</span>
-              </td>
-              <td className="px-md py-md"><Status value={booking.status} /></td>
-              <td className="px-md py-md text-on-surface-variant">{formatDateTime(booking.created_at)}</td>
-              <td className="px-md py-md text-on-surface-variant">{formatDate(booking.move_in_date)}</td>
-              <td className="px-md py-md text-primary font-bold">{money(booking.rent_amount)}</td>
-              <td className="px-md py-md text-electric-purple font-bold">{money(Number(booking.rent_amount) * 0.05)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {!data.bookings.length && <p className="text-on-surface-variant mt-md">No bookings for your properties.</p>}
+        ))}
+      </ResponsiveTable>
     </section>
   );
 
   const deposits = (
     <section className="bg-surface-container-lowest border-2 border-primary p-lg overflow-x-auto">
       <h2 className="font-h3 text-h3 text-primary mb-md">Protected deposits</h2>
-      <table className="w-full min-w-[800px] text-left">
-        <thead className="bg-primary text-on-primary">
-          <tr>
-            {['Tenant', 'Property', 'Amount', 'Status', 'Held at', 'Release requested'].map((item) => (
-              <th key={item} className="px-md py-sm font-label-caps text-[10px] uppercase">{item}</th>
-            ))}
+      <ResponsiveTable headers={['Tenant', 'Property', 'Amount', 'Status', 'Held at', 'Release requested']} empty="No protected deposits linked to your properties.">
+        {data.deposits.map((deposit) => (
+          <tr key={deposit.id} className="border-t-2 border-primary/20">
+            <td className="px-md py-md text-primary font-bold">
+              {deposit.tenant_name}<br />
+              <span className="text-[11px] text-on-surface-variant font-normal">{deposit.tenant_email}</span>
+            </td>
+            <td className="px-md py-md text-primary font-bold">{deposit.property_name}</td>
+            <td className="px-md py-md text-primary font-bold">{money(deposit.amount)}</td>
+            <td className="px-md py-md"><Status value={deposit.status} /></td>
+            <td className="px-md py-md text-on-surface-variant">{formatDateTime(deposit.held_at)}</td>
+            <td className="px-md py-md text-on-surface-variant">{formatDateTime(deposit.release_requested_at)}</td>
           </tr>
-        </thead>
-        <tbody>
-          {data.deposits.map((deposit) => (
-            <tr key={deposit.id} className="border-t-2 border-primary/20">
-              <td className="px-md py-md text-primary font-bold">
-                {deposit.tenant_name}<br />
-                <span className="text-[11px] text-on-surface-variant font-normal">{deposit.tenant_email}</span>
-              </td>
-              <td className="px-md py-md text-primary font-bold">{deposit.property_name}</td>
-              <td className="px-md py-md text-primary font-bold">{money(deposit.amount)}</td>
-              <td className="px-md py-md"><Status value={deposit.status} /></td>
-              <td className="px-md py-md text-on-surface-variant">{formatDateTime(deposit.held_at)}</td>
-              <td className="px-md py-md text-on-surface-variant">{formatDateTime(deposit.release_requested_at)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {!data.deposits.length && <p className="text-on-surface-variant mt-md">No protected deposits linked to your properties.</p>}
+        ))}
+      </ResponsiveTable>
     </section>
   );
 

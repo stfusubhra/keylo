@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getAdminVaultData, releaseDeposit, cancelDepositRelease, resolveDepositDispute } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import LoadingScreen from '../components/ui/LoadingScreen';
+import ResponsiveTable from '../components/ui/ResponsiveTable';
 import toast from 'react-hot-toast';
 
 const money = (v) => `₹${Number(v || 0).toLocaleString('en-IN')}`;
@@ -218,51 +219,35 @@ export default function AdminVaultPage() {
                 </button>
               ))}
             </div>
-            <div className="overflow-x-auto border-2 border-primary">
-              <table className="w-full text-left min-w-[700px]">
-                <thead className="bg-primary text-on-primary">
-                  <tr>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Property</th>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Tenant</th>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Amount</th>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Status</th>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Held Since</th>
-                    <th className="px-md py-sm font-label-caps text-[10px] uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredDeposits.length === 0 ? (
-                    <tr><td colSpan={6} className="px-md py-lg text-center text-on-surface-variant">No deposits found</td></tr>
-                  ) : filteredDeposits.map((deposit) => (
-                    <tr key={deposit.id} className="border-t-2 border-primary/20 hover:bg-surface-container-lowest">
-                      <td className="px-md py-sm">
-                        <p className="font-label-caps text-label-caps text-primary">{deposit.property_name}</p>
-                        <p className="text-[11px] text-on-surface-variant">{deposit.booking_id?.substring(0, 8)}...</p>
-                      </td>
-                      <td className="px-md py-sm">
-                        <p className="text-primary">{deposit.tenant_name}</p>
-                        <p className="text-[11px] text-on-surface-variant">{deposit.tenant_email}</p>
-                      </td>
-                      <td className="px-md py-sm font-price-display text-price-display text-primary">{money(deposit.amount)}</td>
-                      <td className="px-md py-sm"><StatusBadge status={deposit.status} /></td>
-                      <td className="px-md py-sm text-on-surface-variant">{formatDate(deposit.held_at)}</td>
-                      <td className="px-md py-sm">
-                        {deposit.status === 'held' && (
-                          <button onClick={() => handleRelease(deposit)} className="px-sm py-xs bg-acid-lime border-2 border-primary font-label-caps text-[10px] text-primary hover:bg-primary hover:text-on-primary transition-colors">
-                            Release
-                          </button>
-                        )}
-                        {deposit.status === 'release_pending' && (
-                          <button onClick={() => handleApproveRelease(deposit)} className="px-sm py-xs bg-electric-purple border-2 border-primary font-label-caps text-[10px] text-white hover:bg-primary transition-colors">
-                            Approve
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ResponsiveTable bordered headers={['Property', 'Tenant', 'Amount', 'Status', 'Held Since', 'Actions']} empty="No deposits found">
+              {filteredDeposits.map((deposit) => (
+                <tr key={deposit.id} className="border-t-2 border-primary/20 hover:bg-surface-container-lowest">
+                  <td className="px-md py-sm">
+                    <p className="font-label-caps text-label-caps text-primary">{deposit.property_name}</p>
+                    <p className="text-[11px] text-on-surface-variant">{deposit.booking_id?.substring(0, 8)}...</p>
+                  </td>
+                  <td className="px-md py-sm">
+                    <p className="text-primary">{deposit.tenant_name}</p>
+                    <p className="text-[11px] text-on-surface-variant">{deposit.tenant_email}</p>
+                  </td>
+                  <td className="px-md py-sm font-price-display text-price-display text-primary">{money(deposit.amount)}</td>
+                  <td className="px-md py-sm"><StatusBadge status={deposit.status} /></td>
+                  <td className="px-md py-sm text-on-surface-variant">{formatDate(deposit.held_at)}</td>
+                  <td className="px-md py-sm">
+                    {deposit.status === 'held' && (
+                      <button onClick={() => handleRelease(deposit)} className="px-sm py-xs bg-acid-lime border-2 border-primary font-label-caps text-[10px] text-primary hover:bg-primary hover:text-on-primary transition-colors">
+                        Release
+                      </button>
+                    )}
+                    {deposit.status === 'release_pending' && (
+                      <button onClick={() => handleApproveRelease(deposit)} className="px-sm py-xs bg-electric-purple border-2 border-primary font-label-caps text-[10px] text-white hover:bg-primary transition-colors">
+                        Approve
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </ResponsiveTable>
           </div>
         )}
 
@@ -365,39 +350,22 @@ export default function AdminVaultPage() {
 
         {/* Bookings Tab */}
         {activeTab === 'bookings' && (
-          <div className="overflow-x-auto border-2 border-primary">
-            <table className="w-full text-left min-w-[800px]">
-              <thead className="bg-primary text-on-primary">
-                <tr>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Tenant</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Property</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Status</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Move-in</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Rent</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Deposit</th>
-                  <th className="px-md py-sm font-label-caps text-[10px] uppercase">Created</th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.length === 0 ? (
-                  <tr><td colSpan={7} className="px-md py-lg text-center text-on-surface-variant">No bookings found</td></tr>
-                ) : bookings.map((booking) => (
-                  <tr key={booking.id} className="border-t-2 border-primary/20 hover:bg-surface-container-lowest">
-                    <td className="px-md py-sm">
-                      <p className="text-primary">{booking.tenant_name}</p>
-                      <p className="text-[11px] text-on-surface-variant">{booking.tenant_email}</p>
-                    </td>
-                    <td className="px-md py-sm text-primary">{booking.property_name}</td>
-                    <td className="px-md py-sm"><StatusBadge status={booking.status} /></td>
-                    <td className="px-md py-sm text-on-surface-variant">{formatDate(booking.move_in_date)}</td>
-                    <td className="px-md py-sm text-primary">{money(booking.rent_amount)}</td>
-                    <td className="px-md py-sm text-primary">{money(booking.deposit_amount)}</td>
-                    <td className="px-md py-sm text-on-surface-variant">{formatDate(booking.created_at)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ResponsiveTable bordered headers={['Tenant', 'Property', 'Status', 'Move-in', 'Rent', 'Deposit', 'Created']} empty="No bookings found">
+            {bookings.map((booking) => (
+              <tr key={booking.id} className="border-t-2 border-primary/20 hover:bg-surface-container-lowest">
+                <td className="px-md py-sm">
+                  <p className="text-primary">{booking.tenant_name}</p>
+                  <p className="text-[11px] text-on-surface-variant">{booking.tenant_email}</p>
+                </td>
+                <td className="px-md py-sm text-primary">{booking.property_name}</td>
+                <td className="px-md py-sm"><StatusBadge status={booking.status} /></td>
+                <td className="px-md py-sm text-on-surface-variant">{formatDate(booking.move_in_date)}</td>
+                <td className="px-md py-sm text-primary">{money(booking.rent_amount)}</td>
+                <td className="px-md py-sm text-primary">{money(booking.deposit_amount)}</td>
+                <td className="px-md py-sm text-on-surface-variant">{formatDate(booking.created_at)}</td>
+              </tr>
+            ))}
+          </ResponsiveTable>
         )}
       </div>
 

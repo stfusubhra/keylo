@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getAdminOverview } from '../lib/supabaseData';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { formatDate, formatDateTime } from '../lib/format';
+import ResponsiveTable from '../components/ui/ResponsiveTable';
 
 const money = (value) => `₹${Number(value || 0).toLocaleString('en-IN')}`;
 const statusClass = (status) => status === 'confirmed' || status === 'active' || status === 'paid'
@@ -13,18 +14,7 @@ function Status({ value }) {
   return <span className={`px-sm py-xs border-2 border-primary font-label-caps text-[10px] uppercase ${statusClass(value)}`}>{value}</span>;
 }
 
-function Table({ headers, children, empty = 'No records found.' }) {
-  return (
-    <div className="overflow-x-auto border-2 border-primary -mx-4 px-4 sm:mx-0 sm:px-0">
-      <table className="w-full text-left min-w-[500px] sm:min-w-0">
-        <thead className="bg-primary text-on-primary">
-          <tr>{headers.map((header) => <th key={header} className="px-md py-sm font-label-caps text-[10px] uppercase whitespace-nowrap">{header}</th>)}</tr>
-        </thead>
-        <tbody>{children || <tr><td colSpan={headers.length} className="px-md py-lg text-on-surface-variant">{empty}</td></tr>}</tbody>
-      </table>
-    </div>
-  );
-}
+const Table = (props) => <ResponsiveTable bordered bleed {...props} />;
 
 export default function AdminOverviewPage() {
   const [data, setData] = useState(null);
