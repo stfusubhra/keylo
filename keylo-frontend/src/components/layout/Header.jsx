@@ -106,12 +106,12 @@ const isActive = (path) => {
     <Link
       to={authUser?.role === 'landlord' ? '/owner/messages' : '/dashboard/messages'}
       className="relative p-xs text-on-surface-variant hover:text-primary transition-colors"
-      aria-label={`Messages${unreadCount ? ` (${unreadCount} unread)` : ''}`}
-      title={isSupabaseConfigured ? 'Messages' : 'Messages'}
+      aria-label={unreadCount > 0 ? 'Messages (' + unreadCount + ' unread)' : 'Messages'}
+      title="Messages"
     >
       <span className="material-symbols-outlined" aria-hidden="true">chat_bubble</span>
       {unreadCount > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center" aria-label={`${unreadCount} unread messages`}>
+        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-hot-pink text-white border-2 border-primary rounded-full font-label-caps text-[10px] leading-[10px] flex items-center justify-center" aria-label="Unread messages">
           {unreadCount > 9 ? '9+' : unreadCount}
         </span>
       )}
@@ -223,19 +223,19 @@ const isActive = (path) => {
       {!isAdmin && mobileMenuOpen && (
         <div className="lg:hidden bg-surface border-t-2 border-primary px-margin-mobile py-md">
           <nav className="flex flex-col gap-sm" aria-label="Mobile navigation">
-            {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
-                    isActive(item.path)
-                      ? 'bg-primary text-on-primary'
-                      : 'text-on-surface'
-                  }`}
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-current={isActive(item.path) ? 'page' : undefined}
-                  tabIndex={isActive(item.path) ? 0 : -1}
-                >
+            {headerNav.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex items-center gap-md px-md py-lg border-2 border-transparent hover:border-primary transition-all ${
+                  isActive(item.path)
+                    ? 'bg-primary text-on-primary'
+                    : 'text-on-surface'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+                aria-current={isActive(item.path) ? 'page' : undefined}
+                tabIndex={isActive(item.path) ? 0 : -1}
+              >
                 <span className="material-symbols-outlined">{item.icon}</span>
                 {item.label}
               </Link>
