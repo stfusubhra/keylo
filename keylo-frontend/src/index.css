@@ -710,6 +710,30 @@ button:active {
 }
 
 /* ═══════════════════════════════════════════
+   KEYLO BRANDING BOUNCE (LANDING PAGE HERO)
+   One-shot subtle bounce on hover: up, settle back down,
+   tiny second hop. Uses `translate` so it composes with
+   the sticker's `-rotate-2` instead of overriding it.
+   ═══════════════════════════════════════════ */
+@keyframes keylo-brand-bounce {
+  0%   { translate: 0 0; }
+  30%  { translate: 0 -6px; }
+  60%  { translate: 0 0; }
+  80%  { translate: 0 -2px; }
+  100% { translate: 0 0; }
+}
+
+.brand-bounce:hover {
+  animation: keylo-brand-bounce 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-bounce:hover {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════
    MOBILE OPTIMIZATIONS
    ═══════════════════════════════════════════ */
 
