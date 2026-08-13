@@ -1,16 +1,7 @@
-BEGIN;
+-- Fix London properties: the original migration (20260814000000) inserted
+-- universities but the properties failed because owner_id referenced a
+-- non-existent profile. This migration uses the demo landlord instead.
 
--- Add London universities
-INSERT INTO public.universities (name, area, city, latitude, longitude)
-VALUES
-  ('University of London', 'Bloomsbury', 'London', 51.5246, -0.1340),
-  ('Imperial College London', 'South Kensington', 'London', 51.4984, -0.1772),
-  ('King''s College London', 'Strand', 'London', 51.5120, -0.1139)
-ON CONFLICT (name) DO NOTHING;
-
--- Add London properties with virtual tours and 3D measurements.
--- Uses the demo landlord (landlord.demo@keylo.in) as owner, same as
--- the existing Kolkata demo properties (see 20260809008100).
 do $$
 declare
   v_owner_id uuid;
@@ -20,14 +11,13 @@ declare
 begin
   select id into v_owner_id from auth.users where email = 'landlord.demo@keylo.in';
   if v_owner_id is null then
-    raise exception 'Demo landlord "landlord.demo@keylo.in" not found. Create it in Auth > Users first.';
+    raise exception 'Demo landlord "landlord.demo@keylo.in" not found.';
   end if;
 
   select id into v_uni_london from public.universities where name = 'University of London';
   select id into v_uni_imperial from public.universities where name = 'Imperial College London';
   select id into v_uni_kings from public.universities where name = 'King''s College London';
 
-  -- Bloomsbury Student Hub
   INSERT INTO public.properties (
     owner_id, university_id, name, property_type, area, city,
     monthly_rent, security_deposit, distance_to_university_km,
@@ -43,7 +33,6 @@ begin
     '{"living_room": {"length_m": 5.0, "width_m": 4.0, "height_m": 2.5}, "bedroom": {"length_m": 3.5, "width_m": 3.0, "height_m": 2.5}, "kitchen": {"length_m": 3.0, "width_m": 2.5, "height_m": 2.5}}'::jsonb
   WHERE NOT EXISTS (SELECT 1 FROM public.properties p WHERE p.name = 'Bloomsbury Student Hub');
 
-  -- South Kensington Modern Flat
   INSERT INTO public.properties (
     owner_id, university_id, name, property_type, area, city,
     monthly_rent, security_deposit, distance_to_university_km,
@@ -59,7 +48,6 @@ begin
     '{"living_room": {"length_m": 6.0, "width_m": 4.5, "height_m": 2.5}, "master_bedroom": {"length_m": 4.0, "width_m": 3.5, "height_m": 2.5}, "second_bedroom": {"length_m": 3.0, "width_m": 3.0, "height_m": 2.5}, "kitchen": {"length_m": 4.0, "width_m": 3.0, "height_m": 2.5}}'::jsonb
   WHERE NOT EXISTS (SELECT 1 FROM public.properties p WHERE p.name = 'South Kensington Modern Flat');
 
-  -- Strand Deluxe PG
   INSERT INTO public.properties (
     owner_id, university_id, name, property_type, area, city,
     monthly_rent, security_deposit, distance_to_university_km,
@@ -77,5 +65,3 @@ begin
 
   raise notice 'Inserted London demo properties with owner %', v_owner_id;
 end $$;
-
-COMMIT;
