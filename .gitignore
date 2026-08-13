@@ -35,3 +35,8 @@ opencode.jsonc
 stitch_keylo_student_rental_ecosystem/
 .vercel
 .env*
+
+# Supabase CLI local state (never commit)
+supabase/.temp/
+supabase/.branches/
+supabase/.env

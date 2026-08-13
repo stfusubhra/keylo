@@ -15,12 +15,12 @@ const Button = forwardRef(({
   const baseStyles = 'inline-flex items-center justify-center gap-2 font-label-caps transition-all border-2';
 
   const variants = {
-    primary: 'bg-acid-lime border-primary text-primary hover:-translate-y-1 hover:shadow-hard',
-    secondary: 'bg-surface-container-lowest border-primary text-primary hover:-translate-y-1 hover:shadow-hard',
-    ai: 'bg-electric-purple border-primary text-white hover:-translate-y-1 hover:shadow-hard',
-    ghost: 'bg-transparent border-transparent text-on-surface-variant hover:text-primary hover:border-primary',
-    danger: 'bg-coral border-primary text-white hover:-translate-y-1 hover:shadow-hard',
-    outline: 'bg-transparent border-primary text-primary hover:bg-primary hover:text-on-primary',
+    primary: 'bg-acid-lime border-primary text-primary hover:-translate-y-1 hover:shadow-hard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    secondary: 'bg-surface-container-lowest border-primary text-primary hover:-translate-y-1 hover:shadow-hard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    ai: 'bg-electric-purple border-primary text-white hover:-translate-y-1 hover:shadow-hard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    ghost: 'bg-transparent border-transparent text-on-surface-variant hover:text-primary hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    danger: 'bg-coral border-primary text-white hover:-translate-y-1 hover:shadow-hard focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+    outline: 'bg-transparent border-primary text-primary hover:bg-primary hover:text-on-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
   };
 
   const sizes = {
@@ -37,6 +37,7 @@ const Button = forwardRef(({
       ref={ref}
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${width} ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       disabled={disabled || loading}
+      aria-disabled={disabled}
       {...props}
     >
       {loading ? (

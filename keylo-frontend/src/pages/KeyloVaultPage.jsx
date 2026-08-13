@@ -131,7 +131,7 @@ export default function KeyloVaultPage() {
     setIsSubmitting(true);
     try {
       await createDepositDispute({ bookingId: booking.id, reason: disputeReason.trim() });
-      toast.success('Dispute opened. Our team will review within 24 hours.');
+      toast.success('Dispute opened. Our AI is reviewing your evidence — a human makes the final call.');
       setDisputeTarget(null);
       setDisputeReason('');
       // Refresh
@@ -191,7 +191,7 @@ export default function KeyloVaultPage() {
                 <span className="material-symbols-outlined text-2xl bg-acid-lime text-primary border-2 border-primary p-xs" style={{ fontVariationSettings: "'FILL' 1" }}>shield</span>
                 <p className="font-body-md text-primary font-medium leading-relaxed">
                   {hasActiveBooking
-                    ? <>Your security deposit sits in escrow with KeyLo — <mark className="bg-acid-lime text-primary px-xs py-[1px] font-bold">never handed straight to the landlord</mark>. Request a refund at checkout, or open a dispute if anything feels off.</>
+                    ? <>Your security deposit sits in escrow with KeyLo — <mark className="bg-acid-lime text-primary px-xs py-[1px] font-bold">never handed straight to the landlord</mark>. Request a refund at checkout, or open a dispute and our AI reviews your evidence to recommend a fair refund.</>
                     : hasCompletedBooking
                     ? 'Your stay is wrapped up. Request your refund below, or check your vault history — your money stays protected until it reaches you.'
                     : 'Book a stay and your security deposit is locked in the KeyLo Vault — protected end to end, refundable at move-out.'}
@@ -381,7 +381,7 @@ export default function KeyloVaultPage() {
                     {isDisputed && (
                       <span className="px-md py-sm bg-coral border-2 border-primary font-label-caps text-label-caps text-white flex items-center gap-xs">
                         <span className="material-symbols-outlined text-sm">warning</span>
-                        Dispute open — reviewing
+                        Dispute open — AI reviewing
                       </span>
                     )}
                     {isReleased && (
@@ -420,6 +420,13 @@ export default function KeyloVaultPage() {
                     <p className="font-body-sm text-on-surface-variant mt-xs">
                       Claimed: {formatMoney(d.claimed_amount)} · Opened {formatDate(d.created_at)}
                     </p>
+                    {d.ai_recommendation && (
+                      <p className="font-body-sm text-on-surface-variant mt-xs">
+                        AI recommendation: {String(d.ai_recommendation).replaceAll('_', ' ')} · Recommended refund{' '}
+                        {formatMoney(d.recommended_refund || d.claimed_amount)}
+                        {d.ai_confidence != null ? ` · ${Number(d.ai_confidence).toFixed(0)}% confidence` : ''}
+                      </p>
+                    )}
                   </div>
                   <Link
                     to="/dashboard/disputes"
@@ -485,7 +492,8 @@ export default function KeyloVaultPage() {
               aria-describedby="dispute-hint"
             />
             <p id="dispute-hint" className="font-body-sm text-on-surface-variant mt-xs">
-              Be specific — include amounts, dates, and what went wrong.
+              Be specific — include amounts, dates, and what went wrong. Our AI reviews the evidence and recommends a fair
+              refund — a human makes the final call.
             </p>
             <div className="flex gap-sm mt-lg">
               <button

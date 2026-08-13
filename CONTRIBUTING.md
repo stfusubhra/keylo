@@ -30,6 +30,7 @@ Thanks for contributing to the hackathon project.
 - Keep route-level demo content in `src/pages` until a backend data layer is introduced.
 - Use accessible labels and meaningful image `alt` text.
 - Do not add credentials, API keys, private data, or local configuration to Git.
+- Schema changes go in a new `supabase/migrations/<timestamp>_<name>.sql` file with a unique timestamp, applied with `supabase db push` (see README "Supabase setup"). Never edit or delete a migration that has already been pushed — the remote history is fixed.
 - Do not introduce a subscription model in product copy or demo flows. The current model is a landlord success fee plus a one-time first-booking tenant fee.
 
 ## Commit messages
