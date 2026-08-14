@@ -150,7 +150,7 @@ export default function PropertyDetailsPage() {
   const fee = 997;
   const total = rent + deposit + fee;
   const privatePrice = rent + 5500;
-  const description = row?.description || DEFAULT_DESCRIPTION;
+  const description = row?.description || demo?.description || DEFAULT_DESCRIPTION;
   const amenities = row?.amenities?.length ? row.amenities : (demo?.amenities || ['Gigabit Wi-Fi', 'Daily Housekeeping', 'In-house Laundry', '24/7 Security']);
   const trustScore = row?.trust_score ?? 92;
   const trustBreakdown = row?.trust_score_breakdown || {};
@@ -159,7 +159,7 @@ export default function PropertyDetailsPage() {
   const ownerName = row?.profiles?.full_name || 'Riya Sen';
   const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
-  const propertyImages = row?.images?.length ? row.images : [coverImage, ...FALLBACK_IMAGES.slice(1)];
+  const propertyImages = row?.images?.length ? row.images : (demo?.images?.length ? demo.images : [coverImage, ...FALLBACK_IMAGES.slice(1)]);
   const virtualTourUrl = row?.virtual_tour_url || demo?.virtualTourUrl;
   const roomMeasurements = row?.room_measurements || null;
   const virtualTourModal = virtualTourOpen ? <VirtualTourModal isOpen={virtualTourOpen} onClose={() => setVirtualTourOpen(false)} tourUrl={virtualTourUrl} propertyName={name} roomMeasurements={roomMeasurements} /> : null;
