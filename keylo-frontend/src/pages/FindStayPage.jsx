@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { isSupabaseConfigured } from '../lib/supabase';
 import { listProperties, toggleSavedProperty, getSavedPropertyIds, getReviewStats } from '../lib/supabaseData';
 import { demoProperties, universities, colleges } from '../lib/demoCatalog';
@@ -88,6 +88,7 @@ function PropertyCard({ property, saved, onToggleSave }) {
 }
 
 export default function FindStayPage() {
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUniversity, setSelectedUniversity] = useState('All Kolkata');
   const [selectedType, setSelectedType] = useState('All types');
@@ -96,6 +97,16 @@ export default function FindStayPage() {
   const [isLoadingCatalog, setIsLoadingCatalog] = useState(isSupabaseConfigured);
   const [catalogError, setCatalogError] = useState('');
   const navigate = useNavigate();
+
+  // Sync initial university from URL query parameter if present
+  useEffect(() => {
+    const uniParam = (searchParams.get('university') || searchParams.get('uni') || '').trim().toLowerCase();
+    if (!uniParam) return;
+    const found = universities.find((u) => u.toLowerCase().includes(uniParam) || uniParam.includes(u.toLowerCase()));
+    if (found) {
+      setSelectedUniversity(found);
+    }
+  }, [searchParams]);
 
   const handleToggleSave = async (propertyId) => {
     if (!isSupabaseConfigured) {

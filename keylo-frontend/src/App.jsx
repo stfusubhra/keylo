@@ -47,6 +47,7 @@ const ListerDashboardPage = lazy(() => import('./pages/ListerDashboardPage'));
 const ListerSignupPage = lazy(() => import('./pages/ListerSignupPage'));
 const ListerLoginPage = lazy(() => import('./pages/ListerLoginPage'));
 const ListerListingFormPage = lazy(() => import('./pages/ListerListingFormPage'));
+const ThreeDWorldPage = lazy(() => import('./pages/ThreeDWorldPage'));
 
 const ErrorBoundary = (
   <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface flex items-center justify-center">
@@ -209,6 +210,11 @@ const router = createBrowserRouter([
   {
     path: '/lister/login',
     element: <ListerLoginPage />,
+    errorElement: ErrorBoundary,
+  },
+  {
+    path: '/3d-world',
+    element: <PublicRouteGuard><ThreeDWorldPage /></PublicRouteGuard>,
     errorElement: ErrorBoundary,
   },
   {

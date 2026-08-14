@@ -133,25 +133,22 @@
 }
 
 @layer base {
-  html, body {
-    margin: 0;
-    padding: 0;
+  html {
+    overflow-x: clip;
+    scroll-behavior: smooth;
   }
   body {
-    overscroll-behavior: none;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
   }
   main > :first-child {
     margin-top: 0 !important;
   }
   main > :last-child {
     margin-bottom: 0 !important;
-  }
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  * {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
   }
 }
 
@@ -697,16 +694,175 @@ button:active {
   animation: keylo-scroll 40s linear infinite;
 }
 
+@keyframes keylo-scroll-up {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+@keyframes keylo-scroll-down {
+  0%   { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes keylo-float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float-slow {
+  animation: keylo-float-slow 4s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: keylo-float-slow 4s ease-in-out 2s infinite;
+}
+
+.animate-scroll-up {
+  animation: keylo-scroll-up 40s linear infinite;
+}
+
+.animate-scroll-down {
+  animation: keylo-scroll-down 40s linear infinite;
+}
+
+.animate-marquee-left {
+  animation: keylo-marquee-left 32s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: keylo-marquee-right 32s linear infinite;
+}
+
 /* Pause on hover so users can click cards */
-.animate-scroll:hover {
+.animate-scroll:hover,
+.animate-scroll-up:hover,
+.animate-scroll-down:hover,
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
   animation-play-state: paused;
 }
 
 /* Reduced motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .animate-scroll {
+  .animate-scroll,
+  .animate-scroll-up,
+  .animate-scroll-down {
     animation: none;
   }
+}
+
+/* ═══════════════════════════════════════════
+   3D & NEXT-GEN INTERACTIVE PARALLAX UTILITIES
+   ═══════════════════════════════════════════ */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.perspective-2000 {
+  perspective: 2000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+/* Glassmorphism Neubrutalism */
+.glass-brutalism {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid var(--color-primary);
+  box-shadow: 8px 8px 0px 0px #000000;
+}
+
+.glass-brutalism-dark {
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid var(--color-primary);
+  box-shadow: 8px 8px 0px 0px #C7F000;
+}
+
+/* Smooth 3D Floating Motion Keyframes */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(10px) rotate(-2deg); }
+}
+
+@keyframes float-orbit {
+  0% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  33% { transform: translateY(-8px) translateX(6px) rotate(3deg); }
+  66% { transform: translateY(6px) translateX(-6px) rotate(-2deg); }
+  100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 6s ease-in-out infinite;
+}
+
+.animate-float-orbit {
+  animation: float-orbit 7s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+/* 3D Orbit Animations */
+@keyframes spin-orbit {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-orbit-reverse {
+  0%   { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-spin-orbit {
+  animation: spin-orbit 28s linear infinite;
+}
+
+.animate-spin-orbit-reverse {
+  animation: spin-orbit-reverse 34s linear infinite;
+}
+
+/* 3D Perspective Carousel Utilities */
+.carousel-3d-stage {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+/* 3D Spatial Hotspot Utilities */
+@keyframes hotspot-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(199, 240, 0, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 14px rgba(199, 240, 0, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(199, 240, 0, 0); }
+}
+
+.hotspot-node {
+  animation: hotspot-pulse 2.2s infinite;
+}
+
+.stage-3d-canvas {
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 /* ═══════════════════════════════════════════
