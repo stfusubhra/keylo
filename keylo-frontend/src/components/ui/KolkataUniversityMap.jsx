@@ -148,11 +148,11 @@ export default function KolkataUniversityMap({ properties = [], colleges = [], s
     <div className="relative" style={{ isolation: 'isolate' }}>
       <div
         ref={containerRef}
-        className="h-[420px] md:h-[520px] w-full border-2 border-primary"
+        className="h-[340px] sm:h-[420px] md:h-[520px] w-full border-2 border-primary"
         aria-label="Live map of Kolkata with universities highlighted and KeyLo stays nearby"
         data-testid="keylo-university-map"
       />
-      <div className="absolute top-3 right-3 z-[1100] bg-surface-container-lowest border-2 border-primary p-md shadow-[-3px_3px_0px_0px_#000000] pointer-events-none">
+      <div className="hidden sm:block absolute top-3 right-3 z-[1100] bg-surface-container-lowest border-2 border-primary p-md shadow-[-3px_3px_0px_0px_#000000] pointer-events-none">
         <p className="font-label-caps text-label-caps text-primary uppercase mb-sm">Legend</p>
         <div className="flex flex-col gap-xs">
           <div className="flex items-center gap-sm">

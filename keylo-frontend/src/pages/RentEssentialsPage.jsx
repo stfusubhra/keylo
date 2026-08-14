@@ -149,7 +149,7 @@ export default function RentEssentialsPage() {
         {loading ? (
           <LoadingScreen label="Loading rentals..." />
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-lg">
             {visibleItems.map((item) => (
             <div
               key={item.id}
@@ -162,14 +162,14 @@ export default function RentEssentialsPage() {
                   navigate(`/rentals/rent/${item.id}`);
                 }
               }}
-              className="group bg-surface flex flex-col border-2 border-primary shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
+              className="group bg-surface flex flex-col border-2 border-primary shadow-[6px_6px_0px_0px_#000000] sm:shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_#000000] transition-all duration-300 cursor-pointer overflow-hidden"
             >
               <div className="relative w-full aspect-[4/3] sm:aspect-square border-b-2 border-primary overflow-hidden bg-surface-container-high">
-                <div className="absolute top-md left-md z-10 flex gap-sm flex-wrap">
+                <div className="absolute top-2 left-2 sm:top-md sm:left-md z-10 flex gap-1 sm:gap-sm flex-wrap">
                   {item.badges.map((badge) => (
                     <span
                       key={badge.label}
-                      className={`px-sm py-xs ${badge.bg} ${badge.textColor} font-label-caps text-[10px] uppercase border-2 border-primary`}
+                      className={`px-1.5 py-0.5 sm:px-sm sm:py-xs ${badge.bg} ${badge.textColor} font-label-caps text-[9px] sm:text-[10px] uppercase border border-primary sm:border-2`}
                     >
                       {badge.label}
                     </span>
@@ -189,26 +189,26 @@ export default function RentEssentialsPage() {
                   }}
                   aria-label={`${savedIds[item.id] ? 'Remove' : 'Save'} ${item.name} ${savedIds[item.id] ? 'from' : 'to'} wishlist`}
                   aria-pressed={Boolean(savedIds[item.id])}
-                  className={`absolute top-md right-md z-10 p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}
+                  className={`absolute top-2 right-2 sm:top-md sm:right-md z-10 p-1.5 sm:p-sm border-2 border-primary ${savedIds[item.id] ? 'bg-hot-pink text-white' : 'bg-surface text-primary hover:bg-acid-lime'}`}
                 >
-                  <span className="material-symbols-outlined" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+                  <span className="material-symbols-outlined text-[18px] sm:text-[20px]" style={savedIds[item.id] ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
                 </button>
                 )}
               </div>
-              <div className="p-sm sm:p-lg flex flex-col flex-grow">
-                <div className="flex justify-between items-start mb-sm sm:mb-md">
-                  <div className="min-w-0 flex-1 pr-xs">
-                    <h3 className="font-h3 text-[14px] sm:text-h3 text-primary mb-xs leading-tight line-clamp-2">{item.name}</h3>
+              <div className="p-3 sm:p-lg flex flex-col flex-grow">
+                <div className="flex justify-between items-start mb-2 sm:mb-md gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-h3 text-[14px] sm:text-h3 text-primary mb-0.5 sm:mb-xs leading-tight line-clamp-2">{item.name}</h3>
                     <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-body-md hidden sm:block">{item.categoryLabel}</p>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <span className="font-price-display text-[16px] sm:text-price-display text-primary block">{item.price}</span>
+                    <span className="font-price-display text-[16px] sm:text-price-display text-primary block leading-none">{item.price}</span>
                     <span className="font-label-caps text-[9px] sm:text-label-caps text-on-surface-variant uppercase">{item.period}</span>
                   </div>
                 </div>
-                <div className="mt-auto pt-sm sm:pt-lg">
+                <div className="mt-auto pt-2 sm:pt-lg">
                   <div
-                    className="w-full py-sm sm:py-md bg-primary text-on-primary font-label-caps text-[10px] sm:text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-xs sm:gap-sm"
+                    className="w-full py-2 sm:py-md bg-primary text-on-primary font-label-caps text-[10px] sm:text-label-caps border-2 border-primary hover:bg-[#C7F000] hover:text-primary transition-colors flex items-center justify-center gap-xs sm:gap-sm"
                   >
                     RENT <span className="material-symbols-outlined text-xs sm:text-sm">arrow_forward</span>
                   </div>

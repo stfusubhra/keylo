@@ -10,33 +10,33 @@ import toast from 'react-hot-toast';
 
 function PropertyCard({ property, saved, onToggleSave }) {
   return (
-    <article className="group flex flex-col md:flex-row border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px_#000000] transition-all" data-id={property.id}>
-      {/* Image block — fixed height on mobile, square on md+ */}
-      <div className="w-full h-48 md:w-[240px] md:h-auto md:aspect-square relative flex-shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-primary">
+    <article className="group flex flex-col md:flex-row border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_0px_0px_#000000] transition-all overflow-hidden" data-id={property.id}>
+      {/* Image block — responsive aspect ratio on mobile, square on md+ */}
+      <div className="w-full aspect-[16/10] sm:aspect-[4/3] md:w-[240px] md:h-auto md:aspect-square relative flex-shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-primary overflow-hidden bg-surface-container-highest">
         <div className="absolute top-2 left-2 z-10">
-          <span className={`px-2 py-1 border-2 border-primary font-label-caps text-label-caps ${property.badgeClass}`}>{property.badge}</span>
+          <span className={`px-2 py-1 border-2 border-primary font-label-caps text-[10px] sm:text-label-caps ${property.badgeClass}`}>{property.badge}</span>
         </div>
-        <img loading="lazy" className="w-full h-full object-cover" src={property.image} alt={`${property.name} near ${property.university}`} />
+        <img loading="lazy" className="w-full h-full object-cover block group-hover:scale-105 transition-transform duration-500" src={property.image} alt={`${property.name} near ${property.university}`} />
         <button
           onClick={onToggleSave}
           aria-label={`Save ${property.name}`}
           aria-pressed={saved}
           title={saved ? 'Remove from saved' : 'Save for later'}
-          className={`absolute top-2 right-2 p-1.5 border-2 border-primary transition-colors ${saved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
+          className={`absolute top-2 right-2 p-1.5 border-2 border-primary transition-colors z-10 ${saved ? 'bg-hot-pink text-white' : 'bg-surface-container-lowest text-primary hover:bg-hot-pink hover:text-white'}`}
         >
-          <span className="material-symbols-outlined text-[20px]" style={saved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
+          <span className="material-symbols-outlined text-[18px] sm:text-[20px]" style={saved ? { fontVariationSettings: 'FILL 1' } : undefined}>favorite</span>
         </button>
       </div>
 
       {/* Content */}
-      <div className="p-md flex flex-col justify-between flex-1 min-w-0">
+      <div className="p-4 sm:p-md flex flex-col justify-between flex-1 min-w-0">
         <div className="flex flex-col gap-xs">
           {/* Title row */}
-          <div className="flex justify-between items-start gap-sm">
+          <div className="flex justify-between items-start gap-sm mb-1">
             <div className="min-w-0 flex-1">
-              <p className="font-label-caps text-label-caps text-electric-purple uppercase truncate">Near {property.university}</p>
-              <Link to={`/property/${property.id}`}>
-                <h3 className="font-h3 text-h3 text-primary line-clamp-2 group-hover:underline decoration-2 underline-offset-4">{property.name}</h3>
+              <p className="font-label-caps text-[10px] sm:text-label-caps text-electric-purple uppercase truncate">Near {property.university}</p>
+              <Link to={`/property/${property.id}`} className="block mt-0.5">
+                <h3 className="font-h3 text-[18px] sm:text-h3 text-primary leading-tight line-clamp-2 group-hover:underline decoration-2 underline-offset-4">{property.name}</h3>
               </Link>
             </div>
             <div className="flex-shrink-0 flex items-center gap-1 bg-surface border-2 border-primary px-2 py-0.5">
@@ -46,38 +46,38 @@ function PropertyCard({ property, saved, onToggleSave }) {
           </div>
 
           {/* Location */}
-          <p className="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 min-w-0">
+          <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant flex items-center gap-1 min-w-0 mt-0.5">
             <span className="material-symbols-outlined text-[16px] flex-shrink-0">location_on</span>
             <span className="truncate">{property.area}, Kolkata • {property.distance} from campus</span>
           </p>
 
           {/* Trust badges */}
-          <div className="flex flex-wrap gap-xs mt-xs">
-            <span className="px-2 py-1 bg-[#E7F7D1] border border-primary font-label-caps text-[10px] text-primary uppercase">Verified landlord</span>
-            <span className="px-2 py-1 bg-[#EDE9FE] border border-primary font-label-caps text-[10px] text-primary uppercase">AI inspected</span>
+          <div className="flex flex-wrap gap-1.5 mt-1.5">
+            <span className="px-2 py-0.5 sm:py-1 bg-[#E7F7D1] border border-primary font-label-caps text-[9px] sm:text-[10px] text-primary uppercase">Verified landlord</span>
+            <span className="px-2 py-0.5 sm:py-1 bg-[#EDE9FE] border border-primary font-label-caps text-[9px] sm:text-[10px] text-primary uppercase">AI inspected</span>
           </div>
         </div>
 
         {/* Amenity chips */}
-        <div className="mt-sm mb-sm flex flex-wrap gap-2">
-          <span className="px-2 py-1 bg-surface-container border-2 border-primary font-label-caps text-label-caps text-on-surface">{property.type}</span>
+        <div className="mt-2.5 mb-2.5 flex flex-wrap gap-1.5 sm:gap-2">
+          <span className="px-2 py-0.5 sm:py-1 bg-surface-container border-2 border-primary font-label-caps text-[10px] sm:text-label-caps text-on-surface">{property.type}</span>
           {property.amenities.slice(0, 2).map((amenity) => (
-            <span key={amenity} className="px-2 py-1 bg-cyan-300 border-2 border-primary font-label-caps text-label-caps text-primary">{amenity}</span>
+            <span key={amenity} className="px-2 py-0.5 sm:py-1 bg-cyan-300 border-2 border-primary font-label-caps text-[10px] sm:text-label-caps text-primary">{amenity}</span>
           ))}
         </div>
 
         {/* Price + CTA */}
-        <div className="flex items-end justify-between border-t-2 border-primary pt-md mt-auto">
-          <div className="flex flex-col">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Starting from</span>
+        <div className="flex items-end justify-between gap-2 border-t-2 border-primary pt-3 sm:pt-md mt-3 sm:mt-auto">
+          <div className="flex flex-col min-w-0">
+            <span className="font-label-caps text-[9px] sm:text-label-caps text-on-surface-variant uppercase">Starting from</span>
             <div className="flex items-baseline gap-1">
-              <span className="font-price-display text-price-display text-primary tracking-tight">{property.price}</span>
-              <span className="font-body-md text-body-md text-on-surface-variant">/ mo</span>
+              <span className="font-price-display text-[20px] sm:text-price-display text-primary tracking-tight">{property.price}</span>
+              <span className="font-body-md text-xs sm:text-body-md text-on-surface-variant">/ mo</span>
             </div>
           </div>
           <Link
             to={`/property/${property.id}`}
-            className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-0.5 hover:shadow-[-2px_2px_0px_0px_#000000] transition-all whitespace-nowrap"
+            className="px-3.5 sm:px-md py-2 sm:py-sm bg-acid-lime border-2 border-primary font-label-caps text-xs sm:text-label-caps text-primary hover:-translate-y-0.5 hover:shadow-[-2px_2px_0px_0px_#000000] transition-all whitespace-nowrap shrink-0 text-center"
           >
             View stay
           </Link>

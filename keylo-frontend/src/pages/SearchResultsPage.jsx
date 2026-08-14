@@ -49,43 +49,43 @@ const isAvailableProperty = (property) => {
 
 function StayCard({ property }) {
   return (
-    <article className="group flex flex-col border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] hover:shadow-[8px_8px_0px_0px_#000000] transition-all">
+    <article className="group flex flex-col border-2 border-primary bg-surface-container-lowest hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] hover:shadow-[8px_8px_0px_0px_#000000] transition-all overflow-hidden">
       {/* Image */}
-      <div className="relative w-full aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
-        <div className="absolute top-md left-md z-10">
-          <span className={`px-sm py-xs ${property.badgeClass} font-label-caps text-[10px] uppercase border-2 border-primary`}>{property.badge}</span>
+      <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
+        <div className="absolute top-2 left-2 z-10">
+          <span className={`px-2 py-0.5 sm:px-sm sm:py-xs ${property.badgeClass} font-label-caps text-[9px] sm:text-[10px] uppercase border border-primary sm:border-2`}>{property.badge}</span>
         </div>
-        <div className="absolute top-md right-md z-10">
-          <span className="px-sm py-xs bg-acid-lime text-primary font-label-caps text-[10px] uppercase border-2 border-primary flex items-center gap-1">
+        <div className="absolute top-2 right-2 z-10">
+          <span className="px-2 py-0.5 sm:px-sm sm:py-xs bg-acid-lime text-primary font-label-caps text-[9px] sm:text-[10px] uppercase border border-primary sm:border-2 flex items-center gap-1">
             <span className="material-symbols-outlined text-[12px]">check_circle</span>
             {property.availability}
           </span>
         </div>
-        <img loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src={property.image} alt={`${property.name} near ${property.university}`} />
+        <img loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 block" src={property.image} alt={`${property.name} near ${property.university}`} />
       </div>
 
       {/* Content */}
-      <div className="p-md flex flex-col flex-grow">
-        <p className="font-label-caps text-label-caps text-electric-purple uppercase mb-xs">Near {property.university}</p>
-        <h3 className="font-h3 text-h3 text-primary line-clamp-2 leading-tight">{property.name}</h3>
-        <p className="font-body-md text-body-md text-on-surface-variant mt-xs flex items-center gap-1 min-w-0">
+      <div className="p-4 sm:p-md flex flex-col flex-grow">
+        <p className="font-label-caps text-[10px] sm:text-label-caps text-electric-purple uppercase mb-1 truncate">Near {property.university}</p>
+        <h3 className="font-h3 text-[16px] sm:text-h3 text-primary line-clamp-2 leading-tight">{property.name}</h3>
+        <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant mt-1 flex items-center gap-1 min-w-0">
           <span className="material-symbols-outlined text-[16px] flex-shrink-0">location_on</span>
           <span className="truncate">{property.area}, Kolkata • {property.distance} from campus</span>
         </p>
-        <div className="flex flex-wrap gap-xs mt-sm">
-          <span className="px-2 py-1 bg-surface-container border-2 border-primary font-label-caps text-label-caps text-on-surface">{property.type}</span>
-          <span className="px-2 py-1 bg-acid-lime/20 border border-primary font-label-caps text-[10px] text-primary uppercase">Verified landlord</span>
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          <span className="px-2 py-0.5 bg-surface-container border border-primary sm:border-2 font-label-caps text-[10px] sm:text-label-caps text-on-surface">{property.type}</span>
+          <span className="px-2 py-0.5 bg-acid-lime/20 border border-primary font-label-caps text-[9px] sm:text-[10px] text-primary uppercase">Verified landlord</span>
         </div>
-        <div className="flex items-end justify-between border-t-2 border-primary pt-md mt-auto">
-          <div className="flex flex-col">
-            <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">From</span>
-            <span className="font-price-display text-price-display text-primary tracking-tight">
-              {property.price} <span className="font-body-md text-body-md text-on-surface-variant">/ mo</span>
+        <div className="flex items-end justify-between gap-2 border-t-2 border-primary pt-3 sm:pt-md mt-3 sm:mt-auto">
+          <div className="flex flex-col min-w-0">
+            <span className="font-label-caps text-[9px] sm:text-label-caps text-on-surface-variant uppercase">From</span>
+            <span className="font-price-display text-[18px] sm:text-price-display text-primary tracking-tight">
+              {property.price} <span className="font-body-md text-xs sm:text-body-md text-on-surface-variant">/ mo</span>
             </span>
           </div>
           <Link
             to={`/property/${property.id}`}
-            className="px-md py-sm bg-acid-lime border-2 border-primary font-label-caps text-label-caps text-primary hover:-translate-y-0.5 hover:shadow-[-2px_2px_0px_0px_#000000] transition-all whitespace-nowrap"
+            className="px-3.5 sm:px-md py-2 sm:py-sm bg-acid-lime border-2 border-primary font-label-caps text-xs sm:text-label-caps text-primary hover:-translate-y-0.5 hover:shadow-[-2px_2px_0px_0px_#000000] transition-all whitespace-nowrap shrink-0 text-center"
           >
             View Details
           </Link>
@@ -113,19 +113,19 @@ function RentalCard({ item, navigate }) {
       tabIndex={0}
       onClick={handleCardClick}
       onKeyDown={handleKeyDown}
-      className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:scale-[1.02] active:scale-[0.98] hover:shadow-[12px_12px_0px_0px_#000000] transition-all duration-300 cursor-pointer"
+      className="group flex flex-col border-2 border-primary bg-surface-container-lowest shadow-[6px_6px_0px_0px_#000000] sm:shadow-[8px_8px_0px_0px_#000000] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:scale-[1.02] active:scale-[0.98] hover:shadow-[10px_10px_0px_0px_#000000] transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* Image */}
-      <div className="relative w-full aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
-        <div className="absolute top-md left-md z-10 flex gap-sm flex-wrap">
+      <div className="relative w-full aspect-[16/10] sm:aspect-[4/3] border-b-2 border-primary overflow-hidden bg-surface-container-highest">
+        <div className="absolute top-2 left-2 z-10 flex gap-1 flex-wrap">
           {item.badges.slice(0, 2).map((badge) => (
-            <span key={badge.label} className={`px-sm py-xs ${badge.bg} ${badge.textColor} font-label-caps text-[10px] uppercase border-2 border-primary`}>
+            <span key={badge.label} className={`px-1.5 py-0.5 sm:px-sm sm:py-xs ${badge.bg} ${badge.textColor} font-label-caps text-[9px] sm:text-[10px] uppercase border border-primary sm:border-2`}>
               {badge.label}
             </span>
           ))}
         </div>
-        <div className="absolute top-md right-md z-10">
-          <span className={`px-sm py-xs font-label-caps text-[10px] uppercase border-2 border-primary flex items-center gap-1 ${
+        <div className="absolute top-2 right-2 z-10">
+          <span className={`px-1.5 py-0.5 sm:px-sm sm:py-xs font-label-caps text-[9px] sm:text-[10px] uppercase border border-primary sm:border-2 flex items-center gap-1 ${
             item.availability === 'Available' ? 'bg-acid-lime text-primary' : 'bg-hot-pink text-white'
           }`}>
             <span className="material-symbols-outlined text-[12px]">{item.availability === 'Available' ? 'check_circle' : 'block'}</span>
@@ -133,27 +133,27 @@ function RentalCard({ item, navigate }) {
           </span>
         </div>
         <img loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 mix-blend-multiply block"
           src={item.useImage ? item.image : marketplaceCategoryImages[item.category] || item.image}
           alt={item.name}
         />
       </div>
 
       {/* Content */}
-      <div className="p-md flex flex-col flex-grow">
-        <h3 className="font-h3 text-h3 text-primary leading-tight line-clamp-2">{item.name}</h3>
-        <p className="font-body-md text-body-md text-on-surface-variant mt-xs">{item.categoryLabel}</p>
-        <p className="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 min-w-0 mt-xs">
+      <div className="p-4 sm:p-md flex flex-col flex-grow">
+        <h3 className="font-h3 text-[16px] sm:text-h3 text-primary leading-tight line-clamp-2">{item.name}</h3>
+        <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant mt-1">{item.categoryLabel}</p>
+        <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant flex items-center gap-1 min-w-0 mt-1">
           <span className="material-symbols-outlined text-[16px] flex-shrink-0">location_on</span>
           <span className="truncate">{item.location}</span>
         </p>
-        <div className="flex items-end justify-between border-t-2 border-primary pt-md mt-auto">
-          <div className="flex items-baseline gap-1">
-            <span className="font-price-display text-price-display text-primary tracking-tight">{item.price}</span>
-            <span className="font-body-md text-body-md text-on-surface-variant">{item.period}</span>
+        <div className="flex items-end justify-between gap-2 border-t-2 border-primary pt-3 sm:pt-md mt-3 sm:mt-auto">
+          <div className="flex items-baseline gap-1 min-w-0">
+            <span className="font-price-display text-[18px] sm:text-price-display text-primary tracking-tight">{item.price}</span>
+            <span className="font-body-md text-xs sm:text-body-md text-on-surface-variant">{item.period}</span>
           </div>
           <div
-            className="px-md py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:bg-acid-lime hover:text-primary transition-colors whitespace-nowrap"
+            className="px-3.5 sm:px-md py-2 sm:py-sm bg-primary text-on-primary border-2 border-primary font-label-caps text-xs sm:text-label-caps hover:bg-acid-lime hover:text-primary transition-colors whitespace-nowrap shrink-0 text-center"
           >
             View Details
           </div>
