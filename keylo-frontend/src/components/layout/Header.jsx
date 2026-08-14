@@ -26,8 +26,13 @@ function KeyLoLogo({ className = '', textClass = 'text-primary' }) {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <svg className="h-8 w-8 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="0" y="0" width="40" height="40" rx="6" fill="#000000"/>
-        <path d="M20 10 L20 30 M10 20 L30 20" stroke="#C7F000" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M2 2 H19 L5 15 Z" fill="#000000"/>
+        <path d="M38 2 H21 L35 15 Z" fill="#000000"/>
+        <path d="M15.8 25 A5.5 5.5 0 1 1 24.2 25" stroke="#C7F000" strokeWidth="2.2" strokeLinecap="round"/>
+        <circle cx="20" cy="28.5" r="2.8" stroke="#000000" strokeWidth="2.2"/>
+        <rect x="19.1" y="31.5" width="1.8" height="5" rx="0.9" fill="#000000"/>
+        <rect x="20.9" y="33.8" width="2.4" height="1.6" rx="0.8" fill="#000000"/>
+        <rect x="20.9" y="36.6" width="3.2" height="1.6" rx="0.8" fill="#000000"/>
       </svg>
       <span className={`font-h3 text-h3 tracking-tight whitespace-nowrap ${textClass}`}>keylo</span>
     </div>
