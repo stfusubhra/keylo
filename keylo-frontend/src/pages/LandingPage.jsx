@@ -32,6 +32,10 @@ const PropertyCard = ({ property, isFeatured }) => (
         <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-[12px] mb-2">
           Near {property.university.replace('Near ', '')} · {property.area}
         </p>
+        <p className="font-body-md text-body-md text-on-surface-variant text-[10px] sm:text-[11px] mb-2 flex items-center gap-1">
+          <span className="material-symbols-outlined text-[13px]">person</span>
+          Listed by {property.lister}
+        </p>
         <div className="flex items-end justify-between">
           <div>
             <p className="font-price-display text-price-display text-primary text-[18px] sm:text-[22px] leading-none">{property.price}</p>
@@ -73,6 +77,7 @@ export default function LandingPage() {
             badge: row.is_ai_inspected ? 'AI Inspected' : '✓ Verified',
             badgeClass: row.is_ai_inspected ? 'bg-electric-purple text-white' : 'bg-acid-lime text-primary',
             image: row.cover_image_url || demo.image || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=85',
+            lister: row.ownerName || demo.lister || 'Riya Sen',
             featured: Boolean(row.is_featured || demo.featured),
           };
         }));

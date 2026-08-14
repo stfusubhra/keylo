@@ -51,6 +51,12 @@ function PropertyCard({ property, saved, onToggleSave }) {
             <span className="truncate">{property.area}, Kolkata • {property.distance} from campus</span>
           </p>
 
+          {/* Lister */}
+          <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant flex items-center gap-1 min-w-0 mt-0.5">
+            <span className="material-symbols-outlined text-[16px] flex-shrink-0">person</span>
+            <span className="truncate">Listed by {property.lister}</span>
+          </p>
+
           {/* Trust badges */}
           <div className="flex flex-wrap gap-1.5 mt-1.5">
             <span className="px-2 py-0.5 sm:py-1 bg-[#E7F7D1] border border-primary font-label-caps text-[9px] sm:text-[10px] text-primary uppercase">Verified landlord</span>
@@ -152,6 +158,7 @@ export default function FindStayPage() {
             badgeClass: row.is_ai_inspected ? 'bg-electric-purple text-white' : 'bg-acid-lime text-primary',
             amenities: row.amenities || [],
             image: row.cover_image_url || 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=85',
+            lister: row.ownerName || demo.lister || 'Riya Sen',
             lat: demo.lat,
             lng: demo.lng,
           };

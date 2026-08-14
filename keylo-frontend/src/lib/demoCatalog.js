@@ -7,7 +7,7 @@
 
 export const demoProperties = [
   {
-    id: 'adamas-pg', university: 'Adamas University', area: 'Barasat', name: 'Adamas Green PG', type: 'PG', distance: '0.8 km', rating: '4.8', price: '₹8,500', deposit: '₹10,000', status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lat: 22.708, lng: 88.489,
+    id: 'adamas-pg', university: 'Adamas University', area: 'Barasat', name: 'Adamas Green PG', type: 'PG', distance: '0.8 km', rating: '4.8', price: '₹8,500', deposit: '₹10,000',     status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lister: 'Riya Sen', lat: 22.708, lng: 88.489,
     address: 'Plot X/7, Adamas Knowledge City Road, Barasat, North 24 Parganas, West Bengal 700126',
     description: 'A calm, garden-facing PG for Adamas University students, a 9-minute walk from the main gate. Rooms open onto a shared balcony with tree cover, and the on-site mess serves home-style Bengali and North Indian meals three times a day. The ground floor has a quiet study hall that stays open till 11 PM, and a 24/7 warden handles late-night arrivals.',
     amenities: ['Wi-Fi', 'Meals available', '24/7 Security', 'Laundry', 'Study hall', 'Power backup', 'RO water', 'Housekeeping'],
@@ -23,7 +23,7 @@ export const demoProperties = [
     featured: true,
   },
   {
-    id: 'adamas-flat', university: 'Adamas University', area: 'Madhyamgram', name: 'North Kolkata Student Flat', type: 'Flat', distance: '1.4 km', rating: '4.6', price: '₹14,000', deposit: '₹20,000', status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lat: 22.703, lng: 88.447,
+    id: 'adamas-flat', university: 'Adamas University', area: 'Madhyamgram', name: 'North Kolkata Student Flat', type: 'Flat', distance: '1.4 km', rating: '4.6', price: '₹14,000', deposit: '₹20,000',     status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lister: 'Riya Sen', lat: 22.703, lng: 88.447,
     address: 'B/5, Madhyamgram Station Road, Madhyamgram, Kolkata, West Bengal 700129',
     description: 'A bright 2BHK on a quiet lane off Madhyamgram station, 12 minutes by auto from Adamas University. Both bedrooms have study desks and wardrobes; the living room doubles as a shared study zone with a 6-seater table. Kitchen is modular with a water purifier, and the gated society has covered parking and 24/7 security.',
     amenities: ['2 bedrooms', 'Study-ready', 'Gated community', 'High-speed Wi-Fi', 'Power backup', 'Car parking', 'Balcony', '24/7 Security'],
@@ -39,7 +39,7 @@ export const demoProperties = [
     featured: false,
   },
   {
-    id: 'jadavpur-pg', university: 'Jadavpur University', area: 'Jadavpur', name: 'Lake View Student PG', type: 'PG', distance: '0.6 km', rating: '4.9', price: '₹9,500', deposit: '₹12,000', status: 'Fast Filling', badge: '🔥 Fast Filling', badgeClass: 'bg-hot-pink text-white', lat: 22.495, lng: 88.392,
+    id: 'jadavpur-pg', university: 'Jadavpur University', area: 'Jadavpur', name: 'Lake View Student PG', type: 'PG', distance: '0.6 km', rating: '4.9', price: '₹9,500', deposit: '₹12,000',     status: 'Fast Filling', badge: '🔥 Fast Filling', badgeClass: 'bg-hot-pink text-white', lister: 'Riya Sen', lat: 22.495, lng: 88.392,
     address: '45 Lake View Road, near Jadavpur University Gate 4, Jadavpur, Kolkata, West Bengal 700032',
     description: 'Right opposite the Jadavpur lake, this PG is a 5-minute walk to Jadavpur University gate 4 and even closer to the canteen lane. Double-sharing rooms have individual study desks, and the rooftop lounge gets the evening breeze. Rent includes fibre Wi-Fi, daily housekeeping, laundry, and a power backup that keeps study hours uninterrupted.',
     amenities: ['High-speed Wi-Fi', 'Laundry', 'Power backup', 'Lake-facing rooms', 'Study desk', 'Daily housekeeping', 'Common lounge', 'CCTV'],
@@ -56,7 +56,7 @@ export const demoProperties = [
     featured: true,
   },
   {
-    id: 'jadavpur-flat', university: 'Jadavpur University', area: 'Gariahat', name: 'South Kolkata 2BHK Flat', type: 'Flat', distance: '1.1 km', rating: '4.7', price: '₹18,000', deposit: '₹25,000', status: 'Available', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lat: 22.514, lng: 88.362,
+    id: 'jadavpur-flat', university: 'Jadavpur University', area: 'Gariahat', name: 'South Kolkata 2BHK Flat', type: 'Flat', distance: '1.1 km', rating: '4.7', price: '₹18,000', deposit: '₹25,000',     status: 'Available', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lister: 'Riya Sen', lat: 22.514, lng: 88.362,
     address: '7/1, Golpark Lane, Gariahat, Kolkata, West Bengal 700029',
     description: 'A sunlit 2BHK three lanes off Gariahat market, popular with Jadavpur University and Presidency students. Wooden floors, a modular kitchen with chimney, and two balconies with morning sun. The metro at Ballygunge Phari is 7 minutes away. Furnished fully — just bring your books.',
     amenities: ['2 bedrooms', 'Furnished', 'Metro nearby', 'AC in bedrooms', 'Modular kitchen', 'High-speed Wi-Fi', 'Lift access', 'Parking'],
@@ -72,7 +72,7 @@ export const demoProperties = [
     featured: false,
   },
   {
-    id: 'calcutta-pg', university: 'University of Calcutta', area: 'Ballygunge', name: 'College Street Co-Living', type: 'PG', distance: '1.3 km', rating: '4.7', price: '₹7,800', deposit: '₹8,000', status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lat: 22.529, lng: 88.369,
+    id: 'calcutta-pg', university: 'University of Calcutta', area: 'Ballygunge', name: 'College Street Co-Living', type: 'PG', distance: '1.3 km', rating: '4.7', price: '₹7,800', deposit: '₹8,000',     status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lister: 'Riya Sen', lat: 22.529, lng: 88.369,
     address: '22B, Ballygunge Circular Road, Kolkata, West Bengal 700019',
     description: 'A characterful co-living PG on Ballygunge Circular Road for Calcutta University, Presidency, and Scottish Church students. Rooms share a warm common kitchen, a courtyard perfect for late-night adda, and a small library. Weekly community dinners are on the house. Wi-Fi, housekeeping, and laundry are included in the rent.',
     amenities: ['Wi-Fi', 'Housekeeping', 'Common kitchen', 'Community dinners', 'Laundry', 'Study corner', '24/7 Security', 'Power backup'],
@@ -88,7 +88,7 @@ export const demoProperties = [
     featured: false,
   },
   {
-    id: 'calcutta-flat', university: 'University of Calcutta', area: 'Bhowanipore', name: 'Central Kolkata Student Flat', type: 'Flat', distance: '1.8 km', rating: '4.5', price: '₹16,500', deposit: '₹22,000', status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lat: 22.539, lng: 88.349,
+    id: 'calcutta-flat', university: 'University of Calcutta', area: 'Bhowanipore', name: 'Central Kolkata Student Flat', type: 'Flat', distance: '1.8 km', rating: '4.5', price: '₹16,500', deposit: '₹22,000',     status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lister: 'Riya Sen', lat: 22.539, lng: 88.349,
     address: '14, Sarat Bose Road, Bhowanipore, Kolkata, West Bengal 700020',
     description: 'A modern 1BHK in Bhowanipore, 8 minutes from the Kalighat metro and an easy commute to College Street campuses. The bedroom fits a double bed plus a work station; the balcony overlooks a tree-lined avenue. Fully furnished with AC, geyser, modular kitchen, and a 200 Mbps connection included.',
     amenities: ['1 bedroom', 'Fully furnished', 'Bus access', 'Wi-Fi', 'Power backup', 'Modular kitchen', 'Balcony', 'Housekeeping'],
@@ -104,7 +104,7 @@ export const demoProperties = [
     featured: false,
   },
   {
-    id: 'xaviers-pg', university: "St. Xavier's University Kolkata", area: 'New Town', name: 'New Town Scholars PG', type: 'PG', distance: '0.9 km', rating: '4.8', price: '₹10,500', deposit: '₹12,000', status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lat: 22.577, lng: 88.468,
+    id: 'xaviers-pg', university: "St. Xavier's University Kolkata", area: 'New Town', name: 'New Town Scholars PG', type: 'PG', distance: '0.9 km', rating: '4.8', price: '₹10,500', deposit: '₹12,000',     status: 'Verified', badge: '✓ Verified', badgeClass: 'bg-acid-lime text-primary', lister: 'Riya Sen', lat: 22.577, lng: 88.468,
     address: 'Action Area III, New Town, Kolkata, West Bengal 700160',
     description: "Purpose-built student PG in New Town, 900 m from St. Xavier's University and a short ride to Techno India and IEM Salt Lake. Every floor has a study lounge and filtered water; the ground floor has a small gym and a mess serving weekday lunches. CCTV, biometric entry, and a resident caretaker keep it secure.",
     amenities: ['Wi-Fi', 'Gym', '24/7 Security', 'Study hall', 'Laundry', 'Mess on site', 'Power backup', 'CCTV'],
@@ -120,7 +120,7 @@ export const demoProperties = [
     featured: true,
   },
   {
-    id: 'xaviers-flat', university: "St. Xavier's University Kolkata", area: 'Rajarhat', name: 'Rajarhat Campus Flat', type: 'Flat', distance: '1.6 km', rating: '4.6', price: '₹19,500', deposit: '₹28,000', status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lat: 22.564, lng: 88.453,
+    id: 'xaviers-flat', university: "St. Xavier's University Kolkata", area: 'Rajarhat', name: 'Rajarhat Campus Flat', type: 'Flat', distance: '1.6 km', rating: '4.6', price: '₹19,500', deposit: '₹28,000',     status: 'Available', badge: 'AI Inspected', badgeClass: 'bg-electric-purple text-white', lister: 'Riya Sen', lat: 22.564, lng: 88.453,
     address: 'Plot Y/9, Street 21, Rajarhat, Kolkata, West Bengal 700156',
     description: "A spacious 2BHK on the 4th floor of a new Rajarhat society, 1.6 km from St. Xavier's University New Town. Floor-to-ceiling windows, a west-facing balcony, and one reserved car park. The building has a gym, a pool, and 24/7 doorman. Fully furnished, ready to move into this semester.",
     amenities: ['2 bedrooms', 'Balcony', 'Parking', 'Gym', 'Power backup', 'Wi-Fi', 'Furnished', '24/7 Security'],

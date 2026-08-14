@@ -69,6 +69,15 @@ export async function getPublicLister(itemId) {
   return data || null;
 }
 
+// Batch display names for rental cards (same guarded RPC as getPublicLister
+// but in one call). Returns { itemId: listerName }.
+export async function getPublicListerNames(itemIds) {
+  if (!supabase || !itemIds?.length) return {};
+  const { data, error } = await supabase.rpc('get_public_lister_names', { p_item_ids: itemIds });
+  if (error) return {};
+  return (data || []).reduce((map, row) => { map[row.item_id] = row.lister_name; return map; }, {});
+}
+
 export async function getListerRequests(listerId) { const { data, error } = await requireClient().from('lister_requests').select('*').eq('lister_id', listerId).order('created_at', { ascending: false }); if (error) throw error; return (data || []).map(mapRequest); }
 export async function createRentalRequest({ itemId, startDate, endDate, message = '' }) { const { data, error } = await requireClient().rpc('create_lister_request', { p_item_id: itemId, p_start_date: startDate, p_end_date: endDate, p_message: message }); if (error) throw error; return mapRequest(data); }
 export async function respondToRentalRequest(requestId, decision) { const { data, error } = await requireClient().rpc('respond_to_lister_request', { p_request_id: requestId, p_decision: decision }); if (error) throw error; return mapRequest(data); }

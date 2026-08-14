@@ -11,6 +11,7 @@ export const rentalItems = [
       { label: 'Trending', bg: 'bg-[#00E5FF]', textColor: 'text-primary' },
     ],
     image: 'https://images.unsplash.com/photo-1648204834832-78e68052c04f?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 2,
@@ -24,6 +25,7 @@ export const rentalItems = [
       { label: 'Fast Filling', bg: 'bg-[#FF5C5C]', textColor: 'text-white' },
     ],
     image: 'https://images.unsplash.com/photo-1526570207772-784d36084510?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 3,
@@ -34,6 +36,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Flexible', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1616400619175-5beda3a17896?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 4,
@@ -47,6 +50,7 @@ export const rentalItems = [
       { label: 'Popular', bg: 'bg-[#FF4F9A]', textColor: 'text-white' },
     ],
     image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 5,
@@ -57,6 +61,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Inspected', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
     image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 6,
@@ -67,6 +72,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'New', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1594235048794-fae8583a5af5?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 7,
@@ -77,6 +83,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 8,
@@ -90,6 +97,7 @@ export const rentalItems = [
       { label: 'Fast Filling', bg: 'bg-[#FF5C5C]', textColor: 'text-white' },
     ],
     image: 'https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 9,
@@ -100,6 +108,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Inspected', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
     image: 'https://images.unsplash.com/photo-1611648694931-1aeda329f9da?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 10,
@@ -110,6 +119,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Flexible', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1540961403310-79825242906e?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 11,
@@ -120,6 +130,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'New', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1482855549413-2a6c9b1955a7?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 12,
@@ -130,6 +141,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
   },
   {
     id: 13,
@@ -140,6 +152,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Study Ready', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
   {
@@ -151,6 +164,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Presentation Ready', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
   {
@@ -162,6 +176,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Move-in Essential', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
   {
@@ -173,6 +188,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Summer Ready', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
     image: 'https://images.unsplash.com/photo-1601084195907-44baaa49dabd?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
   {
@@ -184,6 +200,7 @@ export const rentalItems = [
     period: '/ Day',
     badges: [{ label: 'Campus Favorite', bg: 'bg-[#FF4F9A]', textColor: 'text-white' }],
     image: 'https://images.unsplash.com/photo-1666275898279-29e7b777bafb?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
   {
@@ -195,6 +212,7 @@ export const rentalItems = [
     period: '/ Month',
     badges: [{ label: 'Creator Pick', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
     image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1000&q=85',
+    lister: 'KeyLo',
     useImage: true,
   },
 ];

@@ -335,7 +335,7 @@ export default function RentItemPage() {
                 </div>
               </div>
 
-              {item.listerItemId && (
+              {(item.listerItemId || item.listerName || item.lister) && (
                 <div className="border-2 border-primary bg-surface p-lg">
                   <h2 className="font-h3 text-h3 text-primary mb-md uppercase">Listed By</h2>
                   <div className="flex flex-col gap-md">
@@ -343,18 +343,22 @@ export default function RentItemPage() {
                       <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">person</span>
                       <div className="min-w-0">
                         <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Lister</p>
-                        <p className="font-body-md text-body-md text-primary break-words">{lister?.name || 'KeyLo verified lister'}</p>
+                        <p className="font-body-md text-body-md text-primary break-words">{lister?.name || item.listerName || item.lister || 'KeyLo verified lister'}</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-sm">
-                      <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">call</span>
-                      <div className="min-w-0">
-                        <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Phone</p>
-                        <p className="font-body-md text-body-md text-primary break-words">{lister?.phone || 'Not provided'}</p>
+                    {lister?.phone && (
+                      <div className="flex items-start gap-sm">
+                        <span className="material-symbols-outlined text-electric-purple text-[20px] mt-0.5">call</span>
+                        <div className="min-w-0">
+                          <p className="font-label-caps text-label-caps text-on-surface-variant uppercase">Phone</p>
+                          <p className="font-body-md text-body-md text-primary break-words">{lister.phone}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                     <p className="font-body-sm text-body-sm text-on-surface-variant">
-                      Contact the lister for pickup or delivery coordination.
+                      {item.listerItemId
+                        ? 'Contact the lister for pickup or delivery coordination.'
+                        : 'This item is listed by KeyLo. Reach out via the booking form for help.'}
                     </p>
                   </div>
                 </div>

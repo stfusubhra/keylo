@@ -200,6 +200,10 @@ export default function RentEssentialsPage() {
                   <div className="min-w-0 flex-1">
                     <h3 className="font-h3 text-[14px] sm:text-h3 text-primary mb-0.5 sm:mb-xs leading-tight line-clamp-2">{item.name}</h3>
                     <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-body-md hidden sm:block">{item.categoryLabel}</p>
+                    <p className="font-body-md text-body-md text-on-surface-variant text-[11px] sm:text-body-md flex items-center gap-1 mt-0.5">
+                      <span className="material-symbols-outlined text-[14px] flex-shrink-0">person</span>
+                      <span className="truncate">Listed by {item.listerName || item.lister || 'KeyLo'}</span>
+                    </p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <span className="font-price-display text-[16px] sm:text-price-display text-primary block leading-none">{item.price}</span>

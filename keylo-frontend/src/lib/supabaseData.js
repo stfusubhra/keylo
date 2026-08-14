@@ -43,7 +43,23 @@ export async function listProperties({ universityId, type } = {}) {
 
   const { data, error } = await query;
   if (error) throw error;
-  return data;
+  return attachOwnerNames(data || []);
+}
+
+// Public owner display names for listing cards. `profiles` is RLS-private, so
+// the REST join above returns null for anonymous users; this guarded RPC
+// exposes just the display name for published properties.
+export async function getPublicOwnerNames(propertyIds) {
+  if (!supabase || !propertyIds?.length) return {};
+  const { data, error } = await supabase.rpc('get_public_owner_names', { p_property_ids: propertyIds });
+  if (error) return {};
+  return (data || []).reduce((map, row) => { map[row.property_id] = row.owner_name; return map; }, {});
+}
+
+async function attachOwnerNames(rows) {
+  if (!rows.length) return rows;
+  const names = await getPublicOwnerNames(rows.map((row) => row.id));
+  return rows.map((row) => ({ ...row, ownerName: names[row.id] || row.profiles?.full_name || null }));
 }
 
 // Resolve a property by UUID or demo slug (e.g. "jadavpur-pg") and return the
@@ -67,7 +83,9 @@ export async function getPropertyById(propertyId) {
     .eq('id', id)
     .maybeSingle();
   if (error) throw error;
-  return data || null;
+  if (!data) return null;
+  const rows = await attachOwnerNames([data]);
+  return rows[0] || null;
 }
 
 export async function createBooking({ propertyId, roomId, moveInDate, rentAmount, depositAmount }) {

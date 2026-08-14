@@ -72,6 +72,10 @@ function StayCard({ property }) {
           <span className="material-symbols-outlined text-[16px] flex-shrink-0">location_on</span>
           <span className="truncate">{property.area}, Kolkata • {property.distance} from campus</span>
         </p>
+        <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant mt-1 flex items-center gap-1 min-w-0">
+          <span className="material-symbols-outlined text-[16px] flex-shrink-0">person</span>
+          <span className="truncate">Listed by {property.lister}</span>
+        </p>
         <div className="flex flex-wrap gap-1.5 mt-2">
           <span className="px-2 py-0.5 bg-surface-container border border-primary sm:border-2 font-label-caps text-[10px] sm:text-label-caps text-on-surface">{property.type}</span>
           <span className="px-2 py-0.5 bg-acid-lime/20 border border-primary font-label-caps text-[9px] sm:text-[10px] text-primary uppercase">Verified landlord</span>
@@ -147,6 +151,10 @@ function RentalCard({ item, navigate }) {
           <span className="material-symbols-outlined text-[16px] flex-shrink-0">location_on</span>
           <span className="truncate">{item.location}</span>
         </p>
+        <p className="font-body-md text-xs sm:text-body-md text-on-surface-variant flex items-center gap-1 min-w-0 mt-1">
+          <span className="material-symbols-outlined text-[16px] flex-shrink-0">person</span>
+          <span className="truncate">Listed by {item.lister}</span>
+        </p>
         <div className="flex items-end justify-between gap-2 border-t-2 border-primary pt-3 sm:pt-md mt-3 sm:mt-auto">
           <div className="flex items-baseline gap-1 min-w-0">
             <span className="font-price-display text-[18px] sm:text-price-display text-primary tracking-tight">{item.price}</span>
@@ -215,6 +223,7 @@ export default function SearchResultsPage() {
             amenities: row.amenities || [],
             image: row.cover_image_url || demo.image || FALLBACK_PROPERTY_IMAGE,
             availability: isAvailableProperty(row) ? 'Available' : 'On hold',
+            lister: row.ownerName || demo.lister || 'Riya Sen',
           };
         }));
         setItems(marketItems.map((item) => ({
@@ -232,6 +241,7 @@ export default function SearchResultsPage() {
           availability: item.listerItemId
             ? (item.availability === 'available' ? 'Available' : 'Rented')
             : 'Available',
+          lister: item.listerName || item.lister || 'KeyLo',
         })));
         setLoading(false);
       })

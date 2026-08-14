@@ -7,7 +7,7 @@
 // ============================================================================
 
 import { rentalItems, categoryImages } from './rentalCatalog';
-import { getPublishedListerItems, listerCategoryLabel, listerCategoryImages } from './listerData';
+import { getPublishedListerItems, getPublicListerNames, listerCategoryLabel, listerCategoryImages } from './listerData';
 
 export const marketplaceCategoryImages = {
   ...categoryImages,
@@ -16,7 +16,7 @@ export const marketplaceCategoryImages = {
 
 // Map a lister item into the exact marketplace card shape used by the
 // existing rental grid (rentalCatalog item contract).
-export function toMarketplaceItem(listerItem) {
+export function toMarketplaceItem(listerItem, listerName) {
   return {
     id: `lister-${listerItem.id}`,
     name: listerItem.name,
@@ -34,6 +34,7 @@ export function toMarketplaceItem(listerItem) {
     image: listerItem.photos?.[0] || marketplaceCategoryImages[listerItem.category],
     listerItemId: listerItem.id,
     listerUserId: listerItem.listerId,
+    listerName: listerName || null,
     description: listerItem.description,
     pricePerDay: listerItem.pricePerDay,
     pricePerWeek: listerItem.pricePerWeek,
@@ -52,7 +53,8 @@ export function toMarketplaceItem(listerItem) {
 export async function getMarketplaceItems() {
   const catalog = rentalItems;
   const published = await getPublishedListerItems();
-  return [...catalog, ...published.map(toMarketplaceItem)];
+  const names = await getPublicListerNames(published.map((item) => item.id));
+  return [...catalog, ...published.map((item) => toMarketplaceItem(item, names[item.id]))];
 }
 
 export async function getMarketplaceItemById(id) {
@@ -61,5 +63,7 @@ export async function getMarketplaceItemById(id) {
   if (catalog) return catalog;
   const published = await getPublishedListerItems();
   const match = published.find((i) => `lister-${i.id}` === stringId);
-  return match ? toMarketplaceItem(match) : null;
+  if (!match) return null;
+  const names = await getPublicListerNames([match.id]);
+  return toMarketplaceItem(match, names[match.id]);
 }

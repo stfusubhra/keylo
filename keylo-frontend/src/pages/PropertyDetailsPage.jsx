@@ -156,7 +156,7 @@ export default function PropertyDetailsPage() {
   const trustBreakdown = row?.trust_score_breakdown || {};
   const isVerified = row?.is_documents_verified ?? true;
   const coverImage = row?.cover_image_url || demo?.image || FALLBACK_IMAGES[0];
-  const ownerName = row?.profiles?.full_name || 'Riya Sen';
+  const ownerName = row?.ownerName || row?.profiles?.full_name || 'Riya Sen';
   const ownerRating = row?.profiles?.owner_rating != null ? String(row.profiles.owner_rating) : (demo?.rating || '4.8');
   const reviewAverage = reviews.length ? (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : ownerRating;
   const propertyImages = row?.images?.length ? row.images : (demo?.images?.length ? demo.images : [coverImage, ...FALLBACK_IMAGES.slice(1)]);
@@ -286,6 +286,11 @@ export default function PropertyDetailsPage() {
                 <span className="material-symbols-outlined text-[#F59E0B]">star</span>
                 <span>{reviews.length ? reviewAverage : rating}</span>
                 <span className="text-on-surface-variant font-normal">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+              </div>
+              <div className="w-1 h-1 rounded-full bg-primary"></div>
+              <div className="flex items-center gap-xs">
+                <span className="material-symbols-outlined">person</span>
+                <span>Listed by {ownerName}</span>
               </div>
               <div className="w-1 h-1 rounded-full bg-primary"></div>
               <div className="flex items-center gap-xs">
