@@ -233,15 +233,15 @@ function House3DScene() {
 
       {/* Floating 3D Verified Badge */}
       <div
-        className="absolute bg-acid-lime text-primary border-2 border-primary px-3.5 py-1.5 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-1.5 whitespace-nowrap z-20"
+        className="absolute bg-acid-lime text-primary border-2 border-primary px-3 py-1.5 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-1.5 whitespace-nowrap z-20"
         style={{
-          top: '30px',
-          right: '-25px',
+          top: '25px',
+          right: '0px',
           transform: 'translateZ(110px)',
         }}
       >
         <span className="material-symbols-outlined text-sm font-bold flex-shrink-0 text-primary">verified</span>
-        <span className="font-label-caps text-[11px] font-bold tracking-wide whitespace-nowrap">★ VERIFIED STUDENT HOME</span>
+        <span className="font-label-caps text-[10px] font-bold tracking-wide whitespace-nowrap">★ VERIFIED STUDENT HOME</span>
       </div>
 
       {/* Floating 3D Spec Tag */}
@@ -422,7 +422,7 @@ function Scooter3DScene() {
         className="absolute bg-acid-lime text-primary border-2 border-primary px-3 py-1.5 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-1.5 whitespace-nowrap"
         style={{
           top: '90px',
-          right: '-20px',
+          right: '0px',
           transform: 'translateZ(95px)',
         }}
       >
@@ -645,7 +645,7 @@ function Furniture3DScene() {
         className="absolute bg-acid-lime text-primary border-2 border-primary px-3 py-1.5 shadow-[4px_4px_0px_0px_#000000] flex items-center gap-1.5 whitespace-nowrap"
         style={{
           top: '15px',
-          right: '-10px',
+          right: '0px',
           transform: 'translateZ(90px)',
         }}
       >
@@ -658,7 +658,7 @@ function Furniture3DScene() {
         className="absolute bg-surface-container-lowest text-primary border-2 border-primary px-3 py-1.5 shadow-[4px_4px_0px_0px_#000000] whitespace-nowrap"
         style={{
           bottom: '25px',
-          left: '-10px',
+          left: '0px',
           transform: 'translateZ(80px)',
         }}
       >
@@ -722,7 +722,7 @@ export default function ThreeDWorldPage() {
   const ActiveScene = ch.Scene;
 
   return (
-    <div className="w-full h-screen h-dvh bg-surface text-primary overflow-hidden flex flex-col font-sans">
+    <div className="w-full min-h-screen min-h-dvh lg:h-screen lg:h-dvh bg-surface text-primary overflow-x-hidden lg:overflow-hidden flex flex-col font-sans">
       {/* ── Top Header Navigation Bar ── */}
       <header className="flex-shrink-0 flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3.5 border-b-2 border-primary bg-surface-container-lowest z-30 relative shadow-[0_2px_0px_0px_#000000]">
         <Link
@@ -739,10 +739,10 @@ export default function ThreeDWorldPage() {
       </header>
 
       {/* ── Main 3D Canvas Stage ── */}
-      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-12 min-h-0 relative overflow-y-auto lg:overflow-hidden">
+      <main className="flex-1 flex flex-col lg:grid lg:grid-cols-12 min-h-0 relative">
 
         {/* Left Column: Autonomous 3D Object Stage */}
-        <div className="h-[46vh] lg:h-auto lg:col-span-7 relative flex items-center justify-center bg-surface-container-low border-b-2 lg:border-b-0 lg:border-r-2 border-primary overflow-hidden flex-shrink-0">
+        <div className="h-[280px] xs:h-[310px] sm:h-[360px] lg:h-auto lg:col-span-7 relative flex items-center justify-center bg-surface-container-low border-b-2 lg:border-b-0 lg:border-r-2 border-primary overflow-hidden flex-shrink-0">
           {/* Subtle blueprint grid canvas background */}
           <div
             className="absolute inset-0 opacity-40 pointer-events-none"
@@ -757,18 +757,18 @@ export default function ThreeDWorldPage() {
         </div>
 
         {/* Right Column: Information & Narrative Panel */}
-        <div className="flex-1 lg:col-span-5 relative flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-6 sm:py-8 bg-surface-container-lowest z-10 overflow-y-auto">
+        <div className="flex-1 lg:col-span-5 relative flex flex-col justify-center px-4 sm:px-8 lg:px-14 py-5 sm:py-8 bg-surface-container-lowest z-10">
 
-          <h1 className="font-heading text-[22px] sm:text-[30px] lg:text-[38px] text-primary uppercase font-bold leading-[1.1] tracking-tight mb-2 sm:mb-4">
+          <h1 className="font-heading text-[20px] xs:text-[24px] sm:text-[30px] lg:text-[38px] text-primary uppercase font-bold leading-[1.15] tracking-tight mb-2 sm:mb-4">
             {ch.headline}
           </h1>
 
-          <p className="font-body-lg text-on-surface-variant text-xs sm:text-sm lg:text-base leading-relaxed mb-4 sm:mb-8 max-w-md">
+          <p className="font-body-lg text-on-surface-variant text-xs sm:text-sm lg:text-base leading-relaxed mb-4 sm:mb-6 max-w-md">
             {ch.subtitle}
           </p>
 
           {/* Geometric step indicator */}
-          <div className="flex gap-2 sm:gap-2.5 mb-5 sm:mb-8">
+          <div className="flex gap-2 mb-4 sm:mb-6">
             {world3dChapters.map((chapter, i) => (
               <button
                 key={i}
@@ -802,7 +802,7 @@ export default function ThreeDWorldPage() {
             <button
               key={chapter.id}
               onClick={() => setCurrentChapter(idx)}
-              className={`py-3 sm:py-3.5 px-2 font-label-caps text-[9px] sm:text-[11px] tracking-tight sm:tracking-wider cursor-pointer transition-all text-center border-r-2 border-primary last:border-r-0 font-bold whitespace-nowrap ${currentChapter === idx
+              className={`py-3 sm:py-3.5 px-2 font-label-caps text-[9px] xs:text-[10px] sm:text-[11px] tracking-tight sm:tracking-wider cursor-pointer transition-all text-center border-r-2 border-primary border-b-2 sm:border-b-0 font-bold whitespace-nowrap ${currentChapter === idx
                 ? 'bg-primary text-on-primary shadow-[inset_0_3px_0_#C7F000]'
                 : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high'
                 }`}

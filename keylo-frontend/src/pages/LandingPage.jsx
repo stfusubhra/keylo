@@ -184,7 +184,7 @@ export default function LandingPage() {
             {/* Know our features (Interactive 3D Showcase) */}
             <Link
               to="/3d-world"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#C7F000] transition-all mb-6"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-on-primary border-2 border-primary font-label-caps text-label-caps hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#C7F000] transition-all mb-6 w-full sm:w-auto"
             >
               <span className="material-symbols-outlined text-acid-lime text-lg">explore</span>
               KNOW OUR FEATURES
