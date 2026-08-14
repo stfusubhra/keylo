@@ -67,7 +67,7 @@ export default function KeyloVaultPage() {
           name: 'Lake View Student PG',
           area: 'Jadavpur',
           city: 'Kolkata',
-          cover_image_url: 'https://images.unsplash.com/photo-1560185008-b033106af5c3?auto=format&fit=crop&w=400&q=80',
+          cover_image_url: 'https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=400&q=80',
           trust_score: 85,
         },
         deposits: [{ id: 'demo-dep-1', status: 'held', amount: 12000, held_at: '2026-10-02T10:00:00Z' }],
@@ -266,7 +266,7 @@ export default function KeyloVaultPage() {
                     {/* Property Image */}
                     <div className="w-full sm:w-32 h-32 flex-shrink-0 border-2 border-primary overflow-hidden">
                       <img
-                        src={prop?.cover_image_url || 'https://images.unsplash.com/photo-1560185008-b033106af5c3?auto=format&fit=crop&w=200&q=80'}
+                        src={prop?.cover_image_url || 'https://images.unsplash.com/photo-1615874959474-d609969a20ed?auto=format&fit=crop&w=200&q=80'}
                         alt={prop?.name || 'Property'}
                         className="w-full h-full object-cover"
                       />

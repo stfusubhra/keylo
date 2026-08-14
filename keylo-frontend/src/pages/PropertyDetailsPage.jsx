@@ -11,10 +11,10 @@ import toast from 'react-hot-toast';
 import VirtualTourModal from '../components/ui/VirtualTourModal';
 
 const FALLBACK_IMAGES = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuAQ_iq_Bjm8FH6Y-N9Bc0Md_KBoSognydvBlRNK5GRcQjayQzaD6jVsO2j7IFbshKul1dDzcirEgznYkGY2_BYrIxwqXxm7C9unXpPWBgJ6D8mpKw8XwVmau156lOuwQ_9X6VTS8w_L_6iQe8BIq5Etfj1gM4AcHEQhsgrmIbSOdoIQIlLdCtSol2gnvEdVPD_1P9sPcTahVmDlYqdGBWTi0vXVpn9FF1FJWEJsblAVc7kxKrK68rnL',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuC8GKTWhZscKHX2BQ9jwIFAZmQMk-l_30pDz4ZlKLdBtainDSghHKdmTf3Xkc5l96TvsXFgAgoEmYIYgxdnekCMnc7lAfDGLbFJRY7d3r5n9KHIoTjljUM8kkzIJbvLLWwvvKDJC690ZhctzIaNnrj_GCHjpuaipNpKddV5mu6TZOraZoS7gvR5LHsALn6N6rq2SEThFuBqXKFH60VzeLz9k-8oeWsPfd1Gdsn_5X0WwFUyu9oedEow',
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuCRIjlP8T0GOAZXoU4LP9mQ_lHjkhrWMEtgbjXjuXue61jA5JHEBae0zcfzNN5O_bmpLNykvvtULzsQv-WV6jpl4Y8qQdHj71q_uOgC_PoxrvT8zIyAvM6PSeVizkZ4fFsJbIysQARQIA3fOyXYb7AZaO6C3Hl_mBVZnxwGryxC_ZC6iNhQNznN9_PY8EPIfMvibkdbGaijKYQcvVTfKi_UwBUakUL3S43i-PdA_quSRVdrvsxowC3T',
+  'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=85',
+  'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=85',
 ];
 
 const DEFAULT_DESCRIPTION =

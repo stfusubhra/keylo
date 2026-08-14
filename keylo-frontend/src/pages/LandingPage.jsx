@@ -207,7 +207,7 @@ export default function LandingPage() {
               <div className="h-32 sm:h-48 w-full border-b-2 border-primary bg-surface-container-highest relative overflow-hidden">
                 <img loading="lazy"
                   className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
-                  src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1200&q=85"
+                  src="https://images.unsplash.com/photo-1648204834832-78e68052c04f?auto=format&fit=crop&w=1200&q=85"
                   alt="A sleek electric scooter parked against a brutalist concrete wall"
                 />
                 <div className="absolute top-3 left-3 w-8 h-8 sm:w-10 sm:h-10 bg-[#FF3366] border-2 border-primary rounded-full flex items-center justify-center shadow-[2px_2px_0px_0px_#000000]">

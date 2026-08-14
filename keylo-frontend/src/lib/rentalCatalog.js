@@ -10,7 +10,7 @@ export const rentalItems = [
       { label: 'Inspected', bg: 'bg-[#7C3AED]', textColor: 'text-white' },
       { label: 'Trending', bg: 'bg-[#00E5FF]', textColor: 'text-primary' },
     ],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAn5PGfZaGNX4Y1059KyVEBWyusuiowTyRx1hmfnQh_Fu9_rFbrlG6dM1Sn9-xx4giHR5thnLC5bWbOnvOpJOOT8faLtHBktAg8_eETWkCNlJ-ad3oQSkEQjKIMLMgoYn_qvoTVDFSkm41b7fZ9so3uxFfJqpx4bFfiSLmNUHX-XkZz6a51INZPJ1bk5_A2vy3DZzXC_L3X7EsUSTMTNQiyR5vUTcWxMJxf8ZpbZyFRZY1Lhl5mKVbT',
+    image: 'https://images.unsplash.com/photo-1648204834832-78e68052c04f?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ export const rentalItems = [
       { label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' },
       { label: 'Fast Filling', bg: 'bg-[#FF5C5C]', textColor: 'text-white' },
     ],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB-5VkKPI_HhRuQZOd7JNKug3y2iabkPvjm0DGIDVsNL-1ykAU_6wjNaJpj4VFCQRqJWIEptTyYmN6BvvY6aSzvTpabcery6A1-_A_ECkYhGy2SM801ejo5_dhtUnHwnFCb181WfEFawrJFs7trtX4VqOyt2eMclVpBtMXbh2lzTknLTxELWl54BlKiCmrq6jOyZaHaATOG3pB6Z2WE_uiO-gstzYIdLeAN0uCq2c2A2TjjZ3gdyj8C',
+    image: 'https://images.unsplash.com/photo-1526570207772-784d36084510?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ export const rentalItems = [
     price: '₹300',
     period: '/ Month',
     badges: [{ label: 'Flexible', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBcYV0S6Qvu2oY1HrIBYYak31oLFAg9--g2A_zqRydeE-4tKt7cv3YpMwDJAynXj03Al2U7MkQ6z-weg8C_Eg3BqLKlRXFHZLohjE_qlToltWt5dVucmbocHKjXf3HCpbwe8joVsq-mN9tAY8ikLY8HPjRiKpXLFjT0e2gJfd5xvSCabe1hJJMWME4Ed1uC3SCA9fwdTut2qy8LzHWDorzmWFqBTHMuVQg2w-Ydt0mTQx_dJ6zM4VcY',
+    image: 'https://images.unsplash.com/photo-1616400619175-5beda3a17896?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 4,
@@ -46,7 +46,7 @@ export const rentalItems = [
       { label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' },
       { label: 'Popular', bg: 'bg-[#FF4F9A]', textColor: 'text-white' },
     ],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtkAui5Tn5GYWsuQ7uqQkvi6YTr-Wbx6-S7HxV7U1Rfy2TbVZGN7u3DA-0Mp8x40-oCMHGydHDVRhuf2Qd9SpGiR0FqleY1qLWm4sMAdZ3yy-XTxYAhvsO8DoassNrelePcQjVY93Ldj4KTkIPPGFz4PbiWk2JCVqrTutRpYCrwANZ7YIXzzYpFboahHceoHj0gIyTHVdyWwouNcszGh99szqHRdpen_octQ-GYpNaD_2HBDoV0qiS',
+    image: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 5,
@@ -56,7 +56,7 @@ export const rentalItems = [
     price: '₹1,200',
     period: '/ Month',
     badges: [{ label: 'Inspected', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBc4-R4SQhrI1Gl7NarbnIcQfeO18ZgTs4ngebY_h6w2QPAfpY9u4hg_0Ab_ezybQTdnSwkK_EM_eZ3Fq48GvhxLXfPFTsNeY6tGWUNEysavTRJf1aAMRLaOZDmOjXZ32OT0FS6MMTD1KzUKGx9UfOQlehKO98GV7kSOZM08LFTA0Jwqas0LPTH5gkO0G2LLKxOm74mJvvXPw1DIl_q3QpMlJTRzs3Mo4LoW59Zzo2RVsGzJEVEkLs_',
+    image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 6,
@@ -66,7 +66,7 @@ export const rentalItems = [
     price: '₹250',
     period: '/ Month',
     badges: [{ label: 'New', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4tUh4ePZJ67IqiyoRpI4X8KHzkeYRGDNxiIuWuDSIrjRFlzD2CbQb7gc7SlllT_B8ybl3qJiF576uR-15OSrvVsw-FMYj5q5gkq9f1rK0Rj3ITcCNrTlc5qITTo2NcY_7NsZdQTC5yrmoWjK1ffCYAkuSiNSew8Ez3PUyft3-eU4XMtAx-tcT3jBe2B4SkdEq54cp1dUJ2RtXXU8w81-_enndMYAi_AXh-KAD49RxFPKRpbrAj8Rx',
+    image: 'https://images.unsplash.com/photo-1594235048794-fae8583a5af5?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 7,
@@ -76,7 +76,7 @@ export const rentalItems = [
     price: '₹180',
     period: '/ Month',
     badges: [{ label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDi5Rs4vUeMB1lDN7kY8VnazifBL1QS-WoJMuGveIV2FS1SUTcYxUxGhGQ6fRPvGGoD6JAtEHw2xlW6LHNEOKg4xuMEofr3r0yLgJnWXgGd9ZgPtJJpu_0IT3eOZIyjZIRvmFK4Ef3qFGNSNswn20NGj8zDgawNdYUsnEL7-M88I5nrRpO9iAhnKiUQ8Q8iZUYIOefyJ8_FuvBwMb1qsNWNeZ9Pu4TNBdZVrHVMl-L3RSZ01GnoluNR',
+    image: 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 8,
@@ -89,7 +89,7 @@ export const rentalItems = [
       { label: 'Trending', bg: 'bg-[#FF4F9A]', textColor: 'text-white' },
       { label: 'Fast Filling', bg: 'bg-[#FF5C5C]', textColor: 'text-white' },
     ],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcCdYud3Dn3RGSpguq4MWbAuaEUUpnq-ntdunFJsj3wfWyGBR5boMQiD5Rkf_6dtvZbxKYhULPnYzr5tNDNOM7qVCmoFzfP-SttO42dOjvugkCIbdQb4lfxCfrVHXOftvv7yHEpfNsqcGkUlqxGYw3zAKyIoZQrbkxWECy3CccjPfFT6EJAA78LpRmWSoP0BiT-Qb7cEfJZ7K4SuIJl8A33PMnJLy3dxVsYDvzBa7eMHnxgK-jY7ib',
+    image: 'https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 9,
@@ -99,7 +99,7 @@ export const rentalItems = [
     price: '₹350',
     period: '/ Month',
     badges: [{ label: 'Inspected', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDk66WyrS7ZLawk1xnXKTSuu-1kiW3tYTSEJQ0nyp9vgfvqSRUcAgrZT1YedUm2AOCUzriZ1LMFNrckV28sKm49BV3_D-8K1ms8aopm7SZLK_CWZ8km8llH-QxnUDxugcYXRwhDYFm-hnt0AYsuZJ4wmJIvVbIhHQt08YXNCnqLUHhyYvr-h5cvUZ17CIeksF27etqZCIsLGBIv4zvIj2itpBAXk7Qmq0YdjAtQK9MJCA3Tk2c7vBNX',
+    image: 'https://images.unsplash.com/photo-1611648694931-1aeda329f9da?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 10,
@@ -109,7 +109,7 @@ export const rentalItems = [
     price: '₹220',
     period: '/ Month',
     badges: [{ label: 'Flexible', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC84I3JhnOumYvKu8FWOrwVlY6CMYzhZ5ogxsmGCThJ9o61sS813DqV4XzL58NBuNblRoGpSM-nxtE76VcHEF6E7DTGvCz43onvW--6hL9TBQZtkuiSmJXHyz3uhmsAqH-ppnvzZZhNxP1OBtEkYATDkivPTq5-8G-SpNvjKAERlEcna6HHO3-WzCFGi93G7jRy1BV_4MYsk5vu9hhrYm3JtMBUzsGbCgeqCc9xBlNjOWBn9YSRGlYk',
+    image: 'https://images.unsplash.com/photo-1540961403310-79825242906e?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 11,
@@ -119,7 +119,7 @@ export const rentalItems = [
     price: '₹450',
     period: '/ Month',
     badges: [{ label: 'New', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBpdL7vWvL_O-xc18tzYWi629aE-h1jY9yzcqbWYnBWZXmo2dubOK745kuei6KLvKmt4UWczT6j7qH3faU51oLf-wdjNQB77a_E7iy6CWe24-GmeGrTBVoi1cK9Ef-LyNt0MceHlYWt3PwVdZR9beaj_URGIxwt1pKGwc32Jm-TZv8-IfW6xw6sr7aJf6VioF8sZD8hLJOUwcWaPPtJsnorw_wz8AtvVCMgEkmmi0UYnlUr-zw-eUQ-',
+    image: 'https://images.unsplash.com/photo-1482855549413-2a6c9b1955a7?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 12,
@@ -129,7 +129,7 @@ export const rentalItems = [
     price: '₹300',
     period: '/ Month',
     badges: [{ label: 'Verified', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
-    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDcyzW8WzQT8ZGRAd-D1Z-s2D8uCUxVZNm1wgVERXwUV1-O8BWnGq65nF-jlb2M2YnQeqF3-F0t0j8QtPqNolagLjA1-M2KWon9M42wBab2LFJEfRvGnWkc6g5Ox5pvWWoZjPf_dmJU8P9C5ZiV8AhnviyvgLGaVkGz2GXDpFgqgZB2Ge0brjBctIEYaWktoOwYVjdVsBFuOCsaAkuRQQ-K0KmqdUNBNqI2TcVO6FzbbzyPAh22tPAv',
+    image: 'https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1000&q=85',
   },
   {
     id: 13,
@@ -150,7 +150,7 @@ export const rentalItems = [
     price: '₹400',
     period: '/ Month',
     badges: [{ label: 'Presentation Ready', bg: 'bg-[#C7F000]', textColor: 'text-primary' }],
-    image: 'https://images.unsplash.com/photo-1528395874238-34b748a7e7e1?auto=format&fit=crop&w=1000&q=85',
+    image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=1000&q=85',
     useImage: true,
   },
   {
@@ -172,7 +172,7 @@ export const rentalItems = [
     price: '₹280',
     period: '/ Month',
     badges: [{ label: 'Summer Ready', bg: 'bg-[#00E5FF]', textColor: 'text-primary' }],
-    image: 'https://images.unsplash.com/photo-1631545806609-4b5f7e0b1e4b?auto=format&fit=crop&w=1000&q=85',
+    image: 'https://images.unsplash.com/photo-1601084195907-44baaa49dabd?auto=format&fit=crop&w=1000&q=85',
     useImage: true,
   },
   {
@@ -183,7 +183,7 @@ export const rentalItems = [
     price: '₹180',
     period: '/ Day',
     badges: [{ label: 'Campus Favorite', bg: 'bg-[#FF4F9A]', textColor: 'text-white' }],
-    image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1000&q=85',
+    image: 'https://images.unsplash.com/photo-1666275898279-29e7b777bafb?auto=format&fit=crop&w=1000&q=85',
     useImage: true,
   },
   {
@@ -194,13 +194,13 @@ export const rentalItems = [
     price: '₹550',
     period: '/ Month',
     badges: [{ label: 'Creator Pick', bg: 'bg-[#7C3AED]', textColor: 'text-white' }],
-    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1000&q=85',
+    image: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=1000&q=85',
     useImage: true,
   },
 ];
 
 export const categoryImages = {
-  scooters: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?auto=format&fit=crop&w=1000&q=85',
+  scooters: 'https://images.unsplash.com/photo-1554223789-df81106a45ed?auto=format&fit=crop&w=1000&q=85',
   bikes: 'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=1000&q=85',
   laptops: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=1000&q=85',
   furniture: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1000&q=85',
@@ -208,5 +208,5 @@ export const categoryImages = {
   electronics: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1000&q=85',
   gaming: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?auto=format&fit=crop&w=1000&q=85',
   tablets: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&w=1000&q=85',
-  projectors: 'https://images.unsplash.com/photo-1528395874238-34b748a7e7e1?auto=format&fit=crop&w=1000&q=85',
+  projectors: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?auto=format&fit=crop&w=1000&q=85',
 };
