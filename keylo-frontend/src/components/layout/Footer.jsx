@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import KeyLoMark from '../KeyLoMark';
 
 export default function Footer() {
   return (
@@ -6,15 +7,7 @@ export default function Footer() {
       <div className="px-margin-mobile lg:px-margin-desktop py-xl flex flex-col md:flex-row md:items-center md:justify-between gap-md">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <svg className="h-6 w-6 flex-shrink-0" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M2 2 H19 L5 15 Z" fill="#ffffff"/>
-          <path d="M38 2 H21 L35 15 Z" fill="#ffffff"/>
-          <path d="M15.8 25 A5.5 5.5 0 1 1 24.2 25" stroke="#C7F000" strokeWidth="2.2" strokeLinecap="round"/>
-          <circle cx="20" cy="28.5" r="2.8" stroke="#ffffff" strokeWidth="2.2"/>
-          <rect x="19.1" y="31.5" width="1.8" height="5" rx="0.9" fill="#ffffff"/>
-          <rect x="20.9" y="33.8" width="2.4" height="1.6" rx="0.8" fill="#ffffff"/>
-          <rect x="20.9" y="36.6" width="3.2" height="1.6" rx="0.8" fill="#ffffff"/>
-          </svg>
+          <KeyLoMark className="h-6 w-auto flex-shrink-0" roof="#ffffff" />
           <span className="font-h3 text-h3 text-on-primary">keylo</span>
         </div>
 
